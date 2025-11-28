@@ -1,148 +1,147 @@
 from django.db import models
+from datetime import datetime
+from decimal import Decimal
 
 # Create your models here.
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+class Usuario(models.Model):
+    ROL_OPCIONES = (
+        ('admin', 'Administrador'),
+        ('empleado', 'Empleado'),
+        ('proveedor', 'Proveedor'),
+    )
+
+    id_usuario = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100)
+    correo_electronico = models.CharField(max_length=150)
+    contraseña = models.CharField(max_length=255)
+    rol = models.CharField(max_length=20, choices=ROL_OPCIONES)
+    fecha_registro = models.DateTimeField()
+
+    class Meta:
+        verbose_name = "Usuario"
+        verbose_name_plural = "Usuarios"
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido}"
+
+
+class Proveedor(models.Model):
+    id_proveedor = models.AutoField(primary_key=True)
+    nombre_proveedor = models.CharField(max_length=150)
+    telefono = models.CharField(max_length=30)
+    correo_electronico = models.CharField(max_length=150)
+    direccion = models.CharField(max_length=200)
+
+    class Meta:
+        verbose_name = "Proveedor"
+        verbose_name_plural = "Proveedores"
+
+    def __str__(self):
+        return self.nombre_proveedor
+
+
+class Producto(models.Model):
+    id_producto = models.AutoField(primary_key=True)
+    nombre = models.CharField(max_length=150)
+    descripcion = models.TextField()
+    unidad = models.CharField(max_length=50)
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    stock = models.IntegerField()
+
+    class Meta:
+        verbose_name = "Producto"
+        verbose_name_plural = "Productos"
+
+    def __str__(self):
+        return self.nombre
+
+
+
+class Compra(models.Model):
+    id_compra = models.AutoField(primary_key=True)
+    id_proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
+    id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    id_producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    id_insumo = models.IntegerField(null=True, blank=True)
+    fecha_compra = models.DateTimeField()
+    total_compra = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = "Compra"
+        verbose_name_plural = "Compras"
+
+    def __str__(self):
+        return f"Compra #{self.id_compra}"
+
+# Modelos de Comanda, pedido, mesa, cliente
+class Cliente(models.Model):
+    id_cliente = models.AutoField(primary_key=True)
+    cedula = models.CharField(max_length=20, unique=True)
+    nombre = models.CharField(max_length=50)
+    apellido = models.CharField(max_length=50)
+    telefono = models.CharField(max_length=15)
+    correo_electronico = models.EmailField(unique=True)
+    direccion = models.CharField(max_length=100)
+    tipo_cliente = models.CharField(max_length=20)
+    
+    def __str___(self):
+        return self.nombre
+    
+    class Meta:
+        verbose_name = 'Cliente'
+        verbose_name_plural = 'Clientes'
+        db_table = 'cliente'
+        
+    
+        
+class Mesa(models.Model):
+    id_mesa = models.AutoField(primary_key=True)
+    id_cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
+    id_menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
+    numero_mesa = models.IntegerField(unique=True)
+    estado = models.CharField(max_length=20)
+    capacidad = models.IntegerField()
+    
+    def __str__(self):
+        return self.numero_mesa
+
+    class Meta:
+        verbose_name = 'Mesa'
+        verbose_name_plural = 'Mesas'
+        db_table = 'mesa'
+        
+class Comanda(models.Model):
+    id_comanda = models.AutoField(primary_key=True)
+    id_usuario = models.ForeignKey(usuario, on_delete=models.CASCADE)
+    fecha_hora = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return self.id_comanda
+    
+    class Meta:
+        verbose_name = 'Comanda'
+        verbose_name_plural = 'Comandas'
+        db_table = 'comanda'
+        
+class Pedido(models.Model):
+    id_pedido = models.AutoField(primary_key=True)
+    id_mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
+    id_comanda = models.ForeignKey(Comanda, on_delete=models.CASCADE)
+    fecha_hora = models.DateTimeField(auto_now_add=True)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    estado = models.CharField(max_length=20)
+    
+    def __str__(self):
+        return self.id_pedido
+    
+    class Meta:
+        verbose_name = 'Pedido'
+        verbose_name_plural = 'Pedidos'
+        db_table = 'pedido'
+    
 #---------------------------------------------------------------------------------
 #notificacion, insumo,receta A CARGO DE ELKIN 
 
@@ -153,12 +152,12 @@ class insumo(models.Model):
     unidad=models.CharField(max_length=100)
     valor=models.CharField(max_length=100)
     stock=models.CharField(max_length=100)
-
-
+    
     def __str__(self):
         return self.nombre
     
     class Meta:
+
         verbose_name = 'insumo'
         verbose_name_plural = 'insumos'
         db_table = 'insumo'
@@ -189,9 +188,13 @@ class Notificacion(models.Model):
     fecha = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"Notificación {self.id} - {self.tipo_notificacion}"
+        return f"Notificacion {self.id} - {self.tipo_notificacion}"
 
     class Meta:
         verbose_name = "notificacion"
         verbose_name_plural = "notificaciones"
         db_table = "notificacion"
+
+        
+
+
