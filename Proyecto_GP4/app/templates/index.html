@@ -9,50 +9,7 @@
   <script defer src="admin_main.js"></script>
 </head>
 
-<body>
-
-  <header>
-    <a href="#"><img id="logo" src="../imagenes/logo.png" alt="Logo"></a>
-    <div class="header-right">
-      <a href="login.html"><img class="icono" src="../Imagenes/cerrar-sesion.png" alt="Cerrar sesión"></a>
-    </div>
-  </header>
-
-  <nav>
-    <a href="index-admin.html "><img class="icono" src="../imagenes/inicio.png" alt="Inicio"></a>
-    <a href="perfil-admin.html"><img class="icono" src="../imagenes/usuario.png" alt="Usuario"></a>
-  </nav>
-
-  <main>
-    <div class="centrado">
-      <h1 class="titulo-principal">-------------------------</h1>
-    </div>
-    <section class="Contenido">
-
-    </section>
-  </main>
-
-
-  <footer>
-    <div class="footer-contact">
-      <span class="contact-text">Contacto</span>
-      <div class="contact-info">
-        <p>Tel: +57 320 456 7890</p>
-        <p>Email: contacto@latuna.com</p>
-        <p>Horario: Lun-Vie 8am - 6pm</p>
-      </div>
-    </div>
-    <button class="btn-accesibilidad" aria-label="Opciones de accesibilidad">♿</button>
-
-    <div class="menu-accesibilidad" id="menuAccesibilidad">
-      <button id="modoOscuro">Modo oscuro</button>
-      <button id="aumentar">Aumentar texto</button>
-      <button id="disminuir">Disminuir texto</button>
-      <button id="restablecer">Restablecer tamaño</button>
-      <button id="contraste">Alto contraste</button>
-    </div>
-  </footer>
-
-</body>
+{% block body %}
+{% endblock %}
 
 </html>
