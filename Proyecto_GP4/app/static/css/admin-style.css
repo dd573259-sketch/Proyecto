@@ -1,0 +1,282 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Jokerman', cursive;
+  transition: all 0.3s ease; /* Animación general */
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-size: 1rem; /* base escalable */
+}
+
+/* HEADER */
+header {
+  background-color: rgb(255, 0, 0);
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 1% 5%;
+}
+
+#logo {
+  width: 20vw;
+  max-width: 120px;
+  height: auto;
+}
+
+.icono {
+  width: 8vw;
+  max-width: 40px;
+  height: auto;
+  cursor: pointer;
+}
+
+.icono:hover {
+  opacity: 0.7;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 25px; /* Espacio entre notificación y cerrar sesión */
+}
+
+/* NAV */
+nav {
+  background-color: #ffe4b5;
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  padding: 10px 20%;
+}
+
+main{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-image: url(../imagenes/fondoadmin.png);
+  padding: 50px;
+  min-height: auto;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.titulo-principal {
+  display: block;
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  background-color: #2e8b57; /* Verde destacado */
+  color: white;
+  padding: 15px 25px;
+  margin: 0 auto 20px auto;        /* Lo centra horizontal y da separación arriba */
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  letter-spacing: 2px;
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.8);}
+  to { opacity: 1; transform: scale(1);}
+}
+
+/* MENU PRINCIPAL */
+.Contenido {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 600px;
+  margin: 30px auto;
+  background: #ffe0b2;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 3px 3px 10px rgba(0,0,0,0.2);
+}
+
+.item {
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.item:hover {
+  transform: scale(1.2);
+}
+
+.item img {
+  width: 80px;
+  height: 80px;
+}
+
+.item p {
+  margin-top: 10px;
+  font-weight: bold;
+  color: #b71c1c;
+}
+
+/* FOOTER */
+footer {
+  background-color: #222;
+  padding: 15px;
+  text-align: center;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.btn-accesibilidad {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ffd700;
+  border: none;
+  border-radius: 50%;
+  padding: 12px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.btn-accesibilidad:hover {
+  background-color: #ffcc00;
+}
+
+.footer-contact {
+  font-weight: bold;
+  cursor: pointer;
+}
+.contact-info {
+  display: none;
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  color: #333;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  text-align: left;
+  min-width: 220px;
+}
+.footer-contact:hover .contact-info {
+  display: block;
+}
+
+
+.menu-accesibilidad {
+  position: fixed;
+  bottom: 70px;
+  right: 20px;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 10%;
+  padding: 10px;
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.menu-accesibilidad button {
+  padding: 8px;
+  border: none;
+  border-radius: 10%;
+  cursor: pointer;
+  font-size: 14px;
+  background: #eee;
+}
+.menu-accesibilidad button:hover {
+  background: #ddd;
+}
+
+.dark-mode {
+  background-color: #121212 !important;
+  color: #eee !important;
+}
+.dark-mode header { background-color: #333 !important; }
+.dark-mode nav { background-color: hsl(0, 0%, 13%) !important; }
+.dark-mode #factura {
+  background: #1e1e1e !important;
+  color: #eee !important;
+  border-color: #555 !important;
+}
+.dark-mode footer { background-color: #111 !important; }
+
+.high-contrast {
+  background: black !important;
+  color: yellow !important;
+}
+.high-contrast header,
+.high-contrast nav,
+.high-contrast #factura,
+.high-contrast footer {
+  background: black !important;
+  color: yellow !important;
+  border-color: yellow !important;
+}
+.high-contrast nav a {
+  color: yellow !important;
+  font-weight: bold;
+  text-decoration: underline;
+}
+.high-contrast img,
+.high-contrast .icono,
+.high-contrast #logo {
+  filter: invert(100%) brightness(150%);
+}
+
+
+/* Tablets */
+@media (max-width: 992px) {
+  nav {
+    padding: 10px 10%;
+  }
+
+  .ventas-container {
+    padding: 20px;
+  }
+}
+
+/* Móviles */
+@media (max-width: 600px) {
+  header {
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .icono {
+    width: 12vw;
+    max-width: 35px;
+  }
+
+  main {
+    padding: 10px;
+  }
+
+  .ventas-container {
+    overflow-x: auto; 
+  }
+
+  .btn-accesibilidad {
+    right: 10px;
+    bottom: 10px;
+    padding: 8px;
+    font-size: 1rem;
+  }
+}
