@@ -1,0 +1,16 @@
+{% extends "index.html" %}
+{% load static %} 
+{% block body %}
+<body>
+
+  {% include 'header.html'%} 
+
+  {% include 'nav.html'%} 
+
+  {% block main %}
+  {% endblock %}
+
+
+  {%include 'footer.html'%}
+</body>
+{% endblock %}
