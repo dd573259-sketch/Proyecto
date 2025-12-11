@@ -64,7 +64,7 @@ main{
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-image: url(../imagenes/fondoadmin.png);
+  background-image: url('../imagenes/fondoadmin.png');
   padding: 50px;
   min-height: auto;
   background-size: cover;

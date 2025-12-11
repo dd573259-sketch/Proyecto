@@ -1,4 +1,5 @@
-  <nav>
-    <a href="index-admin.html "><img class="icono" src="../imagenes/inicio.png" alt="Inicio"></a>
-    <a href="perfil-admin.html"><img class="icono" src="../imagenes/usuario.png" alt="Usuario"></a>
-  </nav>
+{% load static %}
+<nav>
+    <a href="index-admin.html "><img class="icono" src="{% static 'imagenes/inicio.png' %}" alt="Inicio"></a>
+    <a href="perfil-admin.html"><img class="icono" src="{% static 'imagenes/usuario.png' %}" alt="Usuario"></a>
+</nav>
