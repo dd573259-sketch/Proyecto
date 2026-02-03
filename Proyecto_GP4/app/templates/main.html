@@ -5,6 +5,11 @@
   <div class="centrado">
     <h1 class="titulo-principal">-------------------------</h1>
   </div>
-  <section class="Contenido"></section>
+  <section class="Contenido">
+    <h3>{{ titulo }}</h3>
+    {% block Contenido %}
+    
+    {% endblock %}
+  </section>
 </main>
 {% endblock %}

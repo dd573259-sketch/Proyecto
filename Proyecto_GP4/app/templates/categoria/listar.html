@@ -1,0 +1,31 @@
+{% extends "main.html" %}
+
+{% block Contenido %}
+  <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">Descripción</th>
+      <th scope="col">Opciones</th>
+    </tr>
+  </thead>
+  <tbody>
+{% for c in categorias %}
+<tr>
+    <td>{{ c.id }}</td>
+    <td>{{ c.nombre }}</td>
+    <td>{{ c.descripcion }}</td>
+    <td>
+        <a type="button" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+    </td>
+    <td>
+        <a type="button" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+    </td>
+    
+    
+</tr>
+{% endfor %}
+  </tbody>
+</table>
+{% endblock %}
