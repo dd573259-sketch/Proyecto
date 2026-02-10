@@ -3,10 +3,12 @@
 {% block main %}
 <main>
   <div class="centrado">
-    <h1 class="titulo-principal">-------------------------</h1>
+    <h1 class="titulo-principal"> 
+                <i class="fas fa-plus"></i>
+                {{ titulo }}
+            </></h1>
   </div>
   <section class="Contenido">
-    <h3>{{ titulo }}</h3>
     {% block Contenido %}
     
     {% endblock %}

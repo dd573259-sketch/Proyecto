@@ -13,12 +13,20 @@ class Usuario(models.Model):
     )
 
     id_usuario = models.AutoField(primary_key=True)
+    TIPO_DE_DOCUMENTO = [
+        ("CC", "Cédula de Ciudadanía"),
+        ("TI", "Tarjeta de Identidad"),
+        ("CE", "Cédula de Extranjería"),
+        ("Pasaporte", "Pasaporte"),
+    ]
+    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO,null=True)
+    numero_documento = models.IntegerField(unique=True,null=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     correo_electronico = models.CharField(max_length=150)
     contraseña = models.CharField(max_length=255)
     rol = models.CharField(max_length=20, choices=ROL_OPCIONES)
-    fecha_registro = models.DateTimeField()
+    fecha_registro = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Usuario"
@@ -31,6 +39,14 @@ class Usuario(models.Model):
 
 class Proveedor(models.Model):
     id_proveedor = models.AutoField(primary_key=True)
+    TIPO_DE_DOCUMENTO = [
+        ("CC", "Cédula de Ciudadanía"),
+        ("TI", "Tarjeta de Identidad"),
+        ("CE", "Cédula de Extranjería"),
+        ("Pasaporte", "Pasaporte"),
+    ]
+    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO,null=True)
+    numero_documento = models.IntegerField(unique=True,null=True)
     nombre_proveedor = models.CharField(max_length=150)
     telefono = models.CharField(max_length=30)
     correo_electronico = models.CharField(max_length=150)
@@ -67,7 +83,7 @@ class Categoria(models.Model):
         ("inactivo", "Inactivo"),
     ]
 
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.TextField(null=True, blank=True)
     estado = models.CharField(
         max_length=10,
@@ -86,7 +102,14 @@ class Categoria(models.Model):
         
 class Cliente(models.Model):
     id_cliente = models.AutoField(primary_key=True)
-    cedula = models.CharField(max_length=20, unique=True)
+    TIPO_DE_DOCUMENTO = [
+        ("CC", "Cédula de Ciudadanía"),
+        ("TI", "Tarjeta de Identidad"),
+        ("CE", "Cédula de Extranjería"),
+        ("Pasaporte", "Pasaporte"),
+    ]
+    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO,null=True)
+    numero_documento = models.IntegerField(unique=True,null=True)
     nombre = models.CharField(max_length=50)
     apellido = models.CharField(max_length=50)
     telefono = models.CharField(max_length=15)
@@ -122,7 +145,7 @@ class Compra(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
     insumo = models.IntegerField(null=True, blank=True)
-    fecha_compra = models.DateTimeField()
+    fecha_compra = models.DateTimeField(auto_now=True)
     total_compra = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
