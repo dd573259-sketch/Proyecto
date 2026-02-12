@@ -5,30 +5,31 @@
   <thead>
     <tr>
       <th scope="col">#</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Descripción</th>
-      <th scope="col">Estado</th>
-      <th scope="col">Fecha de Creación</th>
-      <th scope="col">Fecha de Actualización</th>
+      <th scope="col">Producto</th>
+      <th scope="col">Insumo</th>
+      <th scope="col">Tipo de notificacion</th>
+      <th scope="col">Mensaje</th>
+      <th scope="col">Fecha</th>
       <th scope="col">Editar</th>
       <th scope="col">Eliminar</th>
     </tr>
   </thead>
   <tbody>
     
-    {% for c in object_list %}
+    {% for n in object_list %}
     <tr>
-      <td>{{ c.id }}</td>
-      <td>{{ c.nombre }}</td>
-      <td>{{ c.descripcion }}</td>
-      <td>{{ c.estado }}</td>
-      <td>{{ c.fecha_creacion }}</td>
-      <td>{{ c.fecha_actualizacion }}</td>
+      <td>{{ n.id_notificacion }}</td>
+      <td>{{ n.producto }}</td>
+      <td>{{ n.insumo }}</td>
+      <td>{{ n.tipo_notificacion }}</td>
+      <td>{{ n.mensaje }}</td>
+      <td>{{ n.fecha }}</td>
+      
       <td>
-        <a href="{% url 'app:editar_categoria' c.id %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+        <a href="{% url 'app:editar_notificacion' n.id_notificacion %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
       </td>
       <td>
-        <a href="{% url 'app:eliminar_categoria' c.id %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+        <a href="{% url 'app:eliminar_notificacion' n.id_notificacion %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
       </td>
     </tr>
     {% endfor %}
@@ -36,7 +37,7 @@
 </table>
 <div class="card-footer">
   <a href="{{crear_url}}" class="btn btn-primary btn-xs">
-    <i class="fas fa-plus"></i> Crear nueva categoria
+    <i class="fas fa-plus"></i> Crear nueva notificación
   </a>
 </div>
 {% endblock %}

@@ -7,21 +7,21 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
-from app.forms import CategoriaForm
+from app.forms import PlatoForm
 
 def index(request):
     return render(request, 'main.html')
 # Create your views here.
-def listar_categorias(request):
+def listar_platos(request):
     nombre = {
         
-        'categorias': Categoria.objects.all()
+        'platos': Plato.objects.all()
     }
-    return render(request, 'Categoria/listar.html', nombre)
+    return render(request, 'Plato/listar.html', nombre)
 
-class categoriaListView(listView):
-    model = Categoria
-    template_name = 'Categoria/listar.html'
+class PlatoListView(listView):
+    model = Plato
+    template_name = 'Plato/listar.html'
     
     #METODO DISPATCH
     #@method_decorator(login_required)
@@ -38,46 +38,46 @@ class categoriaListView(listView):
     #METODO GET CONTEXT DATA
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Listado de Categorias'
-        context['crear_url'] = reverse_lazy('app:crear_categoria')
+        context['titulo'] = 'Listado de Platos'
+        context['crear_url'] = reverse_lazy('app:crear_plato')
         return context
     
-class CategoriaCreateView(CreateView):
-    model = Categoria
-    template_name = 'Categoria/crear.html'
-    form_class = CategoriaForm
-    success_url = reverse_lazy('app:listar_categorias')
+class PlatoCreateView(CreateView):
+    model = Plato
+    template_name = 'Plato/crear.html'
+    form_class = PlatoForm
+    success_url = reverse_lazy('app:listar_platos')
     
     #@method_decorator(csrf_exempt)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Crear Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
+        context['titulo'] = 'Crear Plato'
+        context['listar_url'] = reverse_lazy('app:listar_platos')
         return context
     
     
     
-class CategoriaUpdateView(UpdateView):
-    model = Categoria
-    form_class = CategoriaForm
-    template_name = 'Categoria/crear.html'
-    success_url = reverse_lazy('app:listar_categorias')
+class PlatoUpdateView(UpdateView):
+    model = Plato
+    form_class = PlatoForm
+    template_name = 'Plato/crear.html'
+    success_url = reverse_lazy('app:listar_platos')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
+        context['titulo'] = 'Editar Plato'
+        context['listar_url'] = reverse_lazy('app:listar_platos')
         return context
     
-    
-class CategoriaDeleteView(DeleteView):
-    model = Categoria
-    template_name = 'Categoria/eliminar.html'
-    success_url = reverse_lazy('app:listar_categorias')
+      
+class PlatoDeleteView(DeleteView):
+    model = Plato
+    template_name = 'Plato/eliminar.html'
+    success_url = reverse_lazy('app:listar_platos')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Eliminar Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
+        context['titulo'] = 'Eliminar Plato'
+        context['listar_url'] = reverse_lazy('app:listar_platos')
         return context

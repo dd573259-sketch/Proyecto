@@ -7,21 +7,21 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
-from app.forms import CategoriaForm
+from app.forms import NotificacionForm
 
 def index(request):
     return render(request, 'main.html')
 # Create your views here.
-def listar_categorias(request):
+def listar_notificaciones(request):
     nombre = {
         
-        'categorias': Categoria.objects.all()
+        'notificaciones': Notificacion.objects.all()
     }
-    return render(request, 'Categoria/listar.html', nombre)
+    return render(request, 'Notificacion/listar.html', nombre)
 
-class categoriaListView(listView):
-    model = Categoria
-    template_name = 'Categoria/listar.html'
+class notificacionListView(listView):
+    model = Notificacion
+    template_name = 'Notificacion/listar.html'
     
     #METODO DISPATCH
     #@method_decorator(login_required)
@@ -38,46 +38,46 @@ class categoriaListView(listView):
     #METODO GET CONTEXT DATA
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Listado de Categorias'
-        context['crear_url'] = reverse_lazy('app:crear_categoria')
+        context['titulo'] = 'Listado de Notificaciones'
+        context['crear_url'] = reverse_lazy('app:crear_notificacion')
         return context
     
-class CategoriaCreateView(CreateView):
-    model = Categoria
-    template_name = 'Categoria/crear.html'
-    form_class = CategoriaForm
-    success_url = reverse_lazy('app:listar_categorias')
+class NotificacionCreateView(CreateView):
+    model = Notificacion
+    template_name = 'Notificacion/crear.html'
+    form_class = NotificacionForm
+    success_url = reverse_lazy('app:listar_notificaciones')
     
     #@method_decorator(csrf_exempt)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Crear Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
+        context['titulo'] = 'Crear Notificación'
+        context['listar_url'] = reverse_lazy('app:listar_notificaciones')
         return context
     
     
     
-class CategoriaUpdateView(UpdateView):
-    model = Categoria
-    form_class = CategoriaForm
-    template_name = 'Categoria/crear.html'
-    success_url = reverse_lazy('app:listar_categorias')
+class NotificacionUpdateView(UpdateView):
+    model = Notificacion
+    form_class = NotificacionForm
+    template_name = 'Notificacion/crear.html'
+    success_url = reverse_lazy('app:listar_notificaciones')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
+        context['titulo'] = 'Editar Notificación'
+        context['listar_url'] = reverse_lazy('app:listar_notificaciones')
         return context
     
     
-class CategoriaDeleteView(DeleteView):
-    model = Categoria
-    template_name = 'Categoria/eliminar.html'
-    success_url = reverse_lazy('app:listar_categorias')
+class NotificacionDeleteView(DeleteView):
+    model = Notificacion
+    template_name = 'Notificacion/eliminar.html'
+    success_url = reverse_lazy('app:listar_notificaciones')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Eliminar Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
+        context['titulo'] = 'Eliminar Notificación'
+        context['listar_url'] = reverse_lazy('app:listar_notificaciones')
         return context
