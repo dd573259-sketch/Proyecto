@@ -136,7 +136,7 @@ class Factura(models.Model):
         db_table = "factura"
 
     def __str__(self):
-        return f"Factura {self.id} - Venta: {self.venta.id} - Total: {self.valor_total}"
+        return f"Factura {self.id} - Total: {self.valor_total}"
     
 #modelos debiles
 class Compra(models.Model):

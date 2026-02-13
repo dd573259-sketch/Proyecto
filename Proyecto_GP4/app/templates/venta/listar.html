@@ -1,0 +1,63 @@
+{% extends "main.html" %}
+{% load static %}
+{% block Contenido %}
+
+<table class="table" id="tabla">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Usuario</th>
+      <th>Pedido</th>
+      <th>Total</th>
+      <th>Fecha</th>
+      <th>Editar</th>
+      <th>Eliminar</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for v in object_list %}
+    <tr>
+      <td>{{ v.id_venta }}</td>
+      <td>{{ v.usuario }}</td>
+      <td>{{ v.pedido }}</td>
+      <td>${{ v.total_venta }}</td>
+      <td>{{ v.fecha_venta }}</td>
+      <td>
+        <a href="{% url 'app:editar_venta' v.pk %}" class="btn btn-primary btn-xs">
+          <i class="fas fa-edit"></i>
+        </a>
+      </td>
+      <td>
+        <a href="{% url 'app:eliminar_venta' v.pk %}" class="btn btn-danger btn-xs">
+          <i class="fas fa-trash"></i>
+        </a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<div class="card-footer">
+  <a href="{% url 'app:crear_venta' %}" class="btn btn-primary btn-xs">
+    <i class="fas fa-plus"></i> Crear nueva venta
+  </a>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#tabla').DataTable({
+      responsive: true,
+      autoWidth: false,
+    });
+  });
+</script>
+{% endblock js %}

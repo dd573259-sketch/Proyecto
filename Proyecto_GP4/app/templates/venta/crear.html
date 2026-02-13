@@ -1,0 +1,62 @@
+{% extends 'main.html' %}
+{% load widget_tweaks %}
+
+{% block Contenido %}
+
+<form method="post" action=".">
+    <div class="card card-default">
+
+        {% csrf_token %}
+
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-shopping-cart"></i> Crear Venta
+            </h3>
+        </div>
+
+        <div class="card-body">
+
+            {% if form.errors %}
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                <h5><i class="icon fas fa-ban"></i> ¡Error!</h5>
+                Verifica los campos.
+                {{ form.errors }}
+            </div>
+            {% endif %}
+
+            {% for field in form.visible_fields %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                {{ field|add_class:"form-control"|attr:"autocomplete:off" }}
+            </div>
+            {% endfor %}
+
+        </div>
+
+        <div class="card-footer text-right">
+            <button type="submit" class="btn btn-primary btn-xs">
+                <i class="fas fa-plus"></i> Guardar Venta
+            </button>
+            <a href="{% url 'app:listar_ventas' %}" class="btn btn-secondary btn-xs">
+                Cancelar
+            </a>
+        </div>
+
+    </div>
+</form>
+
+{% endblock %}
+
+
+{% block js %}
+<script>
+    {% if form.errors %}
+    Swal.fire({
+        title: "Error!",
+        text: "Verifica los campos!",
+        icon: "error"
+    });
+    {% endif %}
+</script>
+{% endblock %}
