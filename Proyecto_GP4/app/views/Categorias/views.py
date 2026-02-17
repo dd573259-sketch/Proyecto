@@ -72,7 +72,7 @@ class CategoriaUpdateView(UpdateView):
     
 class CategoriaDeleteView(DeleteView):
     model = Categoria
-    template_name = 'categoria/eliminar.html'
+    template_name = 'Categoria/eliminar.html'
     success_url = reverse_lazy('app:listar_categorias')
     
     def get_context_data(self, **kwargs):
