@@ -1,0 +1,84 @@
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from django.views.generic import ListView as listView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
+from app.models import *
+from app.forms import *
+
+def index(request):
+    return render(request, 'main.html')
+# Create your views here.
+def listar_receta(request):
+    nombre = {
+        
+        'recetas': recetas.objects.all()
+    }
+    return render(request, 'receta/listar.html', nombre)
+
+
+class RecetaListView(listView):
+    model = recetas
+    template_name = 'receta/listar.html'
+    
+    
+    #METODO DISPATCH
+    #@method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        #if request.method == 'GET':
+            #return redirect('app:listar_categorias')    
+        return super().dispatch(request, *args, **kwargs)
+        
+    
+    #METODO POST
+    def post(sefl, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
+    
+    #METODO GET CONTEXT DATA
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Listado de recetas'
+        context['crear_url'] = reverse_lazy('app:crear_receta')
+        return context
+    
+class RecetaCreateView(CreateView):
+    model = recetas
+    template_name = 'receta/crear.html'
+    form_class = RecetaForm
+    success_url = reverse_lazy('app:listar_receta')
+    
+    #@method_decorator(csrf_exempt)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Crear Receta'
+        return context
+    
+    
+    
+class RecetaUpdateView(UpdateView):
+    model = recetas
+    form_class = RecetaForm
+    template_name = 'receta/crear.html'
+    success_url = reverse_lazy('app:listar_receta')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Receta'
+        context['listar_url'] = reverse_lazy('app:listar_receta')
+        return context
+    
+    
+class RecetaDeleteView(DeleteView):
+    model = recetas
+    template_name = 'receta/eliminar.html'
+    success_url = reverse_lazy('app:listar_receta')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Eliminar Receta'
+        context['listar_url'] = reverse_lazy('app:listar_receta')
+        return context

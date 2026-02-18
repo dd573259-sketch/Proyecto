@@ -1,0 +1,59 @@
+{% extends "main.html" %}
+{% load static %}
+{% block Contenido %}
+<table class="table" id="tabla">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">Descripción</th>
+      <th scope="col">Categoria</th>
+      <th scope="col">stock</th>
+      <th scope="col">valor</th>
+      <th scope="col">Eliminar</th>
+      <th scope="col">Editar</th>
+    </tr>
+  </thead>
+  <tbody>
+    
+    {% for m in object_list %}
+    <tr>
+      <td>{{ m.id_insumo}}</td>
+      <td>{{ m.nombre }}</td>
+      <td>{{ m.descripcion }}</td>
+      <td>{{ m.categoria }}</td>
+      <td>{{ m.stock }}</td>
+      <td>{{ m.valor }}</td>
+      <td>
+        <a href="{% url 'app:editar_insumos' m.id_insumo %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+      </td>
+      <td>
+        <a href="{% url 'app:eliminar_insumos' m.id_insumo %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div class="card-footer">
+  <a href="{% url 'app:crear_insumos' %}" class="btn btn-success">
+    <i class="fas fa-plus"></i> Crear nuevo insumo
+  </a>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#tabla').DataTable({
+      responsive: true,
+      autoWidth: false,
+    });
+  });
+</script>
+{% endblock js %}
