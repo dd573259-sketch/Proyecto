@@ -12,16 +12,18 @@ from app.forms import *
 def index(request):
     return render(request, 'main.html')
 # Create your views here.
-def listar_menu(request):
+def listar_receta(request):
     nombre = {
         
-        'menu': menu.objects.all()
+        'recetas': recetas.objects.all()
     }
-    return render(request, 'menu/listar.html', nombre)
+    return render(request, 'receta/listar.html', nombre)
 
-class MenuListView(listView):
-    model = Menu
-    template_name = 'menu/listar.html'
+
+class RecetaListView(listView):
+    model = recetas
+    template_name = 'receta/listar.html'
+    
     
     #METODO DISPATCH
     #@method_decorator(login_required)
@@ -38,46 +40,45 @@ class MenuListView(listView):
     #METODO GET CONTEXT DATA
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Listado de menu'
-        context['crear_url'] = reverse_lazy('app:crear_menu')
+        context['titulo'] = 'Listado de recetas'
+        context['crear_url'] = reverse_lazy('app:crear_receta')
         return context
     
-class MenuCreateView(CreateView):
-    model = Menu
-    template_name = 'menu/crear.html'
-    form_class = MenuForm
-    success_url = reverse_lazy('app:listar_menu')
+class RecetaCreateView(CreateView):
+    model = recetas
+    template_name = 'receta/crear.html'
+    form_class = RecetaForm
+    success_url = reverse_lazy('app:listar_receta')
     
     #@method_decorator(csrf_exempt)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Crear Menu'
+        context['titulo'] = 'Crear Receta'
         return context
     
     
     
-class MenuUpdateView(UpdateView):
-    model = Menu
-    form_class = MenuForm
-    template_name = 'menu/crear.html'
-    success_url = reverse_lazy('app:listar_menu')
+class RecetaUpdateView(UpdateView):
+    model = recetas
+    form_class = RecetaForm
+    template_name = 'receta/crear.html'
+    success_url = reverse_lazy('app:listar_receta')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Menu'
-        context['listar_url'] = reverse_lazy('app:listar_menu')
+        context['titulo'] = 'Editar Receta'
+        context['listar_url'] = reverse_lazy('app:listar_receta')
         return context
     
     
-class MenuDeleteView(DeleteView):
-    model = Menu
-    template_name = 'menu/eliminar.html'
-    success_url = reverse_lazy('app:listar_menu')
+class RecetaDeleteView(DeleteView):
+    model = recetas
+    template_name = 'receta/eliminar.html'
+    success_url = reverse_lazy('app:listar_receta')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Eliminar Menu'
-        context['listar_url'] = reverse_lazy('app:listar_menu')
+        context['titulo'] = 'Eliminar Receta'
+        context['listar_url'] = reverse_lazy('app:listar_receta')
         return context
-    

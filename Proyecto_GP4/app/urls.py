@@ -1,5 +1,8 @@
 from django.urls import path
 from app.views.Categorias.views import *
+from app.views.Menu.views import *
+from app.views.Receta.views import *
+from app.views.Insumos.views import *
 app_name = 'app'
 urlpatterns = [
     #path('listar_categorias/', listar_categorias , name='listar_categorias'),
@@ -7,5 +10,22 @@ urlpatterns = [
     path('crear_categoria/', CategoriaCreateView.as_view() , name='crear_categoria'),
     path('editar_categoria/<int:pk>/', CategoriaUpdateView.as_view(), name='editar_categoria'),
     path('eliminar_categoria/<int:pk>/', CategoriaDeleteView.as_view(), name='eliminar_categoria'),
+    #MENU
+    path('listar_menu/', MenuListView.as_view() , name='listar_menu'),
+    path('crear_menu/', MenuCreateView.as_view() , name='crear_menu'),
+    path('editar_menu/<int:pk>/', MenuUpdateView.as_view(), name='editar_menu'),
+    path('eliminar_menu/<int:pk>/', MenuDeleteView.as_view(), name='eliminar_menu'),
+    
+    #RECETA
+    path('listar_receta/', RecetaListView.as_view() , name='listar_receta'),
+    path('crear_receta/', RecetaCreateView.as_view() , name='crear_receta'),
+    path('editar_receta/<int:pk>/', RecetaUpdateView.as_view(), name='editar_receta'),
+    path('eliminar_receta/<int:pk>/', RecetaDeleteView.as_view(), name='eliminar_receta'),
+    
+    #INSUMOS
+    path('listar_insumos/', InsumosListView.as_view() , name='listar_insumos'),
+    path('crear_insumos/', InsumosCreateView.as_view() , name='crear_insumos'),
+    path('editar_insumos/<int:pk>/', InsumosUpdateView.as_view(), name='editar_insumos'),
+    path('eliminar_insumos/<int:pk>/', InsumosDeleteView.as_view(), name='eliminar_insumos'),
     #path('', index , name='index'),
 ]

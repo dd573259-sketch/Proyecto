@@ -12,16 +12,28 @@ from app.forms import *
 def index(request):
     return render(request, 'main.html')
 # Create your views here.
-def listar_menu(request):
+def listar_insumos(request):
     nombre = {
         
-        'menu': menu.objects.all()
+        'insumos': insumos.objects.all()
     }
-    return render(request, 'menu/listar.html', nombre)
+    return render(request, 'insumos/listar.html', nombre)
 
-class MenuListView(listView):
-    model = Menu
-    template_name = 'menu/listar.html'
+class InsumosListView(listView):
+    model = insumo
+    template_name = 'insumos/listar.html'
+    context_object_name = 'insumos'
+    
+    
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        buscar = self.request.GET.get('buscar', '')
+        
+        if buscar:
+            queryset = queryset.filter(nombre__icontains=buscar)
+            
+        return queryset
+    
     
     #METODO DISPATCH
     #@method_decorator(login_required)
@@ -38,46 +50,47 @@ class MenuListView(listView):
     #METODO GET CONTEXT DATA
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Listado de menu'
-        context['crear_url'] = reverse_lazy('app:crear_menu')
+        context['titulo'] = 'Listado de insumos'
+        context['crear_url'] = reverse_lazy('app:crear_insumos')
+        context['buscar'] = self.request.GET.get('buscar', '')
         return context
     
-class MenuCreateView(CreateView):
-    model = Menu
-    template_name = 'menu/crear.html'
-    form_class = MenuForm
-    success_url = reverse_lazy('app:listar_menu')
+class InsumosCreateView(CreateView):
+    model = insumo
+    template_name = 'insumos/crear.html'
+    form_class = InsumosForm
+    success_url = reverse_lazy('app:listar_insumos')
     
     #@method_decorator(csrf_exempt)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Crear Menu'
+        context['titulo'] = 'Crear Insumo'
         return context
     
     
     
-class MenuUpdateView(UpdateView):
-    model = Menu
-    form_class = MenuForm
-    template_name = 'menu/crear.html'
-    success_url = reverse_lazy('app:listar_menu')
+class InsumosUpdateView(UpdateView):
+    model = insumo
+    form_class = InsumosForm
+    template_name = 'insumos/crear.html'
+    success_url = reverse_lazy('app:listar_insumos')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Menu'
-        context['listar_url'] = reverse_lazy('app:listar_menu')
+        context['titulo'] = 'Editar Insumo'
+        context['listar_url'] = reverse_lazy('app:listar_insumos')
         return context
     
     
-class MenuDeleteView(DeleteView):
-    model = Menu
-    template_name = 'menu/eliminar.html'
-    success_url = reverse_lazy('app:listar_menu')
+class InsumosDeleteView(DeleteView):
+    model = insumo
+    template_name = 'insumos/eliminar.html'
+    success_url = reverse_lazy('app:listar_insumos')
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Eliminar Menu'
-        context['listar_url'] = reverse_lazy('app:listar_menu')
+        context['titulo'] = 'Eliminar Insumo'
+        context['listar_url'] = reverse_lazy('app:listar_insumos')
         return context
-    
+

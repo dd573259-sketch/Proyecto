@@ -7,7 +7,8 @@
       <th scope="col">#</th>
       <th scope="col">Nombre</th>
       <th scope="col">Descripción</th>
-      <th scope="col">precio</th>
+      <th scope="col">unidad</th>
+      <th scope="col">valor</th>
       <th scope="col">Eliminar</th>
       <th scope="col">Editar</th>
     </tr>
@@ -16,23 +17,24 @@
     
     {% for m in object_list %}
     <tr>
-      <td>{{ m.id_menu }}</td>
+      <td>{{ m.id_receta }}</td>
       <td>{{ m.nombre }}</td>
       <td>{{ m.descripcion }}</td>
-      <td>{{ m.precio }}</td>
+      <td>{{ m.descripcion }}</td>
+      <td>{{ m.valor }}</td>
       <td>
-        <a href="{% url 'app:editar_menu' m.id_menu %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+        <a href="{% url 'app:editar_receta' m.id_receta %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
       </td>
       <td>
-        <a href="{% url 'app:eliminar_menu' m.id_menu %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+        <a href="{% url 'app:eliminar_receta' m.id_receta %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
       </td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 <div class="card-footer">
-  <a href="{% url 'app:crear_menu' %}" class="btn btn-success">
-    <i class="fas fa-plus"></i> Crear nuevo menu
+  <a href="{% url 'app:crear_receta' %}" class="btn btn-success">
+    <i class="fas fa-plus"></i> Crear nueva receta
   </a>
 </div>
 {% endblock %}
