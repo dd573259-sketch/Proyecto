@@ -1,0 +1,44 @@
+{% extends 'main.html' %}
+
+{% block Contenido %}
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="card card-danger">
+
+        <div class="card-header">
+            <h3 class="card-title">
+                <i class="fas fa-trash"></i> Eliminar Factura
+            </h3>
+        </div>
+
+        <div class="card-body">
+            <p>¿Estas seguro que deseas eliminar la siguiente factura?</p>
+
+            <ul>
+                <li><strong>ID:</strong> {{ object.id }}</li>
+                <li><strong>Total:</strong> {{ object.valor_total }}</li>
+                <li><strong>Método de pago:</strong> {{ object.metodo_pago }}</li>
+                <li><strong>Fecha:</strong> {{ object.fecha_hora }}</li>
+            </ul>
+
+            <p class="text-danger">
+                 peligroooo
+            </p>
+        </div>
+
+        <div class="card-footer text-right">
+            <button type="submit" class="btn btn-danger">
+                Sí, eliminar
+            </button>
+            <a href="{% url 'app:listar_facturas' %}" class="btn btn-secondary">
+                Cancelar
+            </a>
+        </div>
+
+    </div>
+
+</form>
+
+{% endblock %}

@@ -5,6 +5,10 @@ from app.views.Notificaciones.views import *
 from app.views.Menu.views import *
 from app.views.Receta.views import *
 from app.views.Insumos.views import *
+from app.views.Facturas.views import *
+from app.views.Venta.views import *
+from app.views.pago.views import *
+
 app_name = 'app'
 urlpatterns = [
     #urls de categorias
@@ -43,5 +47,23 @@ urlpatterns = [
     path('crear_insumos/', InsumosCreateView.as_view() , name='crear_insumos'),
     path('editar_insumos/<int:pk>/', InsumosUpdateView.as_view(), name='editar_insumos'),
     path('eliminar_insumos/<int:pk>/', InsumosDeleteView.as_view(), name='eliminar_insumos'),
+    
+    
     #path('', index , name='index'),
+    path('facturas/', FacturaListView.as_view() , name='listar_facturas'),
+    path('crear_factura/', FacturaCreateView.as_view() , name='crear_factura'),
+    path('editar_factura/<int:pk>/', FacturaUpdateView.as_view(), name='editar_factura'),
+    path('eliminar_factura/<int:pk>/', FacturaDeleteView.as_view(), name='eliminar_factura'),
+    
+    
+    path('ventas/', VentaListView.as_view(), name='listar_ventas'),
+    path('ventas/crear/', VentaCreateView.as_view(), name='crear_venta'),
+    path('eliminar_venta/<int:pk>/', VentaDeleteView.as_view(), name='eliminar_venta'),
+    
+    
+    path('pagos/', PagoListView.as_view(), name='listar_pagos'),
+    path('crear_pagos/', PagoCreateView.as_view(), name='crear_pago'),
+    path('pagos/editar/<int:pk>/', PagoUpdateView.as_view(), name='editar_pago'),
+    path('eliminar_pago/<int:pk>/', PagoDeleteView.as_view(), name='eliminar_pago'),
+
 ]
