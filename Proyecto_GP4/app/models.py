@@ -136,7 +136,7 @@ class Factura(models.Model):
         db_table = "factura"
 
     def __str__(self):
-        return f"Factura {self.id} - Venta: {self.venta.id} - Total: {self.valor_total}"
+        return f"Factura {self.id} - Total: {self.valor_total}"
     
 #modelos debiles
 class Compra(models.Model):
@@ -173,7 +173,7 @@ class Comanda(models.Model):
 class Plato(models.Model):
     id_plato = models.AutoField(primary_key=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    nombre = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100, unique=True, null=True)
     descripcion = models.TextField()
     precio = models.DecimalField(max_digits=10, decimal_places=2)
 
