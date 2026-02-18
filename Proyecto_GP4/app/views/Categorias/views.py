@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
-from app.forms import CategoriaForm
+from app.forms import *
 
 def index(request):
     return render(request, 'main.html')

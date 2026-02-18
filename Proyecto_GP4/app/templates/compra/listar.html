@@ -1,0 +1,61 @@
+{% extends "main.html" %}
+{% load static %}
+{% block Contenido %}
+<table class="table" id="tabla">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Proveedor</th>
+      <th>Usuario</th>
+      <th>Producto</th>
+      <th>Insumo</th>
+      <th>Fecha</th>
+      <th>Total</th>
+      <th>Editar</th>
+      <th>Eliminar</th>
+  </thead>
+  <tbody>
+    
+    {% for u in object_list %}
+    <tr>
+      <td>{{ u.id_compra }}</td>
+      <td>{{ u.id_proveedor.nombre_proveedor }}</td>
+      <td>{{ u.id_usuario.nombre }}</td>
+      <td>{{ u.id_producto.nombre }}</td>
+      <td>{{ u.id_insumo.nombre }}</td>
+      <td>{{ u.fecha_compra }}</td>
+      <td>{{ u.total_compra }}</td>
+      <td>
+
+      <a href="{% url 'app:editar_compra' u.id_compra %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+      </td>
+      <td>
+        <a href="{% url 'app:eliminar_compra' u.id_compra %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div class="card-footer">
+  <a href="{{crear_url}}" class="btn btn-primary btn-xs">
+    <i class="fas fa-plus"></i> Crear nueva compra  
+  </a>
+</div>
+{% endblock %}
+
+{% block js %}
+<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
+    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
+
+<script>
+  $(document).ready(function () {
+    $('#tabla').DataTable({
+      responsive: true,
+      autoWidth: false,
+    });
+  });
+</script>
+{% endblock js %}
