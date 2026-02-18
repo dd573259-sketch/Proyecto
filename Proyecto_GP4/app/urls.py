@@ -8,10 +8,10 @@ from app.views.Insumos.views import *
 from app.views.Facturas.views import *
 from app.views.Venta.views import *
 from app.views.pago.views import *
-from app.views.Usuario.views import *
-from app.views.Proveedor.views import *
-from app.views.Producto.views import *
-from app.views.Compra.views import *
+from app.views.usuario.views import *
+from app.views.proveedor.views import *
+from app.views.producto.views import *
+from app.views.compra.views import *
 
 app_name = 'app'
 urlpatterns = [
