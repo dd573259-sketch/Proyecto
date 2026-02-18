@@ -7,76 +7,59 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
-from app.forms import CategoriaForm
+from app.forms import *
 
-def index(request):
-    return render(request, 'main.html')
-# Create your views here.
-def listar_categorias(request):
-    nombre = {
-        
-        'categorias': Categoria.objects.all()
-    }
-    return render(request, 'Categoria/listar.html', nombre)
+class UsuarioListView(listView):        
+    model = Usuario
+    template_name = 'usuario/listar.html'
+    context_object_name = 'object_list'
 
-class categoriaListView(listView):
-    model = Categoria
-    template_name = 'Categoria/listar.html'
-    
-    #METODO DISPATCH
-    #@method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        #if request.method == 'GET':
-            #return redirect('app:listar_categorias')    
-        return super().dispatch(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['crear_url'] = reverse_lazy('app:crear_usuario')
+        context['titulo'] = 'Listado de Usuarios'
+        return context
+
+
+class UsuarioCreateView(CreateView):
+    model = Usuario
+    form_class = UsuarioForm
+    template_name = 'usuario/crear.html'
+    success_url = reverse_lazy('app:listar_usuarios')
+    def form_valid(self, form):
+        return super().form_valid(form)
         
-    
-    #METODO POST
-    def post(sefl, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-    
-    #METODO GET CONTEXT DATA
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Listado de Categorias'
-        context['crear_url'] = reverse_lazy('app:crear_categoria')
+        context['titulo'] = 'Crear Usuario'
         return context
+
     
-class CategoriaCreateView(CreateView):
-    model = Categoria
-    template_name = 'Categoria/crear.html'
-    form_class = CategoriaForm
-    success_url = reverse_lazy('app:listar_categorias')
-    
-    #@method_decorator(csrf_exempt)
-    
+
+class UsuarioDeleteView(DeleteView):
+    model = Usuario
+    template_name = 'usuario/eliminar.html'
+    success_url = reverse_lazy('app:listar_usuarios')
+    context_object_name = 'usuario'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Crear Categoria'
+        context['titulo'] = 'Eliminar Usuario'
         return context
-    
-    
-    
-class CategoriaUpdateView(UpdateView):
-    model = Categoria
-    form_class = CategoriaForm
-    template_name = 'Categoria/crear.html'
-    success_url = reverse_lazy('app:listar_categorias')
-    
+
+
+
+class UsuarioUpdateView(UpdateView):
+    model = Usuario
+    form_class = UsuarioForm
+    template_name = 'usuario/editar.html'
+    success_url = reverse_lazy('app:listar_usuarios')
+    def form_valid(self, form):
+        return super().form_valid(form)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
+        context['titulo'] = 'Editar Usuario'
         return context
-    
-    
-class CategoriaDeleteView(DeleteView):
-    model = Categoria
-    template_name = 'categoria/eliminar.html'
-    success_url = reverse_lazy('app:listar_categorias')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Eliminar Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
-        return context
+        
+
+

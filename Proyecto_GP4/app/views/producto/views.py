@@ -7,76 +7,62 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
-from app.forms import CategoriaForm
+from app.forms import *
 
-def index(request):
-    return render(request, 'main.html')
-# Create your views here.
-def listar_categorias(request):
-    nombre = {
-        
-        'categorias': Categoria.objects.all()
-    }
-    return render(request, 'Categoria/listar.html', nombre)
 
-class categoriaListView(listView):
-    model = Categoria
-    template_name = 'Categoria/listar.html'
+
+class ProductoListView(listView):        
+    model = Producto
+    template_name = 'producto/listar.html'
+    context_object_name = 'object_list'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['crear_url'] = reverse_lazy('app:crear_producto')
+        context['titulo'] = 'Listado de Productos'
+        return context
     
-    #METODO DISPATCH
-    #@method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        #if request.method == 'GET':
-            #return redirect('app:listar_categorias')    
-        return super().dispatch(request, *args, **kwargs)
+
+class ProductoCreateView(CreateView):
+    model = Producto
+    form_class = ProductoForm
+    template_name = 'producto/crear.html'
+    success_url = reverse_lazy('app:listar_productos')
+    def form_valid(self, form):
+        return super().form_valid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Crear Producto'
+        return context
+    
+
+
+class ProductoDeleteView(DeleteView):
+    model = Producto
+    template_name = 'producto/eliminar.html'
+    success_url = reverse_lazy('app:listar_productos')
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Eliminar Producto'
+        return context
+
+
+class ProductoUpdateView(UpdateView):   
+    model = Producto
+    form_class = ProductoForm
+    template_name = 'producto/editar.html'
+    success_url = reverse_lazy('app:listar_productos')
+    def form_valid(self, form):
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Producto '
+        return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Producto'
+        return context
         
-    
-    #METODO POST
-    def post(sefl, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-    
-    #METODO GET CONTEXT DATA
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Listado de Categorias'
-        context['crear_url'] = reverse_lazy('app:crear_categoria')
-        return context
-    
-class CategoriaCreateView(CreateView):
-    model = Categoria
-    template_name = 'Categoria/crear.html'
-    form_class = CategoriaForm
-    success_url = reverse_lazy('app:listar_categorias')
-    
-    #@method_decorator(csrf_exempt)
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Crear Categoria'
-        return context
-    
-    
-    
-class CategoriaUpdateView(UpdateView):
-    model = Categoria
-    form_class = CategoriaForm
-    template_name = 'Categoria/crear.html'
-    success_url = reverse_lazy('app:listar_categorias')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
-        return context
-    
-    
-class CategoriaDeleteView(DeleteView):
-    model = Categoria
-    template_name = 'categoria/eliminar.html'
-    success_url = reverse_lazy('app:listar_categorias')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Eliminar Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
-        return context

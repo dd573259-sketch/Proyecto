@@ -4,31 +4,29 @@
 <table class="table" id="tabla">
   <thead>
     <tr>
-      <th scope="col">#</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Descripción</th>
-      <th scope="col">Estado</th>
-      <th scope="col">Fecha de Creación</th>
-      <th scope="col">Fecha de Actualización</th>
-      <th scope="col">Eliminar</th>
-      <th scope="col">Editar</th>
+        <th scope="col">#</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Teléfono</th>
+        <th scope="col">Correo_Electronico</th>
+        <th scope="col">Dirección</th>
+        <th scope="col">Editar</th>
+        <th scope="col">Eliminar</th>
     </tr>
   </thead>
   <tbody>
     
-    {% for c in object_list %}
+    {% for u in object_list %}
     <tr>
-      <td>{{ c.id }}</td>
-      <td>{{ c.nombre }}</td>
-      <td>{{ c.descripcion }}</td>
-      <td>{{ c.estado }}</td>
-      <td>{{ c.fecha_creacion }}</td>
-      <td>{{ c.fecha_actualizacion }}</td>
-      <td>
-        <a href="{% url 'app:editar_categoria' c.id %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+        <td>{{u.id_proveedor}}</td>
+        <td>{{u.nombre_proveedor}}</td>
+        <td>{{u.telefono}}</td>
+        <td>{{u.correo_electronico}}</td>
+        <td>{{u.direccion}}</td>
+        <td>
+        <a href="{% url 'app:editar_proveedor' u.id_proveedor %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
       </td>
       <td>
-        <a href="{% url 'app:eliminar_categoria' c.id %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+        <a href="{% url 'app:eliminar_proveedor' u.id_proveedor %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
       </td>
     </tr>
     {% endfor %}
@@ -36,7 +34,7 @@
 </table>
 <div class="card-footer">
   <a href="{{crear_url}}" class="btn btn-primary btn-xs">
-    <i class="fas fa-plus"></i> Crear nueva categoria
+    <i class="fas fa-plus"></i> Crear nueva proveedor
   </a>
 </div>
 {% endblock %}

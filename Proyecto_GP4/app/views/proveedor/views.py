@@ -7,76 +7,56 @@ from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
-from app.forms import CategoriaForm
+from app.forms import *
 
-def index(request):
-    return render(request, 'main.html')
-# Create your views here.
-def listar_categorias(request):
-    nombre = {
-        
-        'categorias': Categoria.objects.all()
-    }
-    return render(request, 'Categoria/listar.html', nombre)
 
-class categoriaListView(listView):
-    model = Categoria
-    template_name = 'Categoria/listar.html'
-    
-    #METODO DISPATCH
-    #@method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        #if request.method == 'GET':
-            #return redirect('app:listar_categorias')    
-        return super().dispatch(request, *args, **kwargs)
-        
-    
-    #METODO POST
-    def post(sefl, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-    
-    #METODO GET CONTEXT DATA
+class ProveedorListView(listView):        
+    model = Proveedor
+    template_name = 'proveedor/listar.html'
+    context_object_name = 'object_list'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Listado de Categorias'
-        context['crear_url'] = reverse_lazy('app:crear_categoria')
+        context['crear_url'] = reverse_lazy('app:crear_proveedor')
+        context['titulo'] = 'Listado de Proveedor'
+        return context
+
+
+class ProveedorCreateView(CreateView):
+    model = Proveedor
+    form_class = ProveedorForm
+    template_name = 'proveedor/crear.html'
+    success_url = reverse_lazy('app:listar_proveedores')
+    def form_valid(self, form):
+        return super().form_valid(form)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Crear Proveedor'
         return context
     
-class CategoriaCreateView(CreateView):
-    model = Categoria
-    template_name = 'Categoria/crear.html'
-    form_class = CategoriaForm
-    success_url = reverse_lazy('app:listar_categorias')
-    
-    #@method_decorator(csrf_exempt)
-    
+
+class ProveedorDeleteView(DeleteView):
+    model = Proveedor
+    template_name = 'proveedor/eliminar.html'
+    success_url = reverse_lazy('app:listar_proveedores')
+    def delete(self, request, *args, **kwargs):
+        return super().delete(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Crear Categoria'
+        context['titulo'] = 'Eliminar Proveedor'
         return context
-    
-    
-    
-class CategoriaUpdateView(UpdateView):
-    model = Categoria
-    form_class = CategoriaForm
-    template_name = 'Categoria/crear.html'
-    success_url = reverse_lazy('app:listar_categorias')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
-        return context
-    
-    
-class CategoriaDeleteView(DeleteView):
-    model = Categoria
-    template_name = 'categoria/eliminar.html'
-    success_url = reverse_lazy('app:listar_categorias')
+
+
+class ProveedorUpdateView(UpdateView):
+    model = Proveedor
+    form_class = ProveedorForm
+    template_name = 'proveedor/editar.html'
+    success_url = reverse_lazy('app:listar_proveedores')
+    def form_valid(self, form):
+        return super().form_valid(form)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Eliminar Categoria'
-        context['listar_url'] = reverse_lazy('app:listar_categorias')
+        context['titulo'] = 'Editar Proveedor'
         return context

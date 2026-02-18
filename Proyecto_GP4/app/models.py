@@ -48,7 +48,7 @@ class Proveedor(models.Model):
     tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO,null=True)
     numero_documento = models.IntegerField(unique=True,null=True)
     nombre_proveedor = models.CharField(max_length=150)
-    telefono = models.CharField(max_length=30)
+    telefono = models.CharField(max_length=15)
     correo_electronico = models.CharField(max_length=150)
     direccion = models.CharField(max_length=200)
 
@@ -154,7 +154,7 @@ class Compra(models.Model):
         db_table = "compra"
 
     def __str__(self):
-        return f"Compra #{self.id_compra}"
+        return f"Compra #{self.id_compra} {self.proveedor}{self.usuario}{self.producto} {self.insumo}"
 
 class Comanda(models.Model):
     id_comanda = models.AutoField(primary_key=True)
