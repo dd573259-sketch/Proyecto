@@ -13,14 +13,16 @@ class Usuario(models.Model):
     )
 
     id_usuario = models.AutoField(primary_key=True)
+
     TIPO_DE_DOCUMENTO = [
         ("CC", "Cédula de Ciudadanía"),
         ("TI", "Tarjeta de Identidad"),
         ("CE", "Cédula de Extranjería"),
         ("Pasaporte", "Pasaporte"),
     ]
-    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO,null=True)
-    numero_documento = models.IntegerField(unique=True,null=True)
+
+    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO, null=True)
+    numero_documento = models.IntegerField(unique=True, null=True)
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     correo_electronico = models.CharField(max_length=150)
@@ -36,17 +38,18 @@ class Usuario(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
 
-
 class Proveedor(models.Model):
     id_proveedor = models.AutoField(primary_key=True)
+
     TIPO_DE_DOCUMENTO = [
         ("CC", "Cédula de Ciudadanía"),
         ("TI", "Tarjeta de Identidad"),
         ("CE", "Cédula de Extranjería"),
         ("Pasaporte", "Pasaporte"),
     ]
-    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO,null=True)
-    numero_documento = models.IntegerField(unique=True,null=True)
+
+    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO, null=True)
+    numero_documento = models.IntegerField(unique=True, null=True)
     nombre_proveedor = models.CharField(max_length=150)
     telefono = models.CharField(max_length=15)
     correo_electronico = models.CharField(max_length=150)
@@ -75,9 +78,8 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre
-    
-class Categoria(models.Model):
 
+class Categoria(models.Model):
     ESTADO = [
         ("activo", "Activo"),
         ("inactivo", "Inactivo"),
@@ -85,51 +87,50 @@ class Categoria(models.Model):
 
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.TextField(null=True, blank=True)
-    estado = models.CharField(
-        max_length=10,
-        choices=ESTADO,
-        default="activo"
-    )
+    estado = models.CharField(max_length=10, choices=ESTADO, default="activo")
     fecha_creacion = models.DateTimeField(default=datetime.now)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return self.nombre
     class Meta:
         verbose_name = "Categoria"
         verbose_name_plural = "Categorias"
         db_table = "categoria"
-        
+
+    def __str__(self):
+        return self.nombre
+
 class Cliente(models.Model):
     id_cliente = models.AutoField(primary_key=True)
+
     TIPO_DE_DOCUMENTO = [
         ("CC", "Cédula de Ciudadanía"),
         ("TI", "Tarjeta de Identidad"),
         ("CE", "Cédula de Extranjería"),
         ("Pasaporte", "Pasaporte"),
     ]
-    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO,null=True)
-    numero_documento = models.IntegerField(unique=True,null=True)
+
+    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO, null=True)
+    numero_documento = models.IntegerField(unique=True, null=True)
     nombre = models.CharField(max_length=50)
     apellido = models.CharField(max_length=50)
     telefono = models.CharField(max_length=15)
     correo_electronico = models.EmailField(unique=True)
     direccion = models.CharField(max_length=100)
     tipo_cliente = models.CharField(max_length=20)
-    
-    def __str___(self):
-        return self.nombre
-    
+
     class Meta:
-        verbose_name = 'Cliente'
-        verbose_name_plural = 'Clientes'
+        verbose_name = "Cliente"
+        verbose_name_plural = "Clientes"
         db_table = 'cliente'
-        
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido}"
+
 class Factura(models.Model):
     fecha_hora = models.DateTimeField(auto_now_add=True)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     metodo_pago = models.CharField(max_length=50)
-    
+
     class Meta:
         verbose_name = "Factura"
         verbose_name_plural = "Facturas"
@@ -160,16 +161,23 @@ class Comanda(models.Model):
     id_comanda = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha_hora = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=20)
-    
-    def __str__(self):
-        return self.id_comanda
-    
+
+    ESTADO = [
+        ("En preparación", "En preparación"),
+        ("Listo", "Listo"),
+        ("Entregado", "Entregado"),
+    ]
+
+    estado = models.CharField(max_length=15, choices=ESTADO, default="En preparación")
+
     class Meta:
-        verbose_name = 'Comanda'
-        verbose_name_plural = 'Comandas'
+        verbose_name = "Comanda"
+        verbose_name_plural = "Comandas"
         db_table = 'comanda'
-        
+
+    def __str__(self):
+        return f"Comanda {self.id_comanda}"
+
 class Plato(models.Model):
     id_plato = models.AutoField(primary_key=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
@@ -200,39 +208,51 @@ class Menu(models.Model):
         verbose_name = "Menu"
         verbose_name_plural = "Menus"
         db_table = "menu"
-    
-        
+
 class Mesa(models.Model):
     id_mesa = models.AutoField(primary_key=True)
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    menu = models.ForeignKey(Menu, on_delete=models.CASCADE)
     numero_mesa = models.IntegerField(unique=True)
     estado = models.CharField(max_length=20)
     capacidad = models.IntegerField()
-    
-    def __str__(self):
-        return self.numero_mesa
+    ESTADO = [
+        ("En preparación", "En preparación"),
+        ("Listo", "Listo"),
+        ("Entregado", "Entregado"),
+    ]
+
+    estado = models.CharField(max_length=15, choices=ESTADO, default="En preparación")
 
     class Meta:
-        verbose_name = 'Mesa'
-        verbose_name_plural = 'Mesas'
+        verbose_name = "Mesa"
+        verbose_name_plural = "Mesas"
         db_table = 'mesa'
-        
+
+    def __str__(self):
+        return f"Mesa {self.numero_mesa}"
+
 class Pedido(models.Model):
     id_pedido = models.AutoField(primary_key=True)
     mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
     comanda = models.ForeignKey(Comanda, on_delete=models.CASCADE)
     fecha_hora = models.DateTimeField(auto_now_add=True)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
-    estado = models.CharField(max_length=20)
-    
-    def __str__(self):
-        return self.id_pedido
-    
+
+    ESTADO = [
+        ("En preparación", "En preparación"),
+        ("Listo", "Listo"),
+        ("Entregado", "Entregado"),
+    ]
+
+    estado = models.CharField(max_length=15, choices=ESTADO, default="En preparación")
+
     class Meta:
-        verbose_name = 'Pedido'
-        verbose_name_plural = 'Pedidos'
+        verbose_name = "Pedido"
+        verbose_name_plural = "Pedidos"
         db_table = 'pedido'
+
+    def __str__(self):
+        return f"Pedido {self.id_pedido}"
 
 class insumo(models.Model):
     id_insumo = models.AutoField(primary_key=True)
@@ -286,22 +306,21 @@ class Notificacion(models.Model):
         verbose_name = "notificacion"
         verbose_name_plural = "notificaciones"
         db_table = "notificacion"
-             
+
 class Venta(models.Model):
     id_venta = models.AutoField(primary_key=True)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
     fecha_venta = models.DateTimeField(auto_now_add=True)
     total_venta = models.DecimalField(max_digits=10, decimal_places=2)
-    
-    
+
     class Meta:
         verbose_name = "Venta"
         verbose_name_plural = "Ventas"
         db_table = "venta"
 
     def __str__(self):
-        return f"Venta {self.id} - Usuario: {self.usuario.username} - Total: {self.total_venta}"
+        return f"Venta {self.id_venta} - {self.usuario.nombre} - ${self.total_venta}"
 
 class Pago(models.Model):
     id_pago = models.AutoField(primary_key=True)
@@ -309,11 +328,11 @@ class Pago(models.Model):
     factura = models.ForeignKey(Factura, on_delete=models.CASCADE)
     fecha = models.DateTimeField(auto_now_add=True)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
-    
+
     class Meta:
         verbose_name = "Pago"
-        verbose_name_plural = "Pagos"
+        verbose_name_plural = "Pagos"   
         db_table = "pago"
 
     def __str__(self):
-        return f"Pago {self.id} - Factura: {self.factura.id} - Monto: {self.monto}"
+        return f"Pago {self.id_pago} - ${self.monto}"
