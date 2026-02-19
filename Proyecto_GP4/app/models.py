@@ -108,6 +108,12 @@ class Cliente(models.Model):
         ("CE", "Cédula de Extranjería"),
         ("Pasaporte", "Pasaporte"),
     ]
+    
+    TIPO_CLIENTE = [
+        ("Regular", "Regular"),
+        ("VIP", "VIP"),
+        ("Frecuente", "Frecuente"),
+    ]
 
     tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO, null=True)
     numero_documento = models.IntegerField(unique=True, null=True)
@@ -116,7 +122,8 @@ class Cliente(models.Model):
     telefono = models.CharField(max_length=15)
     correo_electronico = models.EmailField(unique=True)
     direccion = models.CharField(max_length=100)
-    tipo_cliente = models.CharField(max_length=20)
+    tipo_cliente = models.CharField(max_length=20, choices=TIPO_CLIENTE, default="Regular")
+    
 
     class Meta:
         verbose_name = "Cliente"
@@ -232,18 +239,17 @@ class Mesa(models.Model):
         return f"Mesa {self.numero_mesa}"
 
 class Pedido(models.Model):
+    
+    ESTADO = [
+        ("En preparación", "En preparación"),
+        ("Entregado", "Entregado"),
+    ]
+    
     id_pedido = models.AutoField(primary_key=True)
     mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
     comanda = models.ForeignKey(Comanda, on_delete=models.CASCADE)
     fecha_hora = models.DateTimeField(auto_now_add=True)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
-
-    ESTADO = [
-        ("En preparación", "En preparación"),
-        ("Listo", "Listo"),
-        ("Entregado", "Entregado"),
-    ]
-
     estado = models.CharField(max_length=15, choices=ESTADO, default="En preparación")
 
     class Meta:
