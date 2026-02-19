@@ -1,8 +1,10 @@
 from django.db import models
 from datetime import datetime
+from decimal import Decimal
 
+# Create your models here.
 
-
+#Categorias Fuertes
 class Usuario(models.Model):
     ROL_OPCIONES = (
         ('admin', 'Administrador'),
@@ -29,11 +31,12 @@ class Usuario(models.Model):
     fecha_registro = models.DateTimeField(auto_now=True)
 
     class Meta:
+        verbose_name = "Usuario"
+        verbose_name_plural = "Usuarios"
         db_table = "usuario"
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
-
 
 class Proveedor(models.Model):
     id_proveedor = models.AutoField(primary_key=True)
@@ -53,11 +56,12 @@ class Proveedor(models.Model):
     direccion = models.CharField(max_length=200)
 
     class Meta:
+        verbose_name = "Proveedor"
+        verbose_name_plural = "Proveedores"
         db_table = "proveedor"
 
     def __str__(self):
         return self.nombre_proveedor
-
 
 class Producto(models.Model):
     id_producto = models.AutoField(primary_key=True)
@@ -68,11 +72,12 @@ class Producto(models.Model):
     stock = models.IntegerField()
 
     class Meta:
+        verbose_name = "Producto"
+        verbose_name_plural = "Productos"
         db_table = "producto"
 
     def __str__(self):
         return self.nombre
-
 
 class Categoria(models.Model):
     ESTADO = [
@@ -87,11 +92,12 @@ class Categoria(models.Model):
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     class Meta:
+        verbose_name = "Categoria"
+        verbose_name_plural = "Categorias"
         db_table = "categoria"
 
     def __str__(self):
         return self.nombre
-
 
 class Cliente(models.Model):
     id_cliente = models.AutoField(primary_key=True)
@@ -113,12 +119,42 @@ class Cliente(models.Model):
     tipo_cliente = models.CharField(max_length=20)
 
     class Meta:
+        verbose_name = "Cliente"
+        verbose_name_plural = "Clientes"
         db_table = 'cliente'
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
 
+class Factura(models.Model):
+    fecha_hora = models.DateTimeField(auto_now_add=True)
+    valor_total = models.DecimalField(max_digits=10, decimal_places=2)
+    metodo_pago = models.CharField(max_length=50)
 
+    class Meta:
+        verbose_name = "Factura"
+        verbose_name_plural = "Facturas"
+        db_table = "factura"
+
+    def __str__(self):
+        return f"Factura {self.id} - Total ${self.valor_total}"
+
+class Compra(models.Model):
+    id_compra = models.AutoField(primary_key=True)
+    proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    insumo = models.IntegerField(null=True, blank=True)
+    fecha_compra = models.DateTimeField(auto_now=True)
+    total_compra = models.DecimalField(max_digits=10, decimal_places=2)
+
+    class Meta:
+        verbose_name = "Compra"
+        verbose_name_plural = "Compras"
+        db_table = "compra"
+
+    def __str__(self):
+        return f"Compra #{self.id_compra}"
 
 class Comanda(models.Model):
     id_comanda = models.AutoField(primary_key=True)
@@ -134,11 +170,43 @@ class Comanda(models.Model):
     estado = models.CharField(max_length=15, choices=ESTADO, default="En preparación")
 
     class Meta:
+        verbose_name = "Comanda"
+        verbose_name_plural = "Comandas"
         db_table = 'comanda'
 
     def __str__(self):
         return f"Comanda {self.id_comanda}"
 
+class Plato(models.Model):
+    id_plato = models.AutoField(primary_key=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = "Plato"
+        verbose_name_plural = "Platos"
+        db_table = "plato"
+        
+class Menu(models.Model):
+    id_menu = models.AutoField(primary_key=True)
+    plato = models.ForeignKey(Plato, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=100)
+    precio = models.DecimalField(max_digits=10, decimal_places=2)
+    descripcion = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = "Menu"
+        verbose_name_plural = "Menus"
+        db_table = "menu"
 
 class Mesa(models.Model):
     id_mesa = models.AutoField(primary_key=True)
@@ -155,11 +223,12 @@ class Mesa(models.Model):
     estado = models.CharField(max_length=15, choices=ESTADO, default="En preparación")
 
     class Meta:
+        verbose_name = "Mesa"
+        verbose_name_plural = "Mesas"
         db_table = 'mesa'
 
     def __str__(self):
         return f"Mesa {self.numero_mesa}"
-
 
 class Pedido(models.Model):
     id_pedido = models.AutoField(primary_key=True)
@@ -177,11 +246,65 @@ class Pedido(models.Model):
     estado = models.CharField(max_length=15, choices=ESTADO, default="En preparación")
 
     class Meta:
+        verbose_name = "Pedido"
+        verbose_name_plural = "Pedidos"
         db_table = 'pedido'
 
     def __str__(self):
         return f"Pedido {self.id_pedido}"
 
+class insumo(models.Model):
+    id_insumo = models.AutoField(primary_key=True)
+    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=100)
+    descripcion = models.CharField(max_length=100)
+    unidad=models.CharField(max_length=100)
+    valor=models.CharField(max_length=100)
+    stock=models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.nombre
+    
+    class Meta:
+
+        verbose_name = 'insumo'
+        verbose_name_plural = 'insumos'
+        db_table = 'insumo'
+
+class recetas(models.Model):
+    id_receta = models.AutoField(primary_key=True)
+    plato= models.CharField(max_length=100)
+    nombre= models.CharField(max_length=100)
+    descripcion= models.CharField(max_length=100)
+    unidad= models.CharField(max_length=100)
+    valor= models.CharField(max_length=100)
+    stock= models.CharField(max_length=100)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f'{self.nombre}' - {self.insumo}
+    
+    class Meta:
+        verbose_name = 'receta'
+        verbose_name_plural = 'recetas'
+        db_table = 'receta'
+
+class Notificacion(models.Model):
+    id_notificacion = models.AutoField(primary_key=True)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True)
+    insumo = models.ForeignKey(insumo, on_delete=models.CASCADE, null=True, blank=True)
+    tipo_notificacion = models.CharField(max_length=100)
+    mensaje = models.TextField()
+    fecha = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Notificacion {self.id} - {self.tipo_notificacion}"
+
+    class Meta:
+        verbose_name = "notificacion"
+        verbose_name_plural = "notificaciones"
+        db_table = "notificacion"
 
 class Venta(models.Model):
     id_venta = models.AutoField(primary_key=True)
@@ -191,23 +314,12 @@ class Venta(models.Model):
     total_venta = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
+        verbose_name = "Venta"
+        verbose_name_plural = "Ventas"
         db_table = "venta"
 
     def __str__(self):
         return f"Venta {self.id_venta} - {self.usuario.nombre} - ${self.total_venta}"
-
-
-class Factura(models.Model):
-    fecha_hora = models.DateTimeField(auto_now_add=True)
-    valor_total = models.DecimalField(max_digits=10, decimal_places=2)
-    metodo_pago = models.CharField(max_length=50)
-
-    class Meta:
-        db_table = "factura"
-
-    def __str__(self):
-        return f"Factura {self.id} - Total ${self.valor_total}"
-
 
 class Pago(models.Model):
     id_pago = models.AutoField(primary_key=True)
@@ -217,6 +329,8 @@ class Pago(models.Model):
     monto = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
+        verbose_name = "Pago"
+        verbose_name_plural = "Pagos"   
         db_table = "pago"
 
     def __str__(self):
