@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import datetime
 from decimal import Decimal
-
+from django.core.validators import MinValueValidator
 # Create your models here.
 
 #Categorias Fuertes
@@ -163,19 +163,65 @@ class Compra(models.Model):
 
     def __str__(self):
         return f"Compra #{self.id_compra} {self.proveedor}{self.usuario}{self.producto} {self.insumo}"
+class Mesa(models.Model):
+    id_mesa = models.AutoField(primary_key=True)
+    numero_mesa = models.IntegerField(unique=True)
+    estado = models.CharField(max_length=20)
+    ESTADO = [
+        ("Disponible", "Disponible"),
+        ("No disponible", "No disponible"),
+    ]
 
+    estado = models.CharField(max_length=15, choices=ESTADO, default="Disponible")
+
+    class Meta:
+        verbose_name = "Mesa"
+        verbose_name_plural = "Mesas"
+        db_table = 'mesa'
+
+    def __str__(self):
+        return f"Mesa {self.numero_mesa}"
+
+
+class Pedido(models.Model):
+    
+    ESTADO = [
+        ("Preparación", "Preparación"),
+        ("Entregado", "Entregado"),
+    ]
+    
+    id_pedido = models.AutoField(primary_key=True)
+    mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidades = models.IntegerField(validators=[MinValueValidator(1)])
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    fecha_hora = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación")
+
+    class Meta:
+        verbose_name = "Pedido"
+        verbose_name_plural = "Pedidos"
+        db_table = 'pedido'
+
+    def __str__(self):
+        return f"Pedido {self.id_pedido}"
+
+    @property
+    def total(self):
+        return self.producto.precio * self.cantidades
+    
 class Comanda(models.Model):
     id_comanda = models.AutoField(primary_key=True)
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)    
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     fecha_hora = models.DateTimeField(auto_now_add=True)
 
     ESTADO = [
-        ("En preparación", "En preparación"),
-        ("Listo", "Listo"),
+        ("Preparación", "Preparación"),
         ("Entregado", "Entregado"),
     ]
 
-    estado = models.CharField(max_length=15, choices=ESTADO, default="En preparación")
+    estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación")
 
     class Meta:
         verbose_name = "Comanda"
@@ -216,49 +262,6 @@ class Menu(models.Model):
         verbose_name_plural = "Menus"
         db_table = "menu"
 
-class Mesa(models.Model):
-    id_mesa = models.AutoField(primary_key=True)
-    cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE)
-    numero_mesa = models.IntegerField(unique=True)
-    estado = models.CharField(max_length=20)
-    capacidad = models.IntegerField()
-    ESTADO = [
-        ("En preparación", "En preparación"),
-        ("Listo", "Listo"),
-        ("Entregado", "Entregado"),
-    ]
-
-    estado = models.CharField(max_length=15, choices=ESTADO, default="En preparación")
-
-    class Meta:
-        verbose_name = "Mesa"
-        verbose_name_plural = "Mesas"
-        db_table = 'mesa'
-
-    def __str__(self):
-        return f"Mesa {self.numero_mesa}"
-
-class Pedido(models.Model):
-    
-    ESTADO = [
-        ("En preparación", "En preparación"),
-        ("Entregado", "Entregado"),
-    ]
-    
-    id_pedido = models.AutoField(primary_key=True)
-    mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
-    comanda = models.ForeignKey(Comanda, on_delete=models.CASCADE)
-    fecha_hora = models.DateTimeField(auto_now_add=True)
-    valor = models.DecimalField(max_digits=10, decimal_places=2)
-    estado = models.CharField(max_length=15, choices=ESTADO, default="En preparación")
-
-    class Meta:
-        verbose_name = "Pedido"
-        verbose_name_plural = "Pedidos"
-        db_table = 'pedido'
-
-    def __str__(self):
-        return f"Pedido {self.id_pedido}"
 
 class insumo(models.Model):
     id_insumo = models.AutoField(primary_key=True)

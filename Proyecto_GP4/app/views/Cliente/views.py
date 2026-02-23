@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import *
 from app.models import Cliente  
 from app.forms import ClienteForm 
 
@@ -26,6 +26,7 @@ class ClienteCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Registrar Nuevo Cliente'
+        context['listar_url'] = reverse_lazy('app:listar_clientes')
         return context
 
 # Editar estado o usuario de la cliente
@@ -50,4 +51,5 @@ class ClienteDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = '¿Eliminar Cliente?'
+        context['listar_url'] = reverse_lazy('app:listar_clientes')
         return context

@@ -26,18 +26,27 @@ class ClienteForm(ModelForm):
 class PedidoForm(ModelForm):
     class Meta:
         model = Pedido
-        fields = '__all__'
+        fields = ['producto', 'cantidades', 'usuario', 'estado', 'mesa']
         widgets = {
-            'fecha_hora': forms.DateTimeInput(attrs={
-                'placeholder': 'Ingrese la fecha y hora de la comanda'}),
-            'valor': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el valor del pedido'}),
+            'producto': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+
+            'cantidades': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Ingrese la cantidad del pedido'
+            }),
+
+            'usuario': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+
             'estado': forms.Select(attrs={
-                'placeholder': 'Seleccione el estado del pedido'}),
-            'comanda_id': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el ID de la comanda asociada al pedido'}),
-            'mesa_id': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el ID de la mesa asociada al pedido'}),
+                'class': 'form-control'
+            }),
+            'mesa': forms.Select(attrs={
+                'class': 'form-control'
+            }),
         }
 class MesaForm(ModelForm):
     class Meta:
