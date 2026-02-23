@@ -7,34 +7,88 @@
       <th scope="col">#</th>
       <th scope="col">Nombre</th>
       <th scope="col">Descripción</th>
-      <th scope="col">precio</th>
-      <th scope="col">Eliminar</th>
+      <th scope="col">precio</th>d
       <th scope="col">Editar</th>
     </tr>
   </thead>
   <tbody>
     
     {% for m in object_list %}
+<tr>
+    <td>{{ m.id_menu }}</td>
+
+    <td>
+            {{ m.plato.nombre }}
+    </td>
+
+    <td>
+            {{ m.plato.descripcion }}
+    </td>
+
+    
+    <td>
+            $ {{ m.plato.precio }}
+    </td>
+
+    <td>
+        <a href="{% url 'app:editar_plato' m.plato.id_plato %}" class="btn btn-primary btn-xs">
+            <i class="fas fa-edit"></i>
+        </a>
+    </td>
+
+</tr>
+{% endfor %}
+  </tbody>
+
+
+</table>
+
+
+
+
+
+
+<table class="table" id="tabla">
+   <h1>Productos</h1>
+  <thead>
     <tr>
-      <td>{{ m.id_menu }}</td>
-      <td>{{ m.nombre }}</td>
-      <td>{{ m.descripcion }}</td>
-      <td>{{ m.precio }}</td>
-      <td>
-        <a href="{% url 'app:editar_menu' m.id_menu %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
-      </td>
-      <td>
-        <a href="{% url 'app:eliminar_menu' m.id_menu %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
-      </td>
+      <th scope="col">#</th>
+      <th scope="col">Nombre</th>
+      <th scope="col">Descripción</th>
+      <th scope="col">precio</th>
+      <th scope="col">Editar</th>
     </tr>
-    {% endfor %}
+  </thead>
+  <tbody>
+    
+    {% for m in object_list %}
+<tr>
+    <td>{{ m.id_menu }}</td>
+
+
+    <td>
+            {{ m.producto.nombre }}
+    </td>
+
+    <td>
+            {{ m.producto.descripcion }}
+    </td>
+
+    
+    <td>
+            $ {{ m.producto.precio }}
+    </td>
+
+    <td>
+        <a href="{% url 'app:editar_producto' m.producto.id_producto %}" class="btn btn-primary btn-xs">
+            <i class="fas fa-edit"></i>
+        </a>
+
+    </td>
+</tr>
+{% endfor %}
   </tbody>
 </table>
-<div class="card-footer">
-  <a href="{% url 'app:crear_menu' %}" class="btn btn-success">
-    <i class="fas fa-plus"></i> Crear nuevo menu
-  </a>
-</div>
 {% endblock %}
 
 {% block js %}

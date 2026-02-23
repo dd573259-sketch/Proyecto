@@ -22,18 +22,32 @@ def listar_insumos(request):
 class InsumosListView(listView):
     model = insumo
     template_name = 'insumos/listar.html'
-    context_object_name = 'insumos'
-    
-    
+    context_object_name = 'object_list'
+
     def get_queryset(self):
         queryset = super().get_queryset()
-        buscar = self.request.GET.get('buscar', '')
-        
-        if buscar:
-            queryset = queryset.filter(nombre__icontains=buscar)
-            
+
+        categoria = self.request.GET.get('categoria')
+        stock_bajo = self.request.GET.get('stock_bajo')
+
+        if categoria:
+            queryset = queryset.filter(categoria_id=categoria)
+
+        if stock_bajo == "1":
+            queryset = queryset.filter(stock__lt=10)
+
         return queryset
-    
+
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Listado de insumos'
+        context['crear_url'] = reverse_lazy('app:crear_insumos')
+        context['categorias'] = Categoria.objects.all()
+        context['categoria_seleccionada'] = self.request.GET.get('categoria', '')
+        context['stock_bajo'] = self.request.GET.get('stock_bajo')
+        return context
     
     #METODO DISPATCH
     #@method_decorator(login_required)
@@ -46,14 +60,6 @@ class InsumosListView(listView):
     #METODO POST
     def post(sefl, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
-    
-    #METODO GET CONTEXT DATA
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Listado de insumos'
-        context['crear_url'] = reverse_lazy('app:crear_insumos')
-        context['buscar'] = self.request.GET.get('buscar', '')
-        return context
     
 class InsumosCreateView(CreateView):
     model = insumo

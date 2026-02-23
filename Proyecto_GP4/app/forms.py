@@ -113,8 +113,6 @@ class MenuForm(ModelForm):
         model = Menu
         fields = '__all__'
         widgets = {
-            'nombre': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el nombre del menu'}),
             'descripcion': 
                 forms.Textarea(attrs={
                     'placeholder': 'Ingrese la descripcion del menu',
@@ -156,23 +154,46 @@ class InsumosForm(ModelForm):
                 'placeholder': 'Ingrese el precio del insumo'}),
         }
     def clean_nombre(self):
-            nombre = self.cleaned_data.get('nombre')
-            if len(nombre) < 3:
-                raise forms.ValidationError('El nombre debe tener al menos 3 caracteres')
-            return nombre 
+        nombre = self.cleaned_data.get('nombre')
+
+        if len(nombre) < 3:
+            raise forms.ValidationError(
+                'El nombre debe tener al menos 3 caracteres'
+            )
+
+        return nombre
+
+  
     def clean_descripcion(self):
-        descripcion = self.cleaned_data['descripcion']
-        if len(descripcion) <10:
-            raise forms.ValidationError('La descripcion debe tener al menos 10 caracteres')
+        descripcion = self.cleaned_data.get('descripcion')
+
+        if len(descripcion) < 10:
+            raise forms.ValidationError(
+                'La descripcion debe tener al menos 10 caracteres'
+            )
+
         return descripcion
-    
+
+
     def clean(self):
-        cleaned_data  = super().clean()
-        unidad = self.cleaned_data.get('unidad')
-        valor = self.cleaned_data.get('valor')
-        if int(unidad) < 0 or int(valor) < 0:
-            raise forms.ValidationError("El valor y la unidad debe ser mayor a 0")
-        return unidad
+        cleaned_data = super().clean()
+
+        unidad = cleaned_data.get('unidad')
+        valor = cleaned_data.get('valor')
+        stock = cleaned_data.get('stock')
+
+        if unidad is not None and unidad <= 0:
+            self.add_error('unidad', 'La unidad debe ser mayor a 0')
+
+        if valor is not None and valor <= 0:
+            self.add_error('valor', 'El valor debe ser mayor a 0')
+
+        if stock is not None and stock < 0:
+            self.add_error('stock', 'El stock no puede ser negativo')
+
+        return cleaned_data
+    
+    
         
 class FacturaForm(ModelForm):
     class Meta:
@@ -221,6 +242,8 @@ class PagoForm(ModelForm):
                 'class': 'form-control'
             }),
             'monto': forms.NumberInput(attrs={
+                
+                
                 'class': 'form-control'
             }),
         }
