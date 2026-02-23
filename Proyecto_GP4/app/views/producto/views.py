@@ -19,6 +19,7 @@ class ProductoListView(listView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['crear_url'] = reverse_lazy('app:crear_producto')
+        context['icono'] = 'fa-solid fa-boxes-stacked'
         context['titulo'] = 'Listado de Productos'
         return context
     
@@ -32,6 +33,7 @@ class ProductoCreateView(CreateView):
         return super().form_valid(form)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fa-solid fa-boxes-stacked'
         context['titulo'] = 'Crear Producto'
         return context
     
@@ -46,6 +48,7 @@ class ProductoDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Producto'
+        context['icono'] = 'fa-solid fa-trash'
         return context
 
 
@@ -54,15 +57,10 @@ class ProductoUpdateView(UpdateView):
     form_class = ProductoForm
     template_name = 'producto/editar.html'
     success_url = reverse_lazy('app:listar_productos')
-    def form_valid(self, form):
-        return super().form_valid(form)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Producto '
-        return context
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Producto'
+        context['icono'] = 'fa-solid fa-pen-to-square'
         return context
         

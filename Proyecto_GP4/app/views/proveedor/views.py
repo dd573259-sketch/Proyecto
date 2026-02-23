@@ -18,6 +18,7 @@ class ProveedorListView(listView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['crear_url'] = reverse_lazy('app:crear_proveedor')
+        context['icono'] = 'fas fa-truck'
         context['titulo'] = 'Listado de Proveedor'
         return context
 
@@ -27,12 +28,11 @@ class ProveedorCreateView(CreateView):
     form_class = ProveedorForm
     template_name = 'proveedor/crear.html'
     success_url = reverse_lazy('app:listar_proveedores')
-    def form_valid(self, form):
-        return super().form_valid(form)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Proveedor'
+        context['icono'] = 'fas fa-plus-circle'
         return context
     
 
@@ -40,10 +40,10 @@ class ProveedorDeleteView(DeleteView):
     model = Proveedor
     template_name = 'proveedor/eliminar.html'
     success_url = reverse_lazy('app:listar_proveedores')
-    def delete(self, request, *args, **kwargs):
-        return super().delete(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context
         context['titulo'] = 'Eliminar Proveedor'
         return context
 
@@ -53,10 +53,9 @@ class ProveedorUpdateView(UpdateView):
     form_class = ProveedorForm
     template_name = 'proveedor/editar.html'
     success_url = reverse_lazy('app:listar_proveedores')
-    def form_valid(self, form):
-        return super().form_valid(form)
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fas fa-edit'
         context['titulo'] = 'Editar Proveedor'
         return context

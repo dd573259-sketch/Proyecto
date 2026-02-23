@@ -2,6 +2,7 @@ from dataclasses import field
 from django.forms import ModelForm
 from app.models import *
 from django import forms 
+import re
 
 class ClienteForm(ModelForm):
     class Meta:
@@ -80,6 +81,18 @@ class CategoriaForm(ModelForm):
                     'rows': 3,
                     'cols': 3}),
         }
+    
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        if not re.match(r'^[a-zA-Z\s]+$', nombre):
+            raise forms.ValidationError('El nombre solo puede contener letras y espacios')
+        return nombre
+    
+    def clean_descripcion(self):
+        descripcion = self.cleaned_data['descripcion']
+        if len(descripcion) < 10:
+            raise forms.ValidationError('La descripción debe tener al menos 10 caracteres')
+        return descripcion
 
 class PlatoForm(ModelForm):
     class Meta:
@@ -168,11 +181,11 @@ class InsumosForm(ModelForm):
     
     def clean(self):
         cleaned_data  = super().clean()
-        unidad = self.cleaned_data.get('unidad')
-        valor = self.cleaned_data.get('valor')
+        unidad = self.cleaned_data['unidad']
+        valor = self.cleaned_data['valor']
         if int(unidad) < 0 or int(valor) < 0:
             raise forms.ValidationError("El valor y la unidad debe ser mayor a 0")
-        return unidad
+        return cleaned_data
         
 class FacturaForm(ModelForm):
     class Meta:

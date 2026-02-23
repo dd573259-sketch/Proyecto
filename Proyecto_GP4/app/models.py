@@ -265,9 +265,9 @@ class insumo(models.Model):
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100)
     descripcion = models.CharField(max_length=100)
-    unidad=models.CharField(max_length=100)
-    valor=models.CharField(max_length=100)
-    stock=models.CharField(max_length=100)
+    unidad=models.IntegerField()
+    valor=models.DecimalField(max_digits=10, decimal_places=2)
+    stock=models.IntegerField()
     
     def __str__(self):
         return self.nombre

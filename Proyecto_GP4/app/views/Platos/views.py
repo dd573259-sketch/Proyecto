@@ -39,6 +39,7 @@ class PlatoListView(listView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de Platos'
+        context['icono'] = 'fa-solid fa-utensils'
         context['crear_url'] = reverse_lazy('app:crear_plato')
         return context
     
@@ -54,6 +55,7 @@ class PlatoCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Plato'
         context['listar_url'] = reverse_lazy('app:listar_platos')
+        context['icono'] = 'fa-solid fa-plus-circle'
         return context
     
     
@@ -67,6 +69,7 @@ class PlatoUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Plato'
+        context['icono'] = 'fa-solid fa-pen-to-square'
         context['listar_url'] = reverse_lazy('app:listar_platos')
         return context
     
@@ -79,5 +82,6 @@ class PlatoDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Plato'
+        context['icono'] = 'fa-solid fa-trash'
         context['listar_url'] = reverse_lazy('app:listar_platos')
         return context

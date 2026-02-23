@@ -19,6 +19,7 @@ class CompraListView(listView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['crear_url'] = reverse_lazy('app:crear_compra')
+        context['icono'] = 'fa-solid fa-cart-shopping'
         context['titulo'] = 'Listado de Compras'
         return context
 
@@ -31,6 +32,7 @@ class CompraCreateView(CreateView):
         return super().form_valid(form)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fa-solid fa-cart-plus'
         context['titulo'] = 'Crear Compra'
         return context
 
@@ -43,6 +45,7 @@ class CompraDeleteView(DeleteView):
         return super().delete(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fa-solid fa-cart-xmark'
         context['titulo'] = 'Eliminar Compra'
         return context
 
@@ -56,6 +59,7 @@ class CompraUpdateView(UpdateView):
         return super().form_valid(form)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fa-solid fa-cart-edit'
         context['titulo'] = 'Editar Compra'
         return context
         

@@ -17,6 +17,7 @@ class UsuarioListView(listView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['crear_url'] = reverse_lazy('app:crear_usuario')
+        context['icono'] = 'fas fa-users'
         context['titulo'] = 'Listado de Usuarios'
         return context
 
@@ -26,12 +27,12 @@ class UsuarioCreateView(CreateView):
     form_class = UsuarioForm
     template_name = 'usuario/crear.html'
     success_url = reverse_lazy('app:listar_usuarios')
-    def form_valid(self, form):
-        return super().form_valid(form)
+    
         
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Usuario'
+        context['icono'] = 'fas fa-plus-circle'
         return context
 
     
@@ -44,6 +45,7 @@ class UsuarioDeleteView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fas fa-trash'
         context['titulo'] = 'Eliminar Usuario'
         return context
 
@@ -54,11 +56,11 @@ class UsuarioUpdateView(UpdateView):
     form_class = UsuarioForm
     template_name = 'usuario/editar.html'
     success_url = reverse_lazy('app:listar_usuarios')
-    def form_valid(self, form):
-        return super().form_valid(form)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Usuario'
+        context['icono'] = 'fas fa-edit'
         return context
         
 

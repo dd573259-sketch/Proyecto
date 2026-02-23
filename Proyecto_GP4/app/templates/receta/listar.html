@@ -1,7 +1,8 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<table class="table" id="tabla">
+<div class="tabla-wrapper">
+<table class="tabla" id="tabla">
   <thead>
     <tr>
       <th scope="col">#</th>
@@ -32,6 +33,7 @@
     {% endfor %}
   </tbody>
 </table>
+</div>
 <div class="card-footer">
   <a href="{% url 'app:crear_receta' %}" class="btn btn-success">
     <i class="fas fa-plus"></i> Crear nueva receta
@@ -39,19 +41,3 @@
 </div>
 {% endblock %}
 
-{% block js %}
-<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
-
-<script>
-  $(document).ready(function () {
-    $('#tabla').DataTable({
-      responsive: true,
-      autoWidth: false,
-    });
-  });
-</script>
-{% endblock js %}

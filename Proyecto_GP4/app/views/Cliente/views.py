@@ -13,6 +13,7 @@ class ClienteListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Gestión de Clientes'
+        context['icono'] = 'fa-solid fa-users'
         context['crear_url'] = reverse_lazy('app:crear_cliente')
         return context
 
@@ -25,6 +26,7 @@ class ClienteCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fa-solid fa-user-plus'
         context['titulo'] = 'Registrar Nuevo Cliente'
         return context
 
@@ -38,6 +40,7 @@ class ClienteUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Actualizar Cliente'
+        context['icono'] = 'fa-solid fa-user-edit'
         context['listar_url'] = reverse_lazy('app:listar_clientes')
         return context
 
@@ -49,5 +52,6 @@ class ClienteDeleteView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fa-solid fa-user-xmark'
         context['titulo'] = '¿Eliminar Cliente?'
         return context

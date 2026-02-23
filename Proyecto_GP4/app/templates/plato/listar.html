@@ -1,55 +1,40 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<table class="table" id="tabla">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Id_categoria</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Descripción</th>
-      <th scope="col">Editar</th>
-      <th scope="col">Eliminar</th>
-    </tr>
-  </thead>
-  <tbody>
+<div class="tabla-wrapper">
+  <table class="tabla" id="tabla">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Id_categoria</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">Editar</th>
+        <th scope="col">Eliminar</th>
+      </tr>
+    </thead>
+  <tbody> 
     
     {% for p in object_list %}
-    <tr>
-      <td>{{ p.id_plato }}</td>
-      <td>{{ p.categoria_id}}</td>
-      <td>{{ p.nombre }}</td>
-      <td>{{ p.descripcion }}</td>
-      <td>
-        <a href="{% url "app:editar_plato" p.id_plato %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
-      </td>
-      <td>
-        <a href="{% url "app:eliminar_plato" p.id_plato %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+      <tr>
+        <td>{{ p.id_plato }}</td>
+        <td>{{ p.categoria_id}}</td>
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.descripcion }}</td>
+        <td>
+          <a href="{% url "app:editar_plato" p.id_plato %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+        </td>
+        <td>
+          <a href="{% url "app:eliminar_plato" p.id_plato %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 <div class="card-footer">
-  <a href="{{crear_url}}" class="btn btn-primary btn-xs">
+  <a href="{{crear_url}}" class="btn btn-success btn-xs">
     <i class="fas fa-plus"></i> Crear nuevo plato
   </a>
 </div>
 {% endblock %}
-
-{% block js %}
-<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
-
-<script>
-  $(document).ready(function () {
-    $('#tabla').DataTable({
-      responsive: true,
-      autoWidth: false,
-    });
-  });
-</script>
-{% endblock js %}
