@@ -24,7 +24,7 @@ class Usuario(models.Model):
     tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO, null=True)
     numero_documento = models.CharField(max_length=15, unique=True)
     nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100)
+    apellido = models.CharField(max_length=100) 
     correo_electronico = models.EmailField(unique=True)
     contraseña = models.CharField(max_length=255)
     rol = models.CharField(max_length=20, choices=ROL_OPCIONES)
