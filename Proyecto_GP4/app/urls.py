@@ -40,7 +40,7 @@ urlpatterns = [
 #MENU
     path('listar_menu/', MenuListView.as_view() , name='listar_menu'),
     path('crear_menu/', MenuCreateView.as_view() , name='crear_menu'),
-    path('editar_menu/<int:pk>/', MenuUpdateView.as_view(), name='editar_menu'),
+    path('menu/editar/<int:pk>/', editar_menu, name='editar_menu'),
     path('eliminar_menu/<int:pk>/', MenuDeleteView.as_view(), name='eliminar_menu'),
     
 #RECETA

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
@@ -57,7 +57,7 @@ class MenuCreateView(CreateView):
     
     
     
-class MenuUpdateView(UpdateView):
+'''class MenuUpdateView(UpdateView):
     model = Menu
     form_class = MenuForm
     template_name = 'menu/crear.html'
@@ -67,7 +67,18 @@ class MenuUpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Menu'
         context['listar_url'] = reverse_lazy('app:listar_menu')
-        return context
+        return context'''
+
+def editar_menu(request, pk):
+    menu = get_object_or_404(Menu, pk=pk)
+
+    if menu.plato:
+        return redirect('app:editar_plato', menu.plato.id_plato)
+
+    if menu.producto:
+        return redirect('app:editar_producto', menu.producto.id_producto)
+
+    return redirect('app:listar_menu')
     
     
 class MenuDeleteView(DeleteView):

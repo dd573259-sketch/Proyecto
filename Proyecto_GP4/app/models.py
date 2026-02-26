@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 from datetime import datetime
 from decimal import Decimal
 from django.core.validators import MinValueValidator
@@ -301,13 +302,17 @@ class Comanda(models.Model):
         
 class Menu(models.Model):
     id_menu = models.AutoField(primary_key=True)
-    plato = models.ForeignKey(Plato, on_delete=models.CASCADE)
-    nombre = models.CharField(max_length=100)
-    precio = models.DecimalField(max_digits=10, decimal_places=2)
-    descripcion = models.TextField(null=True, blank=True)
+
+    plato = models.ForeignKey(Plato, on_delete=models.CASCADE, null=True, blank=True)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True)
+
 
     def __str__(self):
-        return self.nombre
+        if self.plato:
+            return self.plato.nombre
+        elif self.producto:
+            return self.producto.nombre
+        return "Menu vacío"
 
     class Meta:
         verbose_name = "Menu"
@@ -317,12 +322,12 @@ class Menu(models.Model):
 
 class insumo(models.Model):
     id_insumo = models.AutoField(primary_key=True)
-    categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
-    nombre = models.CharField(max_length=100)
+    categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.CharField(max_length=100)
-    unidad=models.CharField(max_length=100)
-    valor=models.CharField(max_length=100)
-    stock=models.CharField(max_length=100)
+    unidad = models.PositiveIntegerField(validators=[MinValueValidator(0)])
+    valor = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    stock = models.PositiveIntegerField(default=0)
     
     def __str__(self):
         return self.nombre
@@ -338,9 +343,9 @@ class recetas(models.Model):
     plato= models.CharField(max_length=100)
     nombre= models.CharField(max_length=100)
     descripcion= models.CharField(max_length=100)
-    unidad= models.CharField(max_length=100)
-    valor= models.CharField(max_length=100)
-    stock= models.CharField(max_length=100)
+    unidad = models.PositiveIntegerField(validators=[MinValueValidator(0)])
+    valor = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    stock = models.PositiveIntegerField(default=0)
     fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 

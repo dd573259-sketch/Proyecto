@@ -1,7 +1,45 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
+
+
+<form method="get" class="mb-3">
+  <div class="row">
+
+    <div class="col-md-4">
+      <select name="categoria" class="form-control">
+        <option value="">Todas las categorías</option>
+        {% for cat in categorias %}
+          <option value="{{ cat.id }}"
+            {% if categoria_seleccionada == cat.id|stringformat:"s" %}
+              selected
+            {% endif %}
+          >
+            {{ cat.nombre }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-3">
+  <select name="stock_bajo" class="form-control">
+    <option value="">Todos los stocks</option>
+    <option value="1"
+      {% if stock_bajo == "1" %}selected{% endif %}>
+      Stock menor a 10
+    </option>
+  </select>
+</div>
+
+    <div class="col-md-4">
+      <button type="submit" class="btn btn-primary">
+        Filtrar
+      </button>
+    </div>
+
+  </div>
+</form>
 <table class="table" id="tabla">
+  <h1>{{ categoria }}</h1>
   <thead>
     <tr>
       <th scope="col">#</th>
@@ -22,7 +60,28 @@
       <td>{{ m.nombre }}</td>
       <td>{{ m.descripcion }}</td>
       <td>{{ m.categoria }}</td>
-      <td>{{ m.stock }}</td>
+        <td>
+  {% if m.stock == 0 %}
+    <span class="badge bg-danger">
+      Sin stock
+    </span>
+
+  {% elif m.stock > 0 and m.stock < 5 %}
+    <span class="badge bg-warning text-dark">
+      {{ m.stock }} (Crítico)
+    </span>
+
+  {% elif m.stock >= 5 and m.stock <= 10 %}
+    <span class="badge bg-info text-dark">
+      {{ m.stock }} (Bajo)
+    </span>
+
+  {% else %}
+    <span class="badge bg-success">
+      {{ m.stock }} (Normal)
+    </span>
+  {% endif %}
+</td>
       <td>{{ m.valor }}</td>
       <td>
         <a href="{% url 'app:editar_insumos' m.id_insumo %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
