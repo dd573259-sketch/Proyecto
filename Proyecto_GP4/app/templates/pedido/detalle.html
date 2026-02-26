@@ -1,44 +1,6 @@
 {% extends "main.html" %}
 {% block Contenido %}
 
-<<<<<<< HEAD
-<div class="card shadow-lg p-4">
-
-    <h3 class="text-center mb-4">
-        Detalle del Pedido #{{ pedido.id_pedido }}
-    </h3>
-
-    <hr>
-
-    <div class="row">
-        <div class="col-md-6">
-            <p><strong>Mesa:</strong> {{ pedido.mesa.numero_mesa }}</p>
-            <p><strong>Producto:</strong> {{ pedido.producto.nombre }}</p>
-            <p><strong>Precio unitario:</strong> ${{ pedido.producto.precio }}</p>
-            <p><strong>Cantidad:</strong> {{ pedido.cantidades }}</p>
-        </div>
-
-        <div class="col-md-6">
-            <p><strong>Empleado:</strong> {{ pedido.usuario.nombre }} {{ pedido.usuario.apellido }}</p>
-            <p><strong>Fecha:</strong> {{ pedido.fecha_hora|date:"d/m/Y H:i" }}</p>
-            <p><strong>Estado:</strong> {{ pedido.estado }}</p>
-            
-        </div>
-    </div>
-
-    <hr>
-
-    <h4 class="text-end">
-    Total: ${{ pedido.total }}
-    </h4>
-
-    <div class="text-center mt-4">
-        <a href="{% url 'app:listar_pedidos' %}" class="btn btn-secondary">
-            Volver
-        </a>
-    </div>
-
-=======
 {# Card principal con sombra para diseño más profesional #}
 <div class="card shadow-lg">
 
@@ -205,7 +167,6 @@
         </div>
 
     </div>
->>>>>>> 8973b5d0acd268dae53fb7424100dd53b1b1f8a9
 </div>
 
 {% endblock %}

@@ -26,35 +26,11 @@ class ClienteForm(ModelForm):
 class PedidoForm(ModelForm):
     class Meta:
         model = Pedido
-<<<<<<< HEAD
-        fields = ['producto', 'cantidades', 'usuario', 'estado', 'mesa']
-        widgets = {
-            'producto': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-
-            'cantidades': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Ingrese la cantidad del pedido'
-            }),
-
-            'usuario': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-
-            'estado': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'mesa': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-=======
         fields = ['mesa', 'usuario', 'estado']
         widgets = {
             'mesa': forms.Select(attrs={'class': 'form-control'}),
             'usuario': forms.Select(attrs={'class': 'form-control'}),
             'estado': forms.Select(attrs={'class': 'form-control'}),
->>>>>>> 8973b5d0acd268dae53fb7424100dd53b1b1f8a9
         }
 
     def clean_mesa(self):

@@ -138,12 +138,12 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <script>
-    // --- 1. DICCIONARIOS DE DATOS DESDE DJANGO ---
-    const preciosPlatos = { {% for p in platos %}"{{ p.id_plato }}": {{ p.precio }},{% endfor %} };
-    const preciosProductos = { {% for p in productos %}"{{ p.id_producto }}": {{ p.precio }},{% endfor %} };
-    const stockProductos = { {% for p in productos %}"{{ p.id_producto }}": {{ p.stock }},{% endfor %} };
+    // Obtener datos JSON del context
+    const preciosPlatos = {{ platos_json|safe|default:"{}" }};
+    const preciosProductos = {{ productos_json|safe|default:"{}" }};
+    const stockProductos = {{ stock_json|safe|default:"{}" }};
 
-    // --- 2. FUNCIONES CORE ---
+    // --- 1. FUNCIONES CORE ---
 
     // Inicializa Select2 en los selects visibles
     function activarSelect2() {
@@ -152,26 +152,28 @@
                 placeholder: 'Seleccione una opción',
                 allowClear: true,
                 width: '100%',
-                dropdownParent: $(this).parent() // Evita problemas de scroll en modales o tarjetas
+                dropdownParent: $(this).parent()
             });
         });
     }
 
-    // Calcula subtotal de Platos
+    // Calcula subtotal de Platos (lee precio de JSON)
     function calcularSubtotalPlato(fila) {
-        const platoId = fila.find('select[name$="-plato"]').val();
+        const selectPlato = fila.find('select[name$="-plato"]');
+        const platoId = selectPlato.val();
         const cantidad = parseFloat(fila.find('input[name$="-cantidad"]').val()) || 0;
-        const precio = preciosPlatos[platoId] || 0;
+        const precio = parseFloat(preciosPlatos[platoId]) || 0;
         const subtotal = precio * cantidad;
         fila.find('.subtotal-plato').val('$' + subtotal.toLocaleString('es-CO'));
         return subtotal;
     }
 
-    // Calcula subtotal de Productos
+    // Calcula subtotal de Productos (lee precio y stock de JSON)
     function calcularSubtotalProducto(fila) {
-        const productoId = fila.find('select[name$="-producto"]').val();
+        const selectProducto = fila.find('select[name$="-producto"]');
+        const productoId = selectProducto.val();
         const cantidad = parseFloat(fila.find('input[name$="-cantidad"]').val()) || 0;
-        const precio = preciosProductos[productoId] || 0;
+        const precio = parseFloat(preciosProductos[productoId]) || 0;
         const subtotal = precio * cantidad;
         fila.find('.subtotal-producto').val('$' + subtotal.toLocaleString('es-CO'));
         return subtotal;
@@ -180,23 +182,25 @@
     // Recalcula el total general sumando todo
     function recalcularTotal() {
         let total = 0;
-        $('.fila-plato').each(function() { total += calcularSubtotalPlato($(this)); });
-        $('.fila-producto').each(function() { total += calcularSubtotalProducto($(this)); });
+        $('.fila-plato').each(function() {
+            total += calcularSubtotalPlato($(this));
+        });
+        $('.fila-producto').each(function() {
+            total += calcularSubtotalProducto($(this));
+        });
         $('#total-general').text('$' + total.toLocaleString('es-CO'));
     }
 
     // Valida el stock de productos
     function validarStock(fila) {
-        const productoId = fila.find('select[name$="-producto"]').val();
+        const selectProducto = fila.find('select[name$="-producto"]');
         const inputCant = fila.find('input[name$="-cantidad"]');
+        const productoId = selectProducto.val();
         const cantidad = parseInt(inputCant.val()) || 0;
-        const stock = stockProductos[productoId];
+        const stock = parseInt(stockProductos[productoId]) || 0;
 
-        if (stock !== undefined) {
-            if (stock <= 0) {
-                Swal.fire('Sin stock', 'Este producto no está disponible', 'error');
-                inputCant.val(0);
-            } else if (cantidad > stock) {
+        if (stock !== undefined && stock > 0) {
+            if (cantidad > stock) {
                 Swal.fire('Stock insuficiente', `Solo quedan ${stock} unidades`, 'warning');
                 inputCant.val(stock);
             }
@@ -205,39 +209,130 @@
 
     // --- 3. LÓGICA DINÁMICA (AGREGAR FILAS) ---
 
+    // Reindexa los campos de un formset para que los índices sean continuos
+    function reIndexFormset(selectorFila, prefijo) {
+        const filas = $(selectorFila);
+        
+        filas.each(function(index) {
+            // Actualizar campos del formset
+            $(this).find('input, select, label').each(function() {
+                const elem = $(this);
+                
+                // Actualizar 'name' atributo
+                if (elem.attr('name')) {
+                    const oldName = elem.attr('name');
+                    const newName = oldName.replace(
+                        new RegExp(`(${prefijo}-)\\d+(-)`),
+                        `$1${index}$2`
+                    );
+                    if (oldName !== newName) {
+                        elem.attr('name', newName);
+                    }
+                }
+                
+                // Actualizar 'id' atributo
+                if (elem.attr('id')) {
+                    const oldId = elem.attr('id');
+                    const newId = oldId.replace(
+                        new RegExp(`(id_${prefijo}-)\\d+(-)`),
+                        `$1${index}$2`
+                    );
+                    if (oldId !== newId) {
+                        elem.attr('id', newId);
+                    }
+                }
+                
+                // Actualizar 'for' atributo
+                if (elem.attr('for')) {
+                    const oldFor = elem.attr('for');
+                    const newFor = oldFor.replace(
+                        new RegExp(`(id_${prefijo}-)\\d+(-)`),
+                        `$1${index}$2`
+                    );
+                    if (oldFor !== newFor) {
+                        elem.attr('for', newFor);
+                    }
+                }
+            });
+        });
+    }
+
     function agregarFila(selectorFila, prefijo, contenedorId, totalFormsId) {
         const totalForms = $(totalFormsId);
         const nuevoIndice = parseInt(totalForms.val());
+
+        // Límite máximo: 10 filas por formset
+        const MAX_FILAS = 10;
+        if (nuevoIndice >= MAX_FILAS) {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire('Límite alcanzado', `No puede agregar más de ${MAX_FILAS} elementos.`, 'warning');
+            } else {
+                alert(`No puede agregar más de ${MAX_FILAS} elementos.`);
+            }
+            return;
+        }
         const ultimaFila = $(selectorFila).last();
+        
+        // Destruir Select2 en el contenedor para evitar HTML extra al clonar
+        $(contenedorId).find('select').select2 && $(contenedorId).find('select').select2('destroy');
 
-        // IMPORTANTE: Destruir Select2 antes de clonar para que no clone el HTML basura
-        ultimaFila.find('select').select2('destroy');
+        // Clonamos la última fila sin eventos
+        const nuevaFila = ultimaFila.clone(false);
 
-        // Clonamos la fila
-        const nuevaFila = ultimaFila.clone();
+        // Detectamos índice anterior (toma el primer input/select disponible)
+        const nombrePrimer = ultimaFila.find('select, input').first().attr('name') || '';
+        const regexIndice = new RegExp(`${prefijo}-(\\d+)-`);
+        const match = nombrePrimer.match(regexIndice);
+        const indiceAnterior = match ? parseInt(match[1]) : (nuevoIndice - 1);
 
-        // Buscamos el índice de la fila que acabamos de clonar (usualmente nuevoIndice - 1)
-        const regexIndice = new RegExp(`${prefijo}-(\\d+)-`, 'g');
-        const match = ultimaFila.find('select, input').first().attr('name').match(regexIndice);
-        const indiceAnterior = match ? match[0].split('-')[1] : (nuevoIndice - 1);
-
-        // Actualizamos todos los ID y NAME de la nueva fila con el nuevo índice
+        // Actualizamos TODOS los ID y NAME de la nueva fila con el nuevo índice
         nuevaFila.find('input, select, label').each(function() {
-            const attrs = ['name', 'id', 'for'];
-            attrs.forEach(attr => {
-                const val = $(this).attr(attr);
-                if (val) {
-                    $(this).attr(attr, val.replace(`${prefijo}-${indiceAnterior}-`, `${prefijo}-${nuevoIndice}-`));
-                }
-            });
+            const elem = $(this);
+            
+            // Actualizar 'name' atributo
+            if (elem.attr('name')) {
+                const oldName = elem.attr('name');
+                const newName = oldName.replace(
+                    new RegExp(`(${prefijo}-)${indiceAnterior}(-)`),
+                    `$1${nuevoIndice}$2`
+                );
+                elem.attr('name', newName);
+            }
+            
+            // Actualizar 'id' atributo
+            if (elem.attr('id')) {
+                const oldId = elem.attr('id');
+                const newId = oldId.replace(
+                    new RegExp(`(id_${prefijo}-)${indiceAnterior}(-)`),
+                    `$1${nuevoIndice}$2`
+                );
+                elem.attr('id', newId);
+            }
+            
+            // Actualizar 'for' atributo
+            if (elem.attr('for')) {
+                const oldFor = elem.attr('for');
+                const newFor = oldFor.replace(
+                    new RegExp(`(id_${prefijo}-)${indiceAnterior}(-)`),
+                    `$1${nuevoIndice}$2`
+                );
+                elem.attr('for', newFor);
+            }
         });
 
         // Limpiamos los datos de la nueva fila
         nuevaFila.find('input[type=number]').val(1);
         nuevaFila.find('input[type=text]').val('');
-        nuevaFila.find('select').val('').trigger('change');
+        nuevaFila.find('select').val('');
         nuevaFila.find('.form-check').remove(); // No clonar el botón de eliminar si es de un registro viejo
         nuevaFila.find('input[name$="-id"]').val(''); // Limpiar ID de base de datos
+
+        // Añadimos botón para eliminar esta fila (solo para filas nuevas)
+        const botonEliminar = `<div class="text-end mt-2"><button type="button" class="btn btn-sm btn-danger btn-remove-fila">Eliminar</button></div>`;
+        // si ya existe un contenedor de acciones lo reemplazamos, sino lo agregamos
+        if (nuevaFila.find('.btn-remove-fila').length === 0) {
+            nuevaFila.append(botonEliminar);
+        }
 
         // Insertar en el DOM
         $(contenedorId).append(nuevaFila);
@@ -245,33 +340,96 @@
         // Actualizar contador de Django
         totalForms.val(nuevoIndice + 1);
 
-        // Volver a activar Select2 en todas las filas (incluyendo la vieja que destruimos)
+        // Reindexar el formset completo para mantener índices continuos
+        reIndexFormset(selectorFila, prefijo);
+
+        // Reactivar Select2 en todas las filas
         activarSelect2();
+
+        // Calcular subtotal de la nueva fila y total general
+        const filaNueva = $(contenedorId).children().last();
+        if (filaNueva.hasClass('fila-plato')) calcularSubtotalPlato(filaNueva);
+        if (filaNueva.hasClass('fila-producto')) calcularSubtotalProducto(filaNueva);
         recalcularTotal();
     }
 
-    // Eventos de botones "Agregar"
-    $('#agregar-plato').click(() => {
-        agregarFila('.fila-plato', 'detalleplato_set', '#contenedor-platos', '#id_detalleplato_set-TOTAL_FORMS');
+    // Eventos de botones "Agregar" (delegados para asegurar que funcionan aunque el script se cargue antes)
+    $(document).on('click', '#agregar-plato', function(e) {
+        e.preventDefault();
+        agregarFila('.fila-plato', 'detalle_platos', '#contenedor-platos', '#id_detalle_platos-TOTAL_FORMS');
     });
 
-    $('#agregar-producto').click(() => {
-        agregarFila('.fila-producto', 'detallepedido_set', '#contenedor-productos', '#id_detallepedido_set-TOTAL_FORMS');
+    $(document).on('click', '#agregar-producto', function(e) {
+        e.preventDefault();
+        agregarFila('.fila-producto', 'detalle_productos', '#contenedor-productos', '#id_detalle_productos-TOTAL_FORMS');
     });
 
     // --- 4. EVENTOS DE CAMBIO ---
 
-    $(document).on('change', '.fila-plato select, .fila-plato input', recalcularTotal);
-    
-    $(document).on('change', '.fila-producto select, .fila-producto input', function() {
-        validarStock($(this).closest('.fila-producto'));
+    // Escuchamos cambios en selects y inputs de platos
+    $(document).on('change', '.fila-plato select, .fila-plato input', function(e) {
+        const fila = $(this).closest('.fila-plato');
+        if (fila.length) {
+            calcularSubtotalPlato(fila);
+            recalcularTotal();
+        }
+    });
+
+    // Escuchamos cambios en selects e inputs de productos
+    $(document).on('change', '.fila-producto select, .fila-producto input', function(e) {
+        const fila = $(this).closest('.fila-producto');
+        if (fila.length) {
+            validarStock(fila);
+            calcularSubtotalProducto(fila);
+            recalcularTotal();
+        }
+    });
+
+    // También respondemos al evento select2:select y select2:unselect
+    $(document).on('select2:select select2:unselect', '.select2', function() {
+        const fila = $(this).closest('.fila-plato, .fila-producto');
+        if (fila.length) {
+            if (fila.hasClass('fila-plato')) calcularSubtotalPlato(fila);
+            if (fila.hasClass('fila-producto')) {
+                validarStock(fila);
+                calcularSubtotalProducto(fila);
+            }
+            recalcularTotal();
+        }
+    });
+
+    // Eliminar fila (solo filas nuevas). Reindexa y actualiza TOTAL_FORMS
+    $(document).on('click', '.btn-remove-fila', function(e) {
+        e.preventDefault();
+        const fila = $(this).closest('.fila-plato, .fila-producto');
+        const esPlato = fila.hasClass('fila-plato');
+        const totalFormsSel = esPlato ? '#id_detalle_platos-TOTAL_FORMS' : '#id_detalle_productos-TOTAL_FORMS';
+        const selectorFila = esPlato ? '.fila-plato' : '.fila-producto';
+        const prefijo = esPlato ? 'detalle_platos' : 'detalle_productos';
+
+        // Remover la fila del DOM
+        fila.remove();
+
+        // Decrementar contador
+        const totalForms = $(totalFormsSel);
+        const nuevo = Math.max(0, parseInt(totalForms.val()) - 1);
+        totalForms.val(nuevo);
+
+        // Reindexar las filas restantes
+        reIndexFormset(selectorFila, prefijo);
+
+        // Recalcular total
         recalcularTotal();
     });
 
     // --- 5. INICIO ---
     $(document).ready(function() {
         activarSelect2();
-        recalcularTotal();
+        
+        // Delay para asegurar que todos los elementos estén listos
+        setTimeout(function() {
+            recalcularTotal();
+        }, 100);
     });
 </script>
 {% endblock js %}

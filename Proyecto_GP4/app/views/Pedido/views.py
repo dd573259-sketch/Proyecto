@@ -1,7 +1,8 @@
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import *
-from app.models import Pedido
+from app.models import Pedido, Plato, Producto
+import json
 from app.forms import PedidoForm, DetallePedidoFormSet, DetallePlatoFormSet
 
 
@@ -9,8 +10,6 @@ class PedidoListView(ListView):
     model = Pedido
     template_name = 'Pedido/listar.html'
     context_object_name = 'object_list'
-<<<<<<< HEAD
-=======
 
     def get_queryset(self):
         queryset = Pedido.objects.all().prefetch_related(
@@ -30,7 +29,6 @@ class PedidoListView(ListView):
             queryset = queryset.filter(fecha_hora__date=fecha)
 
         return queryset
->>>>>>> 8973b5d0acd268dae53fb7424100dd53b1b1f8a9
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -38,28 +36,9 @@ class PedidoListView(ListView):
         context['crear_url'] = reverse_lazy('app:crear_pedido')
         context['buscar'] = self.request.GET.get('buscar', '')
         context['fecha'] = self.request.GET.get('fecha', '')
-<<<<<<< HEAD
-
-        return context
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        estado = self.request.GET.get('buscar')
-        fecha = self.request.GET.get('fecha')
-
-        if estado:
-            queryset = queryset.filter(estado__icontains=estado)
-        
-        
-        if fecha: 
-            queryset = queryset.filter(fecha_hora__date=fecha)
-
-
-        return queryset
-=======
         return context
 
 
->>>>>>> 8973b5d0acd268dae53fb7424100dd53b1b1f8a9
 class PedidoCreateView(CreateView):
     model = Pedido
     form_class = PedidoForm
@@ -83,6 +62,14 @@ class PedidoCreateView(CreateView):
 
         context['titulo'] = 'Registrar Nuevo Pedido'
         context['listar_url'] = reverse_lazy('app:listar_pedidos')
+        # Datos usados por el template
+        platos_qs = Plato.objects.all()
+        productos_qs = Producto.objects.all()
+        context['platos'] = platos_qs
+        context['productos'] = productos_qs
+        context['platos_json'] = json.dumps({p.id_plato: float(p.precio) for p in platos_qs})
+        context['productos_json'] = json.dumps({p.id_producto: float(p.precio) for p in productos_qs})
+        context['stock_json'] = json.dumps({p.id_producto: int(p.stock) for p in productos_qs})
         return context
 
     def form_valid(self, form):
@@ -99,12 +86,22 @@ class PedidoCreateView(CreateView):
             # Guardamos el pedido principal
             self.object = form.save()
 
-            # Asociamos y guardamos los platos
+            # Guardamos platos: rellenar precio_unitario antes de persistir
             formset_platos.instance = self.object
+            for form_plato in formset_platos.forms:
+                cleaned = form_plato.cleaned_data
+                # Solo procesar si no está marcado para eliminar y tiene datos válidos
+                if cleaned.get('plato') and not cleaned.get('DELETE', False):
+                    form_plato.instance.precio_unitario = cleaned['plato'].precio
             formset_platos.save()
 
-            # Asociamos y guardamos los productos
+            # Guardamos productos: rellenar precio_unitario antes de persistir
             formset_productos.instance = self.object
+            for form_producto in formset_productos.forms:
+                cleaned = form_producto.cleaned_data
+                # Solo procesar si no está marcado para eliminar y tiene datos válidos
+                if cleaned.get('producto') and not cleaned.get('DELETE', False):
+                    form_producto.instance.precio_unitario = cleaned['producto'].precio
             formset_productos.save()
 
             return redirect(self.success_url)
@@ -142,6 +139,14 @@ class PedidoUpdateView(UpdateView):
 
         context['titulo'] = 'Actualizar Pedido'
         context['listar_url'] = reverse_lazy('app:listar_pedidos')
+        # Datos usados por el template
+        platos_qs = Plato.objects.all()
+        productos_qs = Producto.objects.all()
+        context['platos'] = platos_qs
+        context['productos'] = productos_qs
+        context['platos_json'] = json.dumps({p.id_plato: float(p.precio) for p in platos_qs})
+        context['productos_json'] = json.dumps({p.id_producto: float(p.precio) for p in productos_qs})
+        context['stock_json'] = json.dumps({p.id_producto: int(p.stock) for p in productos_qs})
         return context
 
     def form_valid(self, form):
@@ -152,10 +157,20 @@ class PedidoUpdateView(UpdateView):
         if formset_platos.is_valid() and formset_productos.is_valid():
             self.object = form.save()
 
+            # Guardamos platos: rellenar precio_unitario antes de persistir
             formset_platos.instance = self.object
+            for form_plato in formset_platos.forms:
+                cleaned = form_plato.cleaned_data
+                if cleaned.get('plato') and not cleaned.get('DELETE', False):
+                    form_plato.instance.precio_unitario = cleaned['plato'].precio
             formset_platos.save()
 
+            # Guardamos productos: rellenar precio_unitario antes de persistir
             formset_productos.instance = self.object
+            for form_producto in formset_productos.forms:
+                cleaned = form_producto.cleaned_data
+                if cleaned.get('producto') and not cleaned.get('DELETE', False):
+                    form_producto.instance.precio_unitario = cleaned['producto'].precio
             formset_productos.save()
 
             return redirect(self.success_url)
@@ -171,15 +186,6 @@ class PedidoDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = '¿Eliminar Pedido?'
-<<<<<<< HEAD
-        return context
-    
-class DetallePedidoView(DetailView):
-    model = Pedido
-    template_name = "pedido/detalle.html"
-    context_object_name = "pedido"
-    
-=======
         context['listar_url'] = reverse_lazy('app:listar_pedidos')
         return context
 
@@ -201,7 +207,6 @@ class DetallePedidoView(DetailView):
             'usuario'
         )
 
->>>>>>> 8973b5d0acd268dae53fb7424100dd53b1b1f8a9
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Detalle del Pedido'

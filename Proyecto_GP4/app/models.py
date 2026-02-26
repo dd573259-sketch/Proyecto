@@ -2,11 +2,8 @@ from django.db import models
 from datetime import datetime
 from decimal import Decimal
 from django.core.validators import MinValueValidator
-<<<<<<< HEAD
-=======
 from django.core.exceptions import ValidationError
 from django.db.models import Sum
->>>>>>> 8973b5d0acd268dae53fb7424100dd53b1b1f8a9
 # Create your models here.
 
 #Categorias Fuertes
@@ -172,7 +169,7 @@ class Mesa(models.Model):
     id_mesa = models.AutoField(primary_key=True)
     numero_mesa = models.IntegerField(unique=True)
     estado = models.CharField(max_length=20)
-<<<<<<< HEAD
+
     ESTADO = [
         ("Disponible", "Disponible"),
         ("No disponible", "No disponible"),
@@ -228,14 +225,13 @@ class Comanda(models.Model):
     ]
 
     estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación")
-=======
+
     ESTADO = [
         ("Disponible", "Disponible"),
         ("No disponible", "No disponible"),
     ]
 
     estado = models.CharField(max_length=15, choices=ESTADO, default="Disponible")
->>>>>>> 8973b5d0acd268dae53fb7424100dd53b1b1f8a9
 
     class Meta:
         verbose_name = "Mesa"
@@ -304,6 +300,7 @@ class DetallePlato(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name="detalle_platos", verbose_name="Pedido")
     plato = models.ForeignKey('Plato', on_delete=models.CASCADE, verbose_name="Plato")
     cantidad = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name="Cantidad")
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Precio Unitario")
 
     class Meta:
         verbose_name = "Detalle de Plato"
@@ -315,14 +312,16 @@ class DetallePlato(models.Model):
 
     @property
     def subtotal(self):
-        """Toma el precio directamente de la BD y multiplica por la cantidad."""
-        return self.cantidad * self.plato.precio
+        """Usa el precio guardado al crear el pedido, o calcula desde BD si no existe."""
+        precio = self.precio_unitario or self.plato.precio
+        return self.cantidad * precio
 
 class DetallePedido(models.Model):
 
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name="detalle_productos", verbose_name="Pedido")
     producto = models.ForeignKey('Producto', on_delete=models.CASCADE, verbose_name="Producto")
     cantidad = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)], verbose_name="Cantidad")
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Precio Unitario")
 
     class Meta:
         verbose_name = "Detalle de Producto"
@@ -335,7 +334,9 @@ class DetallePedido(models.Model):
 
     @property
     def subtotal(self):
-        return self.cantidad * self.producto.precio
+        """Usa el precio guardado al crear el pedido, o calcula desde BD si no existe."""
+        precio = self.precio_unitario or self.producto.precio
+        return self.cantidad * precio
             
 class Comanda(models.Model):
     id_comanda = models.AutoField(primary_key=True)

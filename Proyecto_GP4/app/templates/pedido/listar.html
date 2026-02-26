@@ -1,92 +1,6 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<<<<<<< HEAD
-
-
-<form method="GET" class="mb-3">
-    <input type="text" name="buscar" placeholder="Buscar por estado"
-           value="{{ request.GET.buscar }}"
-           class="form-control"
-           style="width: 300px; display: inline;">
-    
-    <input type="date" name="fecha"
-           value="{{ request.GET.fecha }}"
-           class="form-control"
-           style="width: 200px; display: inline;">
-
-    <button type="submit" class="btn btn-primary">
-        Buscar
-    </button>
-</form>
-
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>id_pedido</th>
-      <th>Numero_mesa</th>
-      <th>Producto</th>
-      <th>Cantidades</th>
-      <th>Usuario</th>
-      <th>Fecha</th>
-      <th>Estado</th>
-      <th>Detalle</th>
-      <th>Editar</th>
-      <th>Eliminar</th>
-    </tr>
-  </thead>
-  <tbody>
-    
-    {% for c in object_list %}
-    <tr>
-      <td>{{ c.id_pedido }}</td>
-      <td>{{ c.mesa.numero_mesa }}</td>
-      <td>{{ c.producto.nombre }}</td>
-      <td>{{ c.cantidades }}</td>
-      <td>{{ c.usuario.nombre }} {{ c.usuario.apellido }}</td>
-      <td>{{ c.fecha_hora|date:"d/m/Y H:i" }}</td>
-      <td>{{ c.estado }}</td>
-
-      <!-- BOTÓN PARA BUSCAR AMBOS ESTADOS Y FECHA -->
-  
-  <td>
-    {% if buscar or fecha %}
-        <a href="{% url 'app:detalle_pedido' c.id_pedido %}" 
-           class="btn btn-success btn-sm">
-           Detalle
-        </a>
-    {% endif %}
-  </td>
-
-      <td>
-        <a href="{% url 'app:editar_pedido' c.id_pedido %}" 
-           class="btn btn-primary btn-sm">
-           Editar
-        </a>
-      </td>
-
-      <td>
-        <a href="{% url 'app:eliminar_pedido' c.id_pedido %}" 
-           class="btn btn-danger btn-sm">
-           Eliminar
-        </a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="9" class="text-center">
-        No hay pedidos registrados.
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-<div class="card-footer">
-  <a href="{{ crear_url }}" class="btn btn-primary">
-    Crear nuevo pedido
-  </a>
-=======
 
 <!-- Formulario de búsqueda por estado y fecha -->
 <form method="GET" class="mb-3 d-flex gap-2 align-items-center">
@@ -194,7 +108,6 @@
     <a href="{{ crear_url }}" class="btn btn-primary">
         Crear nuevo pedido
     </a>
->>>>>>> 8973b5d0acd268dae53fb7424100dd53b1b1f8a9
 </div>
 
 {% endblock %}
