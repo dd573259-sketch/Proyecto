@@ -1,65 +1,48 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
+<div class="tabla-wrapper">
+  <table class="tabla" id="tabla">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Venta</th>
+        <th>Factura</th>
+        <th>Monto</th>
+        <th>Fecha</th>
+        <th>Editar</th>
+        <th>Eliminar</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in object_list %}
+      <tr>
+        <td>{{ p.id_pago }}</td>
+        <td>{{ p.venta }}</td>
+        <td>{{ p.factura }}</td>
+        <td>${{ p.monto }}</td>
+        <td>{{ p.fecha }}</td>
 
-<table class="table table-bordered table-striped" id="tabla">
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Venta</th>
-      <th>Factura</th>
-      <th>Monto</th>
-      <th>Fecha</th>
-      <th>Editar</th>
-      <th>Eliminar</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for p in object_list %}
-    <tr>
-      <td>{{ p.id_pago }}</td>
-      <td>{{ p.venta }}</td>
-      <td>{{ p.factura }}</td>
-      <td>${{ p.monto }}</td>
-      <td>{{ p.fecha }}</td>
+        <td>
+          <a href="{% url 'app:editar_pago' p.pk %}" class="btn btn-warning btn-sm">
+            <i class="fas fa-edit"></i>
+          </a>
+        </td>
 
-      <td>
-        <a href="{% url 'app:editar_pago' p.pk %}" class="btn btn-warning btn-sm">
-          <i class="fas fa-edit"></i>
-        </a>
-      </td>
-
-      <td>
-        <a href="{% url 'app:eliminar_pago' p.pk %}" class="btn btn-danger btn-sm">
-          <i class="fas fa-trash"></i>
-        </a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
-
+        <td>
+          <a href="{% url 'app:eliminar_pago' p.pk %}" class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 <div class="card-footer">
-  <a href="{% url 'app:crear_pago' %}" class="btn btn-primary btn-sm">
+  <a href="{% url 'app:crear_pago' %}" class="btn btn-success btn-sm">
     <i class="fas fa-plus"></i> Crear Nuevo Pago
   </a>
 </div>
 
 {% endblock %}
-
-{% block js %}
-<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
-
-<script>
-  $(document).ready(function () {
-    $('#tabla').DataTable({
-      responsive: true,
-      autoWidth: false,
-    });
-  });
-</script>
-{% endblock js %}

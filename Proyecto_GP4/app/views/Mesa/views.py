@@ -12,6 +12,7 @@ class MesaListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Gestión de Mesas'
+        context['icono'] = 'fas fa-table'
         context['crear_url'] = reverse_lazy('app:crear_mesa')
         return context
     
@@ -33,6 +34,7 @@ class MesaCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Registrar Nueva Mesa'
+        context['icono'] = 'fas fa-table'
         context['listar_url'] = reverse_lazy('app:listar_mesas')
         return context
 
@@ -45,6 +47,7 @@ class MesaUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Actualizar Mesa'
+        context['icono'] = 'fas fa-table'
         context['listar_url'] = reverse_lazy('app:listar_mesas')
         return context
 
@@ -56,6 +59,7 @@ class MesaDeleteView(DeleteView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fas fa-table'
         context['titulo'] = '¿Eliminar Mesa?'
         context['listar_url'] = reverse_lazy('app:listar_mesas')
         return context

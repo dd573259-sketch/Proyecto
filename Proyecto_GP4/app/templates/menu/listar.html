@@ -1,110 +1,107 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<table class="table" id="tabla_platos">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Descripción</th>
-      <th scope="col">precio</th>d
-      <th scope="col">Editar</th>
-    </tr>
-  </thead>
-  <tbody>
-    
-    {% for m in plato_menu %}
-<tr>
-    <td>{{ m.id_menu }}</td>
+<div class="tabla-wrapper">
+  <table class="table" id="tabla_platos">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">precio</th>d
+        <th scope="col">Editar</th>
+      </tr>
+    </thead>
+    <tbody>
 
-    <td>
-            {{ m.plato.nombre }}
-    </td>
+      {% for m in plato_menu %}
+      <tr>
+        <td>{{ m.id_menu }}</td>
 
-    <th scope="col" data-col="descripcion">Descripción</th>>
+        <td>
+          {{ m.plato.nombre }}
+        </td>
 
-    
-    <td>
-            $ {{ m.plato.precio }}
-    </td>
+        <th scope="col" data-col="descripcion">Descripción</th>>
 
-    <td>
-        <a href="{% url 'app:editar_plato' m.plato.id_plato %}" class="btn btn-primary btn-xs">
+
+        <td>
+          $ {{ m.plato.precio }}
+        </td>
+
+        <td>
+          <a href="{% url 'app:editar_plato' m.plato.id_plato %}" class="btn btn-primary btn-xs">
             <i class="fas fa-edit"></i>
-        </a>
-    </td>
+          </a>
+        </td>
 
-</tr>
-{% endfor %}
-  </tbody>
-
-
-</table>
+      </tr>
+      {% endfor %}
+    </tbody>
 
 
+  </table>
+
+  <table class="tabla" id="tabla_productos">
+    <h1>Productos</h1>
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Descripción</th>
+        <th scope="col">precio</th>
+        <th scope="col">Editar</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for m in productos_menu %}
+      <tr>
+        <td>{{ m.id_menu }}</td>
 
 
+        <td>
+          {{ m.producto.nombre }}
+        </td>
+
+        <th scope="col" data-col="descripcion">Descripción</th>
 
 
-<table class="table" id="tabla_productos">
-   <h1>Productos</h1>
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Descripción</th>
-      <th scope="col">precio</th>
-      <th scope="col">Editar</th>
-    </tr>
-  </thead>
-  <tbody>
-    
-    {% for m in productos_menu %}
-<tr>
-    <td>{{ m.id_menu }}</td>
+        <td>
+          $ {{ m.producto.precio }}
+        </td>
 
-
-    <td>
-            {{ m.producto.nombre }}
-    </td>
-
-    <th scope="col" data-col="descripcion">Descripción</th>
-
-    
-    <td>
-            $ {{ m.producto.precio }}
-    </td>
-
-    <td>
-        <a href="{% url 'app:editar_producto' m.producto.id_producto %}" class="btn btn-primary btn-xs">
+        <td>
+          <a href="{% url 'app:editar_producto' m.producto.id_producto %}" class="btn btn-primary btn-xs">
             <i class="fas fa-edit"></i>
-        </a>
+          </a>
 
-    </td>
-</tr>
-{% endfor %}
-  </tbody>
-</table>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}
 
 {% block js %}
 <script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
 
 <script>
-$(document).ready(function () {
+  $(document).ready(function () {
     $('#tabla_platos').DataTable({
-        responsive: true,
-        autoWidth: false,
+      responsive: true,
+      autoWidth: false,
     });
 
     $('#tabla_productos').DataTable({
-        responsive: true,
-        autoWidth: false,
+      responsive: true,
+      autoWidth: false,
     });
-});
+  });
 </script>
 {% endblock js %}

@@ -1,68 +1,53 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<table class="table" id="tabla">
-  {{ receta.detalles.all }}
-  <thead class="table-dark">
-<tr>
-  <th>#</th>
-  <th>Plato</th>
-  <th>Insumos</th>
-  <th>Editar</th>
-  <th>Eliminar</th>
-</tr>
-</thead>
+<div class="tabla-wrapper">
+  <table class="tabla" id="tabla">
+    {{ receta.detalles.all }}
+    <thead class="table-dark">
+      <tr>
+        <th>#</th>
+        <th>Plato</th>
+        <th>Insumos</th>
+        <th>Editar</th>
+        <th>Eliminar</th>
+      </tr>
+    </thead>
 
-<tbody>
-{% for receta in object_list %}
-<tr>
-  <td>{{ forloop.counter }}</td>
-  <td>{{ receta.plato.nombre }}</td>
-  <td>
-    <ul class="mb-0">
-        {% for detalle in receta.detalles.all %}
+    <tbody>
+      {% for receta in object_list %}
+      <tr>
+        <td>{{ forloop.counter }}</td>
+        <td>{{ receta.plato.nombre }}</td>
+        <td>
+          <ul class="mb-0">
+            {% for detalle in receta.detalles.all %}
             <li>
-                {{ detalle.insumo.nombre }} ({{ detalle.cantidad }})
+              {{ detalle.insumo.nombre }} ({{ detalle.cantidad }})
             </li>
-        {% empty %}
+            {% empty %}
             <li class="text-muted">Sin insumos</li>
-        {% endfor %}
-    </ul>
-</td>
-  <td>
-      <a href="{% url 'app:editar_receta' receta.id %}" class="btn btn-warning btn-sm">
-          <i class="fas fa-edit"></i>
-      </a>
-  </td>
-  <td>
-      <a href="{% url 'app:eliminar_receta' receta.id %}" class="btn btn-danger btn-sm">
-          <i class="fas fa-trash"></i>
-      </a>
-  </td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
+            {% endfor %}
+          </ul>
+        </td>
+        <td>
+          <a href="{% url 'app:editar_receta' receta.id %}" class="btn btn-warning btn-sm">
+            <i class="fas fa-edit"></i>
+          </a>
+        </td>
+        <td>
+          <a href="{% url 'app:eliminar_receta' receta.id %}" class="btn btn-danger btn-sm">
+            <i class="fas fa-trash"></i>
+          </a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 <div class="card-footer">
   <a href="{% url 'app:crear_receta' %}" class="btn btn-success">
     <i class="fas fa-plus"></i> Crear nueva receta
   </a>
 </div>
 {% endblock %}
-
-{% block js %}
-<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
-
-<script>
-  $(document).ready(function () {
-    $('#tabla').DataTable({
-      responsive: true,
-      autoWidth: false,
-    });
-  });
-</script>
-{% endblock js %}

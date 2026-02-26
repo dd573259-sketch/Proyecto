@@ -12,6 +12,7 @@ class ComandaListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Gestión de Comandas'
+        context['icono'] = 'fa-solid fa-clipboard-list'
         context['crear_url'] = reverse_lazy('app:crear_comanda')
         context['buscar'] = self.request.GET.get('buscar', '')
         context['fecha'] = self.request.GET.get('fecha', '')

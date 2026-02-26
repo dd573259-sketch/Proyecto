@@ -43,6 +43,7 @@ class MenuListView(listView):
         context['productos_menu'] = Menu.objects.filter(producto__isnull=False)
 
         context['titulo'] = 'Listado de menu'
+        context['icono'] = 'fas fa-utensils'
         context['crear_url'] = reverse_lazy('app:crear_menu')
 
         return context
@@ -57,6 +58,7 @@ class MenuCreateView(CreateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fas fa-utensils'
         context['titulo'] = 'Crear Menu'
         return context
     
@@ -71,6 +73,7 @@ class MenuCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Menu'
+        context['icono'] = 'fas fa-utensils'
         context['listar_url'] = reverse_lazy('app:listar_menu')
         return context'''
 
@@ -94,6 +97,7 @@ class MenuDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Menu'
+        context['icono'] = 'fas fa-utensils'
         context['listar_url'] = reverse_lazy('app:listar_menu')
         return context
     

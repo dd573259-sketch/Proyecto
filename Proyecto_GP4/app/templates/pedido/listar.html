@@ -1,7 +1,7 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-
+<div class="tabla-wrapper">
 <!-- Formulario de búsqueda por estado y fecha -->
 <form method="GET" class="mb-3 d-flex gap-2 align-items-center">
     <input type="text" name="buscar" placeholder="Buscar por estado"
@@ -19,7 +19,7 @@
     </button>
 </form>
 
-<table class="table table-bordered table-striped">
+<table class="table" id="tabla">
     <thead class="table-dark">
         <tr>
             <th>ID</th>
@@ -103,9 +103,11 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
+
 
 <div class="card-footer">
-    <a href="{{ crear_url }}" class="btn btn-primary">
+    <a href="{{ crear_url }}" class="btn btn-success">
         Crear nuevo pedido
     </a>
 </div>

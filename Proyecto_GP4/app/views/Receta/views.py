@@ -44,6 +44,7 @@ class RecetaListView(listView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de recetas'
+        context['icono'] = 'fas fa-utensils'
         context['crear_url'] = reverse_lazy('app:crear_receta')
         return context
     
@@ -65,6 +66,7 @@ class RecetaCreateView(CreateView):
             context['formset'] = DetalleFormSet()
 
         context['titulo'] = 'Crear Receta'
+        context['icono'] = 'fas fa-plus-circle'
         return context
 
     def form_valid(self, form):
@@ -88,6 +90,9 @@ class RecetaUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Receta'
+        context['icono'] = 'fas fa-edit'
+        context['listar_url'] = reverse_lazy('app:listar_receta')
 
         if self.request.POST:
             context['formset'] = DetalleFormSet(
@@ -123,5 +128,6 @@ class RecetaDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Receta'
+        context['icono'] = 'fas fa-trash'
         context['listar_url'] = reverse_lazy('app:listar_receta')
         return context

@@ -39,15 +39,3 @@
 
 {% endblock %}
  
-{% block js %}
-    
-        <script>
-            {% if form.errors %}
-            Swal.fire({
-                title: "Error!",
-                text: "Verificar los campos!",
-                icon: "error"
-            });
-            {% endif %}
-        </script>
-        {% endblock %}

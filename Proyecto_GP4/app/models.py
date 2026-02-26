@@ -94,7 +94,7 @@ class Categoria(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.TextField(null=True, blank=True)
     estado = models.CharField(max_length=10, choices=ESTADO, default="activo")
-    fecha_creacion = models.DateTimeField(default=datetime.now)
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     class Meta:

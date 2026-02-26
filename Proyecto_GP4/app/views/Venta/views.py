@@ -26,6 +26,7 @@ class VentaListView(listView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de Ventas'
+        context['icono'] = 'fas fa-cash-register'
         context['crear_url'] = reverse_lazy('app:crear_venta')
         return context
 
@@ -38,7 +39,8 @@ class VentaCreateView(CreateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Crear Nueva Venta'
+        context['icono'] = 'fas fa-plus-circle'
+        context['titulo'] = 'Crear Nueva Venta'
         return context
 
 class VentaUpdateView(UpdateView):
@@ -50,6 +52,7 @@ class VentaUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Venta'
+        context['icono'] = 'fas fa-edit'
         context['listar_url'] = reverse_lazy('app:listar_ventas')
         return context
 
@@ -62,5 +65,6 @@ class VentaDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Venta'
+        context['icono'] = 'fas fa-trash'
         context['listar_url'] = reverse_lazy('app:listar_ventas')
         return context

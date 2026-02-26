@@ -16,6 +16,7 @@ class PagoListView(listView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de Pagos'
+        context['icono'] = 'fas fa-cash-register'
         context['crear_url'] = reverse_lazy('app:crear_pago')
         return context
 
@@ -29,6 +30,7 @@ class PagoCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Pago'
+        context['icono'] = 'fas fa-cash-register'
         return context
 
 
@@ -41,6 +43,7 @@ class PagoUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Pago'
+        context['icono'] = 'fas fa-cash-register'
         context['listar_url'] = reverse_lazy('app:listar_pagos')
         return context
 
@@ -53,5 +56,6 @@ class PagoDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Pago'
+        context['icono'] = 'fas fa-cash-register'
         context['listar_url'] = reverse_lazy('app:listar_pagos')
         return context

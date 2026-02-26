@@ -1,7 +1,8 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<form method="GET" class="mb-3 d-flex gap-2 align-items-center">
+<div class="tabla-wrapper">
+  <form method="GET" class="mb-3 d-flex gap-2 align-items-center">
     <input type="text" name="buscar" placeholder="Buscar por numero de cedula"
            value="{{ request.GET.buscar }}"
            class="form-control"
@@ -10,45 +11,48 @@
         Buscar
     </button>
 </form>
-<table class="table" id="tabla">
-  <thead>
-    <tr>
-      <th scope="col">id_cliente</th>
-      <th scope="col">cedula</th>
-      <th scope="col">nombre</th>
-      <th scope="col">apellido</th>
-      <th scope="col">telefono</th>
-      <th scope="col">correo_electronico</th>
-      <th scope="col">direccion</th>
-      <th scope="col">tipo_cliente</th>
-      <th scope="col">Editar</th>
-      <th scope="col">Eliminar</th>
-    </tr>
-  </thead>
-  <tbody>
-    
-    {% for c in object_list %}
-    <tr>
-      <td>{{ c.id_cliente }}</td>
-      <td>{{ c.numero_documento }}</td>
-      <td>{{ c.nombre }}</td>
-      <td>{{ c.apellido }}</td>
-      <td>{{ c.telefono }}</td>
-      <td>{{ c.correo_electronico }}</td>
-      <td>{{ c.direccion }}</td>
-      <td>{{ c.tipo_cliente }}</td>
-      <td>
-        <a href="{% url 'app:editar_cliente' c.id_cliente %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
-      </td>
-      <td>
-        <a href="{% url 'app:eliminar_cliente' c.id_cliente %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table>
+  <table class="tabla" id="tabla">
+    <thead>
+      <tr>
+        <th scope="col">id_cliente</th>
+        <th scope="col">cedula</th>
+        <th scope="col">nombre</th>
+        <th scope="col">apellido</th>
+        <th scope="col">telefono</th>
+        <th scope="col">correo_electronico</th>
+        <th scope="col">direccion</th>
+        <th scope="col">tipo_cliente</th>
+        <th scope="col">Editar</th>
+        <th scope="col">Eliminar</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% for c in object_list %}
+      <tr>
+        <td>{{ c.id_cliente }}</td>
+        <td>{{ c.numero_documento }}</td>
+        <td>{{ c.nombre }}</td>
+        <td>{{ c.apellido }}</td>
+        <td>{{ c.telefono }}</td>
+        <td>{{ c.correo_electronico }}</td>
+        <td>{{ c.direccion }}</td>
+        <td>{{ c.tipo_cliente }}</td>
+        <td>
+          <a href="{% url 'app:editar_cliente' c.id_cliente %}" class="btn btn-primary btn-xs"><i
+              class="fas fa-edit"></i></a>
+        </td>
+        <td>
+          <a href="{% url 'app:eliminar_cliente' c.id_cliente %}" class="btn btn-danger btn-xs"><i
+              class="fas fa-trash"></i></a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
 <div class="card-footer">
-  <a href="{{crear_url}}" class="btn btn-primary btn-xs">
+  <a href="{{crear_url}}" class="btn btn-success btn-xs">
     <i class="fas fa-plus"></i> Crear nuevo cliente
   </a>
 </div>

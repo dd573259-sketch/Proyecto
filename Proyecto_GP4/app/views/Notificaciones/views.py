@@ -39,6 +39,7 @@ class notificacionListView(listView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de Notificaciones'
+        context['icono'] = 'fas fa-bell'
         context['crear_url'] = reverse_lazy('app:crear_notificacion')
         return context
     
@@ -53,6 +54,7 @@ class NotificacionCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Notificación'
+        context['icono'] = 'fas fa-bell'
         context['listar_url'] = reverse_lazy('app:listar_notificaciones')
         return context
     
@@ -67,6 +69,7 @@ class NotificacionUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Notificación'
+        context['icono'] = 'fas fa-bell'
         context['listar_url'] = reverse_lazy('app:listar_notificaciones')
         return context
     
@@ -79,5 +82,6 @@ class NotificacionDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Notificación'
+        context['icono'] = 'fas fa-bell'
         context['listar_url'] = reverse_lazy('app:listar_notificaciones')
         return context

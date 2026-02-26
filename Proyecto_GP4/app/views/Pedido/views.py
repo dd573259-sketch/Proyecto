@@ -32,6 +32,7 @@ class PedidoListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Gestión de Pedidos'
+        context['icono'] = 'fas fa-shopping-cart'
         context['crear_url'] = reverse_lazy('app:crear_pedido')
         context['buscar'] = self.request.GET.get('buscar', '')
         context['fecha'] = self.request.GET.get('fecha', '')
@@ -60,6 +61,7 @@ class PedidoCreateView(CreateView):
             context['formset_productos'] = DetallePedidoFormSet()
 
         context['titulo'] = 'Registrar Nuevo Pedido'
+        context['icono'] = 'fas fa-shopping-cart'
         context['listar_url'] = reverse_lazy('app:listar_pedidos')
         return context
 
@@ -119,6 +121,7 @@ class PedidoUpdateView(UpdateView):
             )
 
         context['titulo'] = 'Actualizar Pedido'
+        context['icono'] = 'fas fa-shopping-cart'
         context['listar_url'] = reverse_lazy('app:listar_pedidos')
         return context
 

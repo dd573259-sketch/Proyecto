@@ -61,6 +61,15 @@ class InsumosListView(listView):
     def post(sefl, request, *args, **kwargs):
         return super().post(request, *args, **kwargs)
     
+    #METODO GET CONTEXT DATA
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Listado de insumos'
+        context['icono'] = 'fa-solid fa-boxes-stacked'
+        context['crear_url'] = reverse_lazy('app:crear_insumos')
+        context['buscar'] = self.request.GET.get('buscar', '')
+        return context
+    
 class InsumosCreateView(CreateView):
     model = insumo
     template_name = 'insumos/crear.html'
@@ -71,6 +80,7 @@ class InsumosCreateView(CreateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['icono'] = 'fa-solid fa-boxes-stacked'
         context['titulo'] = 'Crear Insumo'
         return context
     
@@ -85,6 +95,7 @@ class InsumosUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Insumo'
+        context['icono'] = 'fa-solid fa-boxes-stacked'
         context['listar_url'] = reverse_lazy('app:listar_insumos')
         return context
     
@@ -97,6 +108,7 @@ class InsumosDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Insumo'
+        context['icono'] = 'fa-solid fa-boxes-stacked'
         context['listar_url'] = reverse_lazy('app:listar_insumos')
         return context
 

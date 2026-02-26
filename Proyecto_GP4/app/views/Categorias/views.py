@@ -39,6 +39,7 @@ class categoriaListView(listView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de Categorias'
+        context['icono'] = 'list'
         context['crear_url'] = reverse_lazy('app:crear_categoria')
         return context
     
@@ -53,6 +54,7 @@ class CategoriaCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Categoria'
+        context['icono'] = 'plus'
         context['listar_url'] = reverse_lazy('app:listar_categorias')
         return context
     
@@ -67,6 +69,7 @@ class CategoriaUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Categoria'
+        context['icono'] = 'edit'
         context['listar_url'] = reverse_lazy('app:listar_categorias')
         return context
     
@@ -79,5 +82,6 @@ class CategoriaDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Categoria'
+        context['icono'] = 'trash'
         context['listar_url'] = reverse_lazy('app:listar_categorias')
         return context
