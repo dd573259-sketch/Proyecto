@@ -38,8 +38,13 @@ class MenuListView(listView):
     #METODO GET CONTEXT DATA
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        context['platos_menu'] = Menu.objects.filter(plato__isnull=False)
+        context['productos_menu'] = Menu.objects.filter(producto__isnull=False)
+
         context['titulo'] = 'Listado de menu'
         context['crear_url'] = reverse_lazy('app:crear_menu')
+
         return context
     
 class MenuCreateView(CreateView):

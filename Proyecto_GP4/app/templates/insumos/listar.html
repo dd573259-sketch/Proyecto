@@ -8,17 +8,17 @@
 
     <div class="col-md-4">
       <select name="categoria" class="form-control">
-        <option value="">Todas las categorías</option>
-        {% for cat in categorias %}
-          <option value="{{ cat.id }}"
-            {% if categoria_seleccionada == cat.id|stringformat:"s" %}
-              selected
-            {% endif %}
-          >
-            {{ cat.nombre }}
-          </option>
-        {% endfor %}
-      </select>
+  <option value="">Todas las categorías</option>
+  {% for cat in categorias %}
+    <option value="{{ cat.id }}"
+      {% if categoria_seleccionada == cat.id|stringformat:"s" %}
+        selected
+      {% endif %}
+    >
+      {{ cat.nombre }}
+    </option>
+  {% endfor %}
+</select>
     </div>
     <div class="col-md-3">
   <select name="stock_bajo" class="form-control">
@@ -58,7 +58,7 @@
     <tr>
       <td>{{ m.id_insumo}}</td>
       <td>{{ m.nombre }}</td>
-      <td>{{ m.descripcion }}</td>
+      <th scope="col" data-col="descripcion">Descripción</th>
       <td>{{ m.categoria }}</td>
         <td>
   {% if m.stock == 0 %}

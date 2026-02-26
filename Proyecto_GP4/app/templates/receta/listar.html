@@ -2,35 +2,46 @@
 {% load static %}
 {% block Contenido %}
 <table class="table" id="tabla">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Nombre</th>
-      <th scope="col">Descripción</th>
-      <th scope="col">unidad</th>
-      <th scope="col">valor</th>
-      <th scope="col">Eliminar</th>
-      <th scope="col">Editar</th>
-    </tr>
-  </thead>
-  <tbody>
-    
-    {% for m in object_list %}
-    <tr>
-      <td>{{ m.id_receta }}</td>
-      <td>{{ m.nombre }}</td>
-      <td>{{ m.descripcion }}</td>
-      <td>{{ m.descripcion }}</td>
-      <td>{{ m.valor }}</td>
-      <td>
-        <a href="{% url 'app:editar_receta' m.id_receta %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
-      </td>
-      <td>
-        <a href="{% url 'app:eliminar_receta' m.id_receta %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
+  {{ receta.detalles.all }}
+  <thead class="table-dark">
+<tr>
+  <th>#</th>
+  <th>Plato</th>
+  <th>Insumos</th>
+  <th>Editar</th>
+  <th>Eliminar</th>
+</tr>
+</thead>
+
+<tbody>
+{% for receta in object_list %}
+<tr>
+  <td>{{ forloop.counter }}</td>
+  <td>{{ receta.plato.nombre }}</td>
+  <td>
+    <ul class="mb-0">
+        {% for detalle in receta.detalles.all %}
+            <li>
+                {{ detalle.insumo.nombre }} ({{ detalle.cantidad }})
+            </li>
+        {% empty %}
+            <li class="text-muted">Sin insumos</li>
+        {% endfor %}
+    </ul>
+</td>
+  <td>
+      <a href="{% url 'app:editar_receta' receta.id %}" class="btn btn-warning btn-sm">
+          <i class="fas fa-edit"></i>
+      </a>
+  </td>
+  <td>
+      <a href="{% url 'app:eliminar_receta' receta.id %}" class="btn btn-danger btn-sm">
+          <i class="fas fa-trash"></i>
+      </a>
+  </td>
+</tr>
+{% endfor %}
+</tbody>
 </table>
 <div class="card-footer">
   <a href="{% url 'app:crear_receta' %}" class="btn btn-success">

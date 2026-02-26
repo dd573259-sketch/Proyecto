@@ -1,7 +1,7 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<table class="table" id="tabla">
+<table class="table" id="tabla_platos">
   <thead>
     <tr>
       <th scope="col">#</th>
@@ -13,7 +13,7 @@
   </thead>
   <tbody>
     
-    {% for m in object_list %}
+    {% for m in plato_menu %}
 <tr>
     <td>{{ m.id_menu }}</td>
 
@@ -21,9 +21,7 @@
             {{ m.plato.nombre }}
     </td>
 
-    <td>
-            {{ m.plato.descripcion }}
-    </td>
+    <th scope="col" data-col="descripcion">Descripción</th>>
 
     
     <td>
@@ -48,7 +46,7 @@
 
 
 
-<table class="table" id="tabla">
+<table class="table" id="tabla_productos">
    <h1>Productos</h1>
   <thead>
     <tr>
@@ -61,7 +59,7 @@
   </thead>
   <tbody>
     
-    {% for m in object_list %}
+    {% for m in productos_menu %}
 <tr>
     <td>{{ m.id_menu }}</td>
 
@@ -70,9 +68,7 @@
             {{ m.producto.nombre }}
     </td>
 
-    <td>
-            {{ m.producto.descripcion }}
-    </td>
+    <th scope="col" data-col="descripcion">Descripción</th>
 
     
     <td>
@@ -99,11 +95,16 @@
     <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
 
 <script>
-  $(document).ready(function () {
-    $('#tabla').DataTable({
-      responsive: true,
-      autoWidth: false,
+$(document).ready(function () {
+    $('#tabla_platos').DataTable({
+        responsive: true,
+        autoWidth: false,
     });
-  });
+
+    $('#tabla_productos').DataTable({
+        responsive: true,
+        autoWidth: false,
+    });
+});
 </script>
 {% endblock js %}

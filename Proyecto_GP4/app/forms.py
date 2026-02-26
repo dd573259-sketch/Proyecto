@@ -2,6 +2,8 @@ from dataclasses import field
 from django.forms import ModelForm, inlineformset_factory
 from app.models import *
 from django import forms 
+from django.forms import inlineformset_factory
+
 
 from django import forms
 from django.forms import ModelForm
@@ -323,22 +325,34 @@ class MenuForm(ModelForm):
             'precio': forms.NumberInput(attrs={
                 'placeholder': 'Ingrese el precio del menu'}),
         }
+        
 
 class RecetaForm(ModelForm):
     class Meta:
-        model = recetas
-        fields = '__all__'
+        model = Receta
+        fields = ['plato']   # solo el plato si así lo tienes
         widgets = {
-            'nombre': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el nombre de la receta'}),
-            'descripcion': 
-                forms.Textarea(attrs={
-                    'placeholder': 'Ingrese la descripcion de la receta',
-                    'rows': 3,
-                    'cols': 3}),
-            'precio': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el precio de la receta'}),
+            'plato': forms.Select(attrs={
+                'class': 'form-control'
+            })
         }
+
+class DetalleRecetaForm(ModelForm):
+    class Meta:
+        model = DetalleReceta
+        fields = ['insumo', 'cantidad']
+        widgets = {
+            'insumo': forms.Select(attrs={'class': 'form-control'}),
+            'cantidad': forms.NumberInput(attrs={'class': 'form-control'})
+        }
+
+DetalleFormSet = inlineformset_factory(
+    Receta,
+    DetalleReceta,
+    form=DetalleRecetaForm,
+    extra=1,
+    can_delete=True
+)
 
 class InsumosForm(ModelForm):
     class Meta:
@@ -347,14 +361,15 @@ class InsumosForm(ModelForm):
         widgets = {
             'nombre': forms.TextInput(attrs={
                 'placeholder': 'Ingrese el nombre del insumo'}),
-            'descripcion': 
-                forms.Textarea(attrs={
-                    'placeholder': 'Ingrese la descripcion del insumo',
-                    'rows': 3,
-                    'cols': 3}),
-            'precio': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el precio del insumo'}),
+            'descripcion': forms.Textarea(attrs={
+                'placeholder': 'Ingrese la descripcion del insumo',
+                'rows': 3,
+                'cols': 3}),
+            'valor': forms.NumberInput(attrs={
+                'placeholder': 'Ingrese el valor del insumo'}),
         }
+
+    # 🔹 Validaciones de NOMBRE
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
 
@@ -363,9 +378,17 @@ class InsumosForm(ModelForm):
                 'El nombre debe tener al menos 3 caracteres'
             )
 
+        if nombre.isdigit():
+            raise forms.ValidationError(
+                'El nombre no puede ser solo números'
+            )
+
+        if nombre.startswith(' '):
+            raise forms.ValidationError(
+                'El nombre no puede iniciar con espacio'
+            )
         return nombre
 
-  
     def clean_descripcion(self):
         descripcion = self.cleaned_data.get('descripcion')
 
@@ -374,27 +397,48 @@ class InsumosForm(ModelForm):
                 'La descripcion debe tener al menos 10 caracteres'
             )
 
+        if descripcion.isdigit():
+            raise forms.ValidationError(
+                'La descripcion no puede ser solo números'
+            )
+
         return descripcion
 
+    def clean_valor(self):
+        valor = self.cleaned_data.get('valor')
+
+        if valor is not None and valor > 10000000:
+            raise forms.ValidationError(
+                'El valor es demasiado alto'
+            )
+
+        return valor
+
+
+    # 🔹 Validación individual de STOCK
+    def clean_stock(self):
+        stock = self.cleaned_data.get('stock')
+
+        if stock is not None and stock > 10000:
+            raise forms.ValidationError(
+                'El stock es demasiado alto'
+            )
+
+        return stock
 
     def clean(self):
         cleaned_data = super().clean()
 
-        unidad = cleaned_data.get('unidad')
         valor = cleaned_data.get('valor')
         stock = cleaned_data.get('stock')
 
-        if unidad is not None and unidad <= 0:
-            self.add_error('unidad', 'La unidad debe ser mayor a 0')
-
-        if valor is not None and valor <= 0:
+        if valor is not None and valor < 0:
             self.add_error('valor', 'El valor debe ser mayor a 0')
 
         if stock is not None and stock < 0:
             self.add_error('stock', 'El stock no puede ser negativo')
 
-        return cleaned_data
-    
+        return cleaned_data    
     
         
 class FacturaForm(ModelForm):
