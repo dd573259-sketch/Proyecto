@@ -99,7 +99,6 @@ urlpatterns = [
     
 # COMANDA
     path('listar_comanda/', ComandaListView.as_view() , name='listar_comandas'),
-    path('crear_comanda/', ComandaCreateView.as_view() , name='crear_comanda'),
     path('editar_comanda/<int:pk>/', ComandaUpdateView.as_view(), name='editar_comanda'),
     path('eliminar_comanda/<int:pk>/', ComandaDeleteView.as_view(), name='eliminar_comanda'),
     

@@ -1,56 +1,83 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<table class="table" id="tabla">
+
+<form method="GET" class="mb-3">
+    <input type="text" name="buscar" placeholder="Buscar por estado"
+           value="{{ request.GET.buscar }}"
+           class="form-control"
+           style="width: 300px; display: inline;">
+    
+    <input type="date" name="fecha"
+           value="{{ request.GET.fecha }}"
+           class="form-control"
+           style="width: 200px; display: inline;">
+
+    <button type="submit" class="btn btn-primary">
+        Buscar
+    </button>
+</form>
+
+{% if request.GET.fecha and not object_list %}
+<div class="alert alert-danger text-center mt-3">
+    No hay un pedido con esa fecha.
+</div>
+{% endif %}
+
+<table class="table table-bordered">
   <thead>
     <tr>
-      <th scope="col">id_comanda</th>
-      <th scope="col">fecha_hora</th>
-      <th scope="col">estado</th>
-      <th scope="col">usuario_id</th>
-      <th scope="col">Editar</th>
-      <th scope="col">Eliminar</th>
+      <th>id_pedido</th>
+      <th>Fecha</th>
+      <th>Estado</th>
+      <th>Usuario</th>
+      <th>Detalle</th>
+      <th>Editar</th>
+      <th>Eliminar</th>
     </tr>
   </thead>
+
   <tbody>
-    
     {% for c in object_list %}
     <tr>
-      <td>{{ c.id_comanda }}</td>
-      <td>{{ c.fecha_hora }}</td>
+      <td>{{ c.id_pedido }}</td>
+      <td>{{ c.fecha_hora|date:"d/m/Y H:i" }}</td>
       <td>{{ c.estado }}</td>
-      <td>{{ c.usuario_id }}</td>
+      <td>{{ c.usuario }}</td>
+
       <td>
-        <a href="{% url 'app:editar_comanda' c.id_comanda %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+        {% if buscar or fecha %}
+        <a href="{% url 'app:detalle_pedido' c.id_pedido %}" 
+           class="btn btn-success btn-sm">
+           Detalle
+        </a>
+        {% endif %}
       </td>
+
       <td>
-        <a href="{% url 'app:eliminar_comanda' c.id_comanda %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+        <a href="{% url 'app:editar_pedido' c.id_pedido %}" 
+           class="btn btn-primary btn-sm">
+           Editar
+        </a>
+      </td>
+
+      <td>
+        <a href="{% url 'app:eliminar_pedido' c.id_pedido %}" 
+           class="btn btn-danger btn-sm">
+           Eliminar
+        </a>
       </td>
     </tr>
-   
+
+    {% empty %}
+    <tr>
+      <td colspan="7" class="text-center">
+        No hay pedidos registrados.
+      </td>
+    </tr>
     {% endfor %}
   </tbody>
 </table>
-<div class="card-footer">
-  <a href="{{crear_url}}" class="btn btn-primary btn-xs">
-    <i class="fas fa-plus"></i> Crear nueva comanda
-  </a>
-</div>
+
+
 {% endblock %}
-
-{% block js %}
-<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
-
-<script>
-  $(document).ready(function () {
-    $('#tabla').DataTable({
-      responsive: true,
-      autoWidth: false,
-    });
-  });
-</script>
-{% endblock js %}

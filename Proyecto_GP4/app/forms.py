@@ -1,5 +1,5 @@
 from dataclasses import field
-from django.forms import ModelForm
+from django.forms import ModelForm, inlineformset_factory
 from app.models import *
 from django import forms 
 
@@ -26,6 +26,7 @@ class ClienteForm(ModelForm):
 class PedidoForm(ModelForm):
     class Meta:
         model = Pedido
+<<<<<<< HEAD
         fields = ['producto', 'cantidades', 'usuario', 'estado', 'mesa']
         widgets = {
             'producto': forms.Select(attrs={
@@ -47,7 +48,155 @@ class PedidoForm(ModelForm):
             'mesa': forms.Select(attrs={
                 'class': 'form-control'
             }),
+=======
+        fields = ['mesa', 'usuario', 'estado']
+        widgets = {
+            'mesa': forms.Select(attrs={'class': 'form-control'}),
+            'usuario': forms.Select(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-control'}),
+>>>>>>> 8973b5d0acd268dae53fb7424100dd53b1b1f8a9
         }
+
+    def clean_mesa(self):
+        mesa = self.cleaned_data.get('mesa')
+
+        # Solo validamos disponibilidad al crear un pedido nuevo
+        # Al editar no bloqueamos porque la mesa ya estaba asignada
+        if not self.instance.pk:
+            if mesa and mesa.estado == 'No disponible':
+                raise forms.ValidationError(
+                    f'La mesa {mesa.numero_mesa} no está disponible. '
+                    f'Por favor seleccione otra mesa.'
+                )
+        return mesa
+
+
+# ==============================================================
+# FORMULARIO PARA CADA PLATO DEL PEDIDO
+# Valida cantidad > 0 y que el plato tenga precio válido
+# ==============================================================
+class DetallePlatoForm(ModelForm):
+    class Meta:
+        model = DetallePlato
+        fields = ['plato', 'cantidad']
+        widgets = {
+            'plato': forms.Select(attrs={'class': 'form-control select2'}),
+            'cantidad': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'placeholder': 'Cantidad'
+            }),
+        }
+
+    def clean_cantidad(self):
+        cantidad = self.cleaned_data.get('cantidad')
+
+        # La cantidad debe ser mayor a 0
+        if cantidad is not None and cantidad < 1:
+            raise forms.ValidationError('La cantidad debe ser mayor a 0.')
+
+        return cantidad
+
+    def clean(self):
+        cleaned_data = super().clean()
+        plato    = cleaned_data.get('plato')
+        cantidad = cleaned_data.get('cantidad')
+
+        if plato:
+            # El plato debe tener un precio válido registrado en la BD
+            if plato.precio <= 0:
+                raise forms.ValidationError(
+                    f'El plato "{plato.nombre}" no tiene un precio válido. '
+                    f'Contacte al administrador.'
+                )
+
+        return cleaned_data
+
+
+# ==============================================================
+# FORMULARIO PARA CADA PRODUCTO DEL PEDIDO
+# Valida cantidad > 0, stock disponible y que no supere el stock
+# ==============================================================
+class DetallePedidoForm(ModelForm):
+    class Meta:
+        model = DetallePedido
+        fields = ['producto', 'cantidad']
+        widgets = {
+            'producto': forms.Select(attrs={'class': 'form-control select2'}),
+            'cantidad': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'placeholder': 'Cantidad'
+            }),
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Mostramos la descripción del producto en el selector
+        # en vez del nombre que trae por defecto el __str__
+        self.fields['producto'].queryset = Producto.objects.all()
+        self.fields['producto'].label_from_instance = lambda obj: obj.descripcion
+
+    def clean_cantidad(self):
+        cantidad = self.cleaned_data.get('cantidad')
+
+        # La cantidad debe ser mayor a 0
+        if cantidad is not None and cantidad < 1:
+            raise forms.ValidationError('La cantidad debe ser mayor a 0.')
+
+        return cantidad
+
+    def clean(self):
+        cleaned_data = super().clean()
+        producto = cleaned_data.get('producto')
+        cantidad = cleaned_data.get('cantidad')
+
+        # Si no hay producto seleccionado no validamos
+        # (puede ser una fila vacía del formset)
+        if not producto:
+            return cleaned_data
+
+        if cantidad is not None:
+            # El producto no debe tener stock en 0
+            if producto.stock <= 0:
+                raise forms.ValidationError(
+                    f'El producto "{producto.descripcion}" no tiene stock disponible. '
+                    f'No es posible agregarlo al pedido.'
+                )
+
+            # La cantidad pedida no puede superar el stock disponible
+            if cantidad > producto.stock:
+                raise forms.ValidationError(
+                    f'Solo hay {producto.stock} unidades disponibles de '
+                    f'"{producto.descripcion}". Ingrese una cantidad menor o igual.'
+                )
+
+        return cleaned_data
+
+# ==============================================================
+# FORMSET DE PLATOS
+# Permite agregar múltiples platos al pedido
+# ==============================================================
+DetallePlatoFormSet = inlineformset_factory(
+    Pedido,
+    DetallePlato,
+    form=DetallePlatoForm,
+    extra=1,
+    can_delete=True
+)
+
+
+# ==============================================================
+# FORMSET DE PRODUCTOS
+# Permite agregar múltiples productos al pedido
+# ==============================================================
+DetallePedidoFormSet = inlineformset_factory(
+    Pedido,
+    DetallePedido,
+    form=DetallePedidoForm,
+    extra=1,
+    can_delete=True
+)
+
 class MesaForm(ModelForm):
     class Meta:
         model = Mesa
