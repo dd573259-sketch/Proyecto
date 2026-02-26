@@ -1,18 +1,17 @@
 from django.db import models
 from datetime import datetime
 from decimal import Decimal
+from django.core.validators import RegexValidator
+from datetime import datetime
 
 # Create your models here.
-
-#Categorias Fuertes
 class Usuario(models.Model):
+
     ROL_OPCIONES = (
         ('admin', 'Administrador'),
         ('empleado', 'Empleado'),
         ('proveedor', 'Proveedor'),
     )
-
-    id_usuario = models.AutoField(primary_key=True)
 
     TIPO_DE_DOCUMENTO = [
         ("CC", "Cédula de Ciudadanía"),
@@ -21,15 +20,16 @@ class Usuario(models.Model):
         ("Pasaporte", "Pasaporte"),
     ]
 
-    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO, null=True)
-    numero_documento = models.CharField(max_length=15, unique=True)
+    id_usuario = models.AutoField(primary_key=True)
+    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO,null=True)
+    numero_documento = models.CharField(max_length=15, unique=True, null=True)
     nombre = models.CharField(max_length=100)
-    apellido = models.CharField(max_length=100) 
+    apellido = models.CharField(max_length=100)
     correo_electronico = models.EmailField(unique=True)
-    contraseña = models.CharField(max_length=255)
+    contrasena = models.CharField(max_length=50)
+    verificar_contrasena = models.CharField(max_length=50)
     rol = models.CharField(max_length=20, choices=ROL_OPCIONES)
-    fecha_registro = models.DateTimeField(auto_now=True)
-
+    fecha_registro = models.DateTimeField(default=datetime.now)
 
     class Meta:
         verbose_name = "Usuario"
@@ -38,6 +38,8 @@ class Usuario(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
+
+#Categorias Fuertes
 
 class Proveedor(models.Model):
     id_proveedor = models.AutoField(primary_key=True)

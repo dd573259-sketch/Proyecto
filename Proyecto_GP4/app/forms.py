@@ -2,7 +2,10 @@ from dataclasses import field
 from django.forms import ModelForm
 from app.models import *
 from django import forms 
-from django.contrib.auth.hashers import make_password
+import re
+from django import forms
+from django.contrib.auth.hashers import make_password, check_password
+from django.core.exceptions import ValidationError
 
 
 
@@ -229,122 +232,47 @@ class PagoForm(ModelForm):
         }
 
 class UsuarioForm(ModelForm):
-
     class Meta:
         model = Usuario
         fields = '__all__'
         widgets = {
-            'numero_documento': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el número de documento del usuario'
-            }),
             'nombre': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el nombre del usuario'
-            }),
+                'placeholder': 'Ingrese el nombre del usuario'}),
             'apellido': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el apellido del usuario'
-            }),
+                'placeholder': 'Ingrese el apellido del usuario'}),
             'correo_electronico': forms.EmailInput(attrs={
-                'placeholder': 'Ingrese el correo electrónico del usuario'
-            }),
+                'placeholder': 'Ingrese el correo electrónico del usuario'}),
             'rol': forms.Select(attrs={
-                'placeholder': 'Seleccione el rol del usuario'
-            }),
+                'placeholder': 'Seleccione el rol del usuario'}),
             'contraseña': forms.PasswordInput(attrs={
-                'placeholder': 'Ingrese la contraseña'
-            }),
+                'placeholder': 'Ingrese la contraseña del usuario'}),
+            'verificar_contraseña': forms.PasswordInput(attrs={
+                'placeholder': 'Verifique la contraseña del usuario'}),
         }
-
-    def clean_nombre(self):
+    def clean_nombre(self): 
         nombre = self.cleaned_data.get('nombre')
-
-        if not nombre:
-            raise forms.ValidationError("El nombre es obligatorio")
-
         if len(nombre) < 3:
-            raise forms.ValidationError(
-                "El nombre debe tener al menos 3 caracteres"
-            )
-
-        if not nombre.isalpha():
-            raise forms.ValidationError(
-                "El nombre solo puede contener letras"
-            )
-
+            raise forms.ValidationError('El nombre debe tener al menos 3 caracteres')
+        if not re.match(r'^[a-zA-Z\s]+$', nombre):
+            raise forms.ValidationError('El nombre solo puede contener letras y espacios')
         return nombre
-
-
+    
     def clean_apellido(self):
         apellido = self.cleaned_data.get('apellido')
-
-        if not apellido:
-            raise forms.ValidationError("El apellido es obligatorio")
-
-        if len(apellido) < 2:
-            raise forms.ValidationError(
-                "El apellido debe tener al menos 2 caracteres"
-            )
-
-        if not apellido.isalpha():
-            raise forms.ValidationError(
-                "El apellido solo puede contener letras"
-            )
-
+        if len(apellido) < 3:
+            raise forms.ValidationError('El apellido debe tener al menos 3 caracteres')
+        if not re.match(r'^[a-zA-Z\s]+$', apellido):
+            raise forms.ValidationError('El apellido solo puede contener letras y espacios')   
         return apellido
+    
+    def clean_contrasena(self):
+        contrasena = self.cleaned_data.get('contrasena')
+        if len(contrasena) < 8:
+            raise forms.ValidationError('La contraseña debe tener al menos 8 caracteres')
+        return contrasena
 
-
-    def clean_numero_documento(self):
-        numero = self.cleaned_data.get("numero_documento")
-
-        if not numero:
-            raise forms.ValidationError(
-                "El número de documento es obligatorio"
-            )
-
-
-        if len(str(numero)) < 10:
-            raise forms.ValidationError(
-                "El número de documento debe tener al menos 10 dígitos"
-            )
-
-        return numero
-
-
-    def clean_contraseña(self):
-        contraseña = self.cleaned_data.get('contraseña')
-        errores = []
-
-        if not contraseña:
-            errores.append("La contraseña es obligatoria")
-        else:
-            if len(contraseña) < 8:
-                errores.append("La contraseña debe tener al menos 8 caracteres")
-
-            tiene_mayuscula = False
-            tiene_minuscula = False
-            tiene_numero = False
-
-            for c in contraseña:
-                if c.isupper():
-                    tiene_mayuscula = True
-                if c.islower():
-                    tiene_minuscula = True
-                if c.isdigit():
-                    tiene_numero = True
-
-            if not tiene_mayuscula:
-                errores.append("Debe contener al menos una letra mayúscula en la contraseña")
-
-            if not tiene_minuscula:
-                errores.append("Debe contener al menos una letra minúscula en la contraseña")
-
-            if not tiene_numero:
-                errores.append("Debe contener al menos un número la contraseña")
-
-        if errores:
-            raise forms.ValidationError(errores)
-
-        return make_password(contraseña)
-
+    
+    
     
 class ProveedorForm(ModelForm):
     class Meta:
