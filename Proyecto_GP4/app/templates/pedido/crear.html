@@ -1,76 +1,277 @@
 {% extends 'main.html' %}
-{% load widget_tweaks %}
+{% load static %}
 
 {% block Contenido %}
-<div class="card card-primary">
-    <div class="card-header">
-        <h3 class="card-title">
-            <i class="fas fa-edit"></i> {{ titulo }}
-        </h3>
-    </div>
 
-    <div class="card-body">
+<link href="{% static "css/select2.min.css" %}" rel="stylesheet">
 
-        {% if form %}
-        <form method="post" action=".">
-            {% csrf_token %}
+<div class="container mt-4">
+    <h2 class="mb-4">{{ titulo }}</h2>
 
-            {% if form.errors %}
-            <div class="alert alert-danger alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                <h5><i class="icon fas fa-ban"></i> ¡Error al guardar!</h5>
-                <ul>
-                    {% for field in form %}
-                        {% for error in field.errors %}
-                            <li>{{ field.label }}: {{ error }}</li>
+    <form method="post" id="form-pedido">
+        {% csrf_token %}
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-info-circle"></i> Información del Pedido
+            </div>
+            <div class="card-body">
+                {% for campo in form.visible_fields %}
+                    <div class="form-group mb-3">
+                        <label><strong>{{ campo.label }}:</strong></label>
+                        {{ campo }}
+                        {% if campo.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ campo.errors|join:", " }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-warning text-dark">
+                <i class="fas fa-utensils"></i> Platos del Pedido
+            </div>
+            <div class="card-body" id="contenedor-platos">
+                {{ formset_platos.management_form }}
+
+                {% for form_plato in formset_platos %}
+                    <div class="border rounded p-3 mb-3 fila-plato bg-light">
+                        <div class="row align-items-end">
+                            <div class="col-md-6 mb-2">
+                                <label><strong>Plato:</strong></label>
+                                {{ form_plato.plato }}
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label><strong>Cantidad:</strong></label>
+                                {{ form_plato.cantidad }}
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label><strong>Subtotal:</strong></label>
+                                <input type="text" class="form-control subtotal-plato" readonly placeholder="$0">
+                            </div>
+                        </div>
+
+                        {% if form_plato.instance.pk %}
+                            <div class="form-check mt-2">
+                                {{ form_plato.DELETE }}
+                                <label class="form-check-label text-danger">Eliminar este plato</label>
+                            </div>
+                        {% endif %}
+
+                        {% for campo_oculto in form_plato.hidden_fields %}
+                            {{ campo_oculto }}
                         {% endfor %}
-                    {% endfor %}
-                </ul>
+                    </div>
+                {% endfor %}
             </div>
-            {% endif %}
-
-            {% for field in form.visible_fields %}
-                <div class="form-group">
-                    <label>{{ field.label }}:</label>
-                    {{ field|add_class:"form-control"|attr:"autocomplete:off" }}
-                </div>
-            {% endfor %}
-
-            <div class="card-footer">
-                <button type="submit" class="btn btn-primary btn-flat">
-                    <i class="fas fa-save"></i> Guardar Registro
+            <div class="card-footer bg-white">
+                <button type="button" class="btn btn-outline-warning btn-sm" id="agregar-plato">
+                    <i class="fas fa-plus"></i> Agregar otro plato
                 </button>
-
-                {% if listar_url %}
-                <a href="{{ listar_url }}" class="btn btn-danger btn-flat">
-                    <i class="fas fa-times"></i> Cancelar
-                </a>
-                {% endif %}
             </div>
+        </div>
 
-        </form>
-        {% else %}
-            <div class="alert alert-warning">
-                No hay formulario disponible.
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-success text-white">
+                <i class="fas fa-box"></i> Productos del Pedido
             </div>
-        {% endif %}
+            <div class="card-body" id="contenedor-productos">
+                {{ formset_productos.management_form }}
 
-    </div>
+                {% for form_producto in formset_productos %}
+                    <div class="border rounded p-3 mb-3 fila-producto bg-light">
+                        <div class="row align-items-end">
+                            <div class="col-md-6 mb-2">
+                                <label><strong>Producto:</strong></label>
+                                {{ form_producto.producto }}
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label><strong>Cantidad:</strong></label>
+                                {{ form_producto.cantidad }}
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label><strong>Subtotal:</strong></label>
+                                <input type="text" class="form-control subtotal-producto" readonly placeholder="$0">
+                            </div>
+                        </div>
+
+                        {% if form_producto.instance.pk %}
+                            <div class="form-check mt-2">
+                                {{ form_producto.DELETE }}
+                                <label class="form-check-label text-danger">Eliminar este producto</label>
+                            </div>
+                        {% endif %}
+
+                        {% for campo_oculto in form_producto.hidden_fields %}
+                            {{ campo_oculto }}
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="card-footer bg-white">
+                <button type="button" class="btn btn-outline-success btn-sm" id="agregar-producto">
+                    <i class="fas fa-plus"></i> Agregar otro producto
+                </button>
+            </div>
+        </div>
+
+        <div class="card mb-4 border-primary">
+            <div class="card-body d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Total del Pedido:</h4>
+                <h3 class="mb-0 text-primary"><strong id="total-general">$0</strong></h3>
+            </div>
+        </div>
+
+        <div class="text-end mb-5">
+            <a href="{% url 'app:listar_pedidos' %}" class="btn btn-secondary">Cancelar</a>
+            <button type="submit" class="btn btn-primary px-4">Guardar Pedido</button>
+        </div>
+    </form>
 </div>
-{% endblock %}
+
+{% endblock Contenido %}
 
 {% block js %}
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src={% static "js/select2.min.js" %}></script>
 
-{% if form and form.errors %}
 <script>
-    Swal.fire({
-        title: "¡Error!",
-        text: "Por favor, verifica los campos del formulario.",
-        icon: "error",
-        confirmButtonText: "Entendido"
+    // --- 1. DICCIONARIOS DE DATOS DESDE DJANGO ---
+    const preciosPlatos = { {% for p in platos %}"{{ p.id_plato }}": {{ p.precio }},{% endfor %} };
+    const preciosProductos = { {% for p in productos %}"{{ p.id_producto }}": {{ p.precio }},{% endfor %} };
+    const stockProductos = { {% for p in productos %}"{{ p.id_producto }}": {{ p.stock }},{% endfor %} };
+
+    // --- 2. FUNCIONES CORE ---
+
+    // Inicializa Select2 en los selects visibles
+    function activarSelect2() {
+        $('.select2').each(function() {
+            $(this).select2({
+                placeholder: 'Seleccione una opción',
+                allowClear: true,
+                width: '100%',
+                dropdownParent: $(this).parent() // Evita problemas de scroll en modales o tarjetas
+            });
+        });
+    }
+
+    // Calcula subtotal de Platos
+    function calcularSubtotalPlato(fila) {
+        const platoId = fila.find('select[name$="-plato"]').val();
+        const cantidad = parseFloat(fila.find('input[name$="-cantidad"]').val()) || 0;
+        const precio = preciosPlatos[platoId] || 0;
+        const subtotal = precio * cantidad;
+        fila.find('.subtotal-plato').val('$' + subtotal.toLocaleString('es-CO'));
+        return subtotal;
+    }
+
+    // Calcula subtotal de Productos
+    function calcularSubtotalProducto(fila) {
+        const productoId = fila.find('select[name$="-producto"]').val();
+        const cantidad = parseFloat(fila.find('input[name$="-cantidad"]').val()) || 0;
+        const precio = preciosProductos[productoId] || 0;
+        const subtotal = precio * cantidad;
+        fila.find('.subtotal-producto').val('$' + subtotal.toLocaleString('es-CO'));
+        return subtotal;
+    }
+
+    // Recalcula el total general sumando todo
+    function recalcularTotal() {
+        let total = 0;
+        $('.fila-plato').each(function() { total += calcularSubtotalPlato($(this)); });
+        $('.fila-producto').each(function() { total += calcularSubtotalProducto($(this)); });
+        $('#total-general').text('$' + total.toLocaleString('es-CO'));
+    }
+
+    // Valida el stock de productos
+    function validarStock(fila) {
+        const productoId = fila.find('select[name$="-producto"]').val();
+        const inputCant = fila.find('input[name$="-cantidad"]');
+        const cantidad = parseInt(inputCant.val()) || 0;
+        const stock = stockProductos[productoId];
+
+        if (stock !== undefined) {
+            if (stock <= 0) {
+                Swal.fire('Sin stock', 'Este producto no está disponible', 'error');
+                inputCant.val(0);
+            } else if (cantidad > stock) {
+                Swal.fire('Stock insuficiente', `Solo quedan ${stock} unidades`, 'warning');
+                inputCant.val(stock);
+            }
+        }
+    }
+
+    // --- 3. LÓGICA DINÁMICA (AGREGAR FILAS) ---
+
+    function agregarFila(selectorFila, prefijo, contenedorId, totalFormsId) {
+        const totalForms = $(totalFormsId);
+        const nuevoIndice = parseInt(totalForms.val());
+        const ultimaFila = $(selectorFila).last();
+
+        // IMPORTANTE: Destruir Select2 antes de clonar para que no clone el HTML basura
+        ultimaFila.find('select').select2('destroy');
+
+        // Clonamos la fila
+        const nuevaFila = ultimaFila.clone();
+
+        // Buscamos el índice de la fila que acabamos de clonar (usualmente nuevoIndice - 1)
+        const regexIndice = new RegExp(`${prefijo}-(\\d+)-`, 'g');
+        const match = ultimaFila.find('select, input').first().attr('name').match(regexIndice);
+        const indiceAnterior = match ? match[0].split('-')[1] : (nuevoIndice - 1);
+
+        // Actualizamos todos los ID y NAME de la nueva fila con el nuevo índice
+        nuevaFila.find('input, select, label').each(function() {
+            const attrs = ['name', 'id', 'for'];
+            attrs.forEach(attr => {
+                const val = $(this).attr(attr);
+                if (val) {
+                    $(this).attr(attr, val.replace(`${prefijo}-${indiceAnterior}-`, `${prefijo}-${nuevoIndice}-`));
+                }
+            });
+        });
+
+        // Limpiamos los datos de la nueva fila
+        nuevaFila.find('input[type=number]').val(1);
+        nuevaFila.find('input[type=text]').val('');
+        nuevaFila.find('select').val('').trigger('change');
+        nuevaFila.find('.form-check').remove(); // No clonar el botón de eliminar si es de un registro viejo
+        nuevaFila.find('input[name$="-id"]').val(''); // Limpiar ID de base de datos
+
+        // Insertar en el DOM
+        $(contenedorId).append(nuevaFila);
+
+        // Actualizar contador de Django
+        totalForms.val(nuevoIndice + 1);
+
+        // Volver a activar Select2 en todas las filas (incluyendo la vieja que destruimos)
+        activarSelect2();
+        recalcularTotal();
+    }
+
+    // Eventos de botones "Agregar"
+    $('#agregar-plato').click(() => {
+        agregarFila('.fila-plato', 'detalleplato_set', '#contenedor-platos', '#id_detalleplato_set-TOTAL_FORMS');
+    });
+
+    $('#agregar-producto').click(() => {
+        agregarFila('.fila-producto', 'detallepedido_set', '#contenedor-productos', '#id_detallepedido_set-TOTAL_FORMS');
+    });
+
+    // --- 4. EVENTOS DE CAMBIO ---
+
+    $(document).on('change', '.fila-plato select, .fila-plato input', recalcularTotal);
+    
+    $(document).on('change', '.fila-producto select, .fila-producto input', function() {
+        validarStock($(this).closest('.fila-producto'));
+        recalcularTotal();
+    });
+
+    // --- 5. INICIO ---
+    $(document).ready(function() {
+        activarSelect2();
+        recalcularTotal();
     });
 </script>
-{% endif %}
-
-{% endblock %}
+{% endblock js %}

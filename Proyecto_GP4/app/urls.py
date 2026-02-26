@@ -99,7 +99,6 @@ urlpatterns = [
     
 # COMANDA
     path('listar_comanda/', ComandaListView.as_view() , name='listar_comandas'),
-    path('crear_comanda/', ComandaCreateView.as_view() , name='crear_comanda'),
     path('editar_comanda/<int:pk>/', ComandaUpdateView.as_view(), name='editar_comanda'),
     path('eliminar_comanda/<int:pk>/', ComandaDeleteView.as_view(), name='eliminar_comanda'),
     
@@ -114,6 +113,7 @@ urlpatterns = [
     path('crear_pedido/', PedidoCreateView.as_view() , name='crear_pedido'),
     path('editar_pedido/<int:pk>/', PedidoUpdateView.as_view(), name='editar_pedido'),
     path('eliminar_pedido/<int:pk>/', PedidoDeleteView.as_view(), name='eliminar_pedido'),
+    path('pedido/detalle/<int:pk>/', DetallePedidoView.as_view(), name='detalle_pedido'),
     
 # CLIENTE
     path('listar_cliente/', ClienteListView.as_view() , name='listar_clientes'),

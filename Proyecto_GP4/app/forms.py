@@ -1,44 +1,251 @@
 from dataclasses import field
-from django.forms import ModelForm
+from django.forms import ModelForm, inlineformset_factory
 from app.models import *
 from django import forms 
 
+from django import forms
+from django.forms import ModelForm
+from .models import Cliente
+
 class ClienteForm(ModelForm):
+
     class Meta:
         model = Cliente
         fields = '__all__'
         widgets = {
-            'cedula': forms.TextInput(attrs={
-                'placeholder': 'Ingrese la cédula del cliente'}),
+            'numero_documento': forms.NumberInput(attrs={
+                'placeholder': 'Ingrese el número de documento',
+                'min': '1'
+            }),
             'nombre': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el nombre del cliente'}),
+                'placeholder': 'Ingrese el nombre del cliente'
+            }),
             'apellido': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el apellido del cliente'}),
+                'placeholder': 'Ingrese el apellido del cliente'
+            }),
             'telefono': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el teléfono del cliente'}),
+                'placeholder': 'Ingrese el teléfono del cliente'
+            }),
             'correo_electronico': forms.EmailInput(attrs={
-                'placeholder': 'Ingrese el correo electrónico del cliente'}),
+                'placeholder': 'Ingrese el correo electrónico del cliente'
+            }),
             'direccion': forms.TextInput(attrs={
-                'placeholder': 'Ingrese la dirección del cliente'}),
-            'tipo_cliente': forms.Select(attrs={
-                'placeholder': 'Seleccione el tipo de cliente'}),
+                'placeholder': 'Ingrese la dirección del cliente'
+            }),
+            'tipo_cliente': forms.Select(),
         }
+
+    #Nombre obligatorio y solo letras
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+
+        if not nombre:
+            raise forms.ValidationError("El nombre no puede estar vacío.")
+
+        if not nombre.replace(" ", "").isalpha():
+            raise forms.ValidationError("El nombre solo debe contener letras.")
+
+        return nombre
+    
+    def clean_apellido(self):
+        apellido = self.cleaned_data.get('apellido')
+
+        if not apellido:
+            raise forms.ValidationError("El apellido no puede estar vacío.")
+
+        if not apellido.replace(" ", "").isalpha():
+            raise forms.ValidationError("El apellido solo debe contener letras.")
+
+        return apellido
+
+
+    #Correo solo gmail o hotmail
+    def clean_correo_electronico(self):
+        correo = self.cleaned_data.get('correo_electronico')
+
+        if not correo:
+            raise forms.ValidationError("El correo es obligatorio.")
+
+        if not (correo.endswith("@gmail.com") or correo.endswith("@hotmail.com")):
+            raise forms.ValidationError("El correo debe ser gmail.com o hotmail.com.")
+
+        return correo
+
+
+    # ✅ 3️⃣ Teléfono solo números y 10 dígitos
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get('telefono')
+
+        if not telefono.isdigit():
+            raise forms.ValidationError("El teléfono solo debe contener números.")
+
+        if len(telefono) != 10:
+            raise forms.ValidationError("El teléfono debe tener 10 dígitos.")
+
+        return telefono
+
+
+    # ✅ 4️⃣ Documento positivo y mínimo 6 dígitos
+    def clean_numero_documento(self):
+        numero = self.cleaned_data.get('numero_documento')
+
+        if numero <= 0:
+            raise forms.ValidationError("El número de documento debe ser positivo.")
+
+        if len(str(numero)) < 6:
+            raise forms.ValidationError("El número de documento debe tener mínimo 6 dígitos.")
+
+        return numero
 class PedidoForm(ModelForm):
     class Meta:
         model = Pedido
-        fields = '__all__'
+        fields = ['mesa', 'usuario', 'estado']
         widgets = {
-            'fecha_hora': forms.DateTimeInput(attrs={
-                'placeholder': 'Ingrese la fecha y hora de la comanda'}),
-            'valor': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el valor del pedido'}),
-            'estado': forms.Select(attrs={
-                'placeholder': 'Seleccione el estado del pedido'}),
-            'comanda_id': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el ID de la comanda asociada al pedido'}),
-            'mesa_id': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el ID de la mesa asociada al pedido'}),
+            'mesa': forms.Select(attrs={'class': 'form-control'}),
+            'usuario': forms.Select(attrs={'class': 'form-control'}),
+            'estado': forms.Select(attrs={'class': 'form-control'}),
         }
+
+    def clean_mesa(self):
+        mesa = self.cleaned_data.get('mesa')
+
+        # Solo validamos disponibilidad al crear un pedido nuevo
+        # Al editar no bloqueamos porque la mesa ya estaba asignada
+        if not self.instance.pk:
+            if mesa and mesa.estado == 'No disponible':
+                raise forms.ValidationError(
+                    f'La mesa {mesa.numero_mesa} no está disponible. '
+                    f'Por favor seleccione otra mesa.'
+                )
+        return mesa
+
+
+# ==============================================================
+# FORMULARIO PARA CADA PLATO DEL PEDIDO
+# Valida cantidad > 0 y que el plato tenga precio válido
+# ==============================================================
+class DetallePlatoForm(ModelForm):
+    class Meta:
+        model = DetallePlato
+        fields = ['plato', 'cantidad']
+        widgets = {
+            'plato': forms.Select(attrs={'class': 'form-control select2'}),
+            'cantidad': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'placeholder': 'Cantidad'
+            }),
+        }
+
+    def clean_cantidad(self):
+        cantidad = self.cleaned_data.get('cantidad')
+
+        # La cantidad debe ser mayor a 0
+        if cantidad is not None and cantidad < 1:
+            raise forms.ValidationError('La cantidad debe ser mayor a 0.')
+
+        return cantidad
+
+    def clean(self):
+        cleaned_data = super().clean()
+        plato    = cleaned_data.get('plato')
+        cantidad = cleaned_data.get('cantidad')
+
+        if plato:
+            # El plato debe tener un precio válido registrado en la BD
+            if plato.precio <= 0:
+                raise forms.ValidationError(
+                    f'El plato "{plato.nombre}" no tiene un precio válido. '
+                    f'Contacte al administrador.'
+                )
+
+        return cleaned_data
+
+
+# ==============================================================
+# FORMULARIO PARA CADA PRODUCTO DEL PEDIDO
+# Valida cantidad > 0, stock disponible y que no supere el stock
+# ==============================================================
+class DetallePedidoForm(ModelForm):
+    class Meta:
+        model = DetallePedido
+        fields = ['producto', 'cantidad']
+        widgets = {
+            'producto': forms.Select(attrs={'class': 'form-control select2'}),
+            'cantidad': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'placeholder': 'Cantidad'
+            }),
+        }
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Mostramos la descripción del producto en el selector
+        # en vez del nombre que trae por defecto el __str__
+        self.fields['producto'].queryset = Producto.objects.all()
+        self.fields['producto'].label_from_instance = lambda obj: obj.descripcion
+
+    def clean_cantidad(self):
+        cantidad = self.cleaned_data.get('cantidad')
+
+        # La cantidad debe ser mayor a 0
+        if cantidad is not None and cantidad < 1:
+            raise forms.ValidationError('La cantidad debe ser mayor a 0.')
+
+        return cantidad
+
+    def clean(self):
+        cleaned_data = super().clean()
+        producto = cleaned_data.get('producto')
+        cantidad = cleaned_data.get('cantidad')
+
+        # Si no hay producto seleccionado no validamos
+        # (puede ser una fila vacía del formset)
+        if not producto:
+            return cleaned_data
+
+        if cantidad is not None:
+            # El producto no debe tener stock en 0
+            if producto.stock <= 0:
+                raise forms.ValidationError(
+                    f'El producto "{producto.descripcion}" no tiene stock disponible. '
+                    f'No es posible agregarlo al pedido.'
+                )
+
+            # La cantidad pedida no puede superar el stock disponible
+            if cantidad > producto.stock:
+                raise forms.ValidationError(
+                    f'Solo hay {producto.stock} unidades disponibles de '
+                    f'"{producto.descripcion}". Ingrese una cantidad menor o igual.'
+                )
+
+        return cleaned_data
+
+# ==============================================================
+# FORMSET DE PLATOS
+# Permite agregar múltiples platos al pedido
+# ==============================================================
+DetallePlatoFormSet = inlineformset_factory(
+    Pedido,
+    DetallePlato,
+    form=DetallePlatoForm,
+    extra=1,
+    can_delete=True
+)
+
+
+# ==============================================================
+# FORMSET DE PRODUCTOS
+# Permite agregar múltiples productos al pedido
+# ==============================================================
+DetallePedidoFormSet = inlineformset_factory(
+    Pedido,
+    DetallePedido,
+    form=DetallePedidoForm,
+    extra=1,
+    can_delete=True
+)
+
 class MesaForm(ModelForm):
     class Meta:
         model = Mesa
@@ -48,12 +255,7 @@ class MesaForm(ModelForm):
                 'placeholder': 'Ingrese el número de la mesa'}),
             'estado': forms.Select(attrs={
                 'placeholder': 'Seleccione el estado de la mesa'}),
-            'capacidad': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese la capacidad de la mesa'}),
-            'cliente_id': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el ID del cliente asignado a la mesa'}),
-            'menu_id': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el ID del menú asignado a la mesa'}),
+            
         }
 class ComandaForm(ModelForm):
     class Meta:

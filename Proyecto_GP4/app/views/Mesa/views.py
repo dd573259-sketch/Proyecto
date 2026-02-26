@@ -14,6 +14,15 @@ class MesaListView(ListView):
         context['titulo'] = 'Gestión de Mesas'
         context['crear_url'] = reverse_lazy('app:crear_mesa')
         return context
+    
+    def get_queryset(self):
+        queryset = Mesa.objects.all()
+        buscar = self.request.GET.get('buscar')
+
+        if buscar:
+            queryset = queryset.filter(numero_mesa__icontains=buscar)
+
+        return queryset
 
 class MesaCreateView(CreateView):
     model = Mesa
@@ -24,12 +33,13 @@ class MesaCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Registrar Nueva Mesa'
+        context['listar_url'] = reverse_lazy('app:listar_mesas')
         return context
 
 class MesaUpdateView(UpdateView):
     model = Mesa
     form_class = MesaForm
-    template_name = 'Mesa/crear.html' # Reutilizamos el template de crear
+    template_name = 'Mesa/crear.html' 
     success_url = reverse_lazy('app:listar_mesas')
 
     def get_context_data(self, **kwargs):
@@ -47,4 +57,5 @@ class MesaDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = '¿Eliminar Mesa?'
+        context['listar_url'] = reverse_lazy('app:listar_mesas')
         return context

@@ -1,67 +1,113 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<table class="table" id="tabla">
-  <thead>
-    <tr>
-      <th scope="col">id_pedido</th>
-      <th scope="col">fecha_hora</th>
-      <th scope="col">valor</th>
-      <th scope="col">estado</th>
-      <th scope="col">comanda_id</th>
-      <th scope="col">mesa_id</th>
-      <th scope="col">Editar</th>
-      <th scope="col">eliminar</th>
-    </tr>
-  </thead>
-  <tbody>
-    
-    {% for c in object_list %}
-    <tr>
-      <td>{{ c.id_pedido }}</td>
-      <td>{{ c.fecha_hora }}</td>
-      <td>{{ c.valor }}</td>
-      <td>{{ c.estado }}</td>
-      <td>{{ c.comanda_id }}</td>
-      <td>{{ c.mesa_id }}</td>
 
-      <td>
-        <a href="{% url 'app:editar_pedido' c.id_pedido %}" 
-           class="btn btn-primary btn-sm">
-          <i class="fas fa-edit"></i>
-        </a>
-      </td>
+<!-- Formulario de búsqueda por estado y fecha -->
+<form method="GET" class="mb-3 d-flex gap-2 align-items-center">
+    <input type="text" name="buscar" placeholder="Buscar por estado"
+           value="{{ request.GET.buscar }}"
+           class="form-control"
+           style="width: 300px;">
 
-      <td>
-        <a href="{% url 'app:eliminar_pedido' c.id_pedido %}" 
-           class="btn btn-danger btn-sm">
-          <i class="fas fa-trash"></i>
-        </a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
+    <input type="date" name="fecha"
+           value="{{ request.GET.fecha }}"
+           class="form-control"
+           style="width: 200px;">
+
+    <button type="submit" class="btn btn-primary">
+        Buscar
+    </button>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Mesa</th>
+            <th>Platos</th>
+            <th>Productos</th>
+            <th>Usuario</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Total</th>
+            <th>Detalle</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for c in object_list %}
+        <tr>
+            <td>{{ c.id_pedido }}</td>
+            <td>Mesa {{ c.mesa.numero_mesa }}</td>
+
+            <!-- PLATOS: muestra nombre y cantidad de cada plato del pedido -->
+            <td>
+                {% for detalle in c.detalle_platos.all %}
+                    {{ detalle.plato.nombre }} (x{{ detalle.cantidad }})<br>
+                {% empty %}
+                    <span class="text-muted">Sin platos</span>
+                {% endfor %}
+            </td>
+
+            <!-- PRODUCTOS: muestra nombre y cantidad de cada producto del pedido -->
+            <td>
+                {% for detalle in c.detalle_productos.all %}
+                    {{ detalle.producto.descripcion }} (x{{ detalle.cantidad }})<br>
+                {% empty %}
+                    <span class="text-muted">Sin productos</span>
+                {% endfor %}
+            </td>
+
+            <td>{{ c.usuario.nombre }} {{ c.usuario.apellido }}</td>
+            <td>{{ c.fecha_hora|date:"d/m/Y H:i" }}</td>
+            <td>{{ c.estado }}</td>
+
+            <!-- TOTAL: se calcula automáticamente desde el modelo -->
+            <td>${{ c.total }}</td>
+
+            <!-- Botón de detalle solo aparece si se filtró por estado o fecha -->
+            <td>
+                {% if request.GET.buscar or request.GET.fecha %}
+                    <a href="{% url 'app:detalle_pedido' c.id_pedido %}"
+                       class="btn btn-success btn-sm">
+                        Ver Detalle
+                    </a>
+                {% else %}
+                    <span class="text-muted">—</span>
+                {% endif %}
+            </td>
+
+            <td>
+                <a href="{% url 'app:editar_pedido' c.id_pedido %}"
+                   class="btn btn-primary btn-sm">
+                    Editar
+                </a>
+            </td>
+
+            <td>
+                <a href="{% url 'app:eliminar_pedido' c.id_pedido %}"
+                   class="btn btn-danger btn-sm">
+                    Eliminar
+                </a>
+            </td>
+        </tr>
+
+        {% empty %}
+        <tr>
+            <td colspan="11" class="text-center text-muted">
+                No hay pedidos registrados.
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
+
 <div class="card-footer">
-  <a href="{{crear_url}}" class="btn btn-primary btn-xs">
-    <i class="fas fa-plus"></i> Crear nueva pedido
-  </a>
+    <a href="{{ crear_url }}" class="btn btn-primary">
+        Crear nuevo pedido
+    </a>
 </div>
+
 {% endblock %}
-
-{% block js %}
-<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
-
-<script>
-  $(document).ready(function () {
-    $('#tabla').DataTable({
-      responsive: true,
-      autoWidth: false,
-    });
-  });
-</script>
-{% endblock js %}
