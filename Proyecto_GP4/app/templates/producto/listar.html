@@ -6,7 +6,7 @@
     <tr>
       <th>#</th>
       <th>Nombre</th>
-      <th>Descripción</th>
+      <th scope="col" data-col="descripción">Descripción</th>
       <th>Unidad</th>
       <th>Precio</th>
       <th>Stock</th>
@@ -20,7 +20,7 @@
     <tr>
         <td>{{ u.id_producto }}</td>
         <td>{{ u.nombre }}</td>
-        <td>{{ u.descripcion }}</td>
+        <td scope="col" data-col="descripcion">{{ u.descripcion }}</td>
         <td>{{ u.unidad }}</td>
         <td>{{ u.precio }}</td>
         <td>{{ u.stock }}</td>

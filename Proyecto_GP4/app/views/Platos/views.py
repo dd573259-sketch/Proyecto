@@ -63,7 +63,8 @@ class PlatoUpdateView(UpdateView):
     form_class = PlatoForm
     template_name = 'Plato/crear.html'
     success_url = reverse_lazy('app:listar_platos')
-    
+    def dispatch(self, request, *args, **kwargs):
+        return super().dispatch(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Plato'

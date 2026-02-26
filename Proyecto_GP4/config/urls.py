@@ -19,6 +19,7 @@ from django.urls import path, include
 from login.views import *
 
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('principal/', include(('app.urls', 'app'), namespace='app')),

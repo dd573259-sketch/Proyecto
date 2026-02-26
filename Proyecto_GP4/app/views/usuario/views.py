@@ -52,7 +52,7 @@ class UsuarioDeleteView(DeleteView):
 class UsuarioUpdateView(UpdateView):
     model = Usuario
     form_class = UsuarioForm
-    template_name = 'usuario/editar.html'
+    template_name = 'usuario/crear.html'
     success_url = reverse_lazy('app:listar_usuarios')
     def form_valid(self, form):
         return super().form_valid(form)
