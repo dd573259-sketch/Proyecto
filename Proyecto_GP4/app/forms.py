@@ -3,26 +3,99 @@ from django.forms import ModelForm, inlineformset_factory
 from app.models import *
 from django import forms 
 
+from django import forms
+from django.forms import ModelForm
+from .models import Cliente
+
 class ClienteForm(ModelForm):
+
     class Meta:
         model = Cliente
         fields = '__all__'
         widgets = {
-            'cedula': forms.TextInput(attrs={
-                'placeholder': 'Ingrese la cédula del cliente'}),
+            'numero_documento': forms.NumberInput(attrs={
+                'placeholder': 'Ingrese el número de documento',
+                'min': '1'
+            }),
             'nombre': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el nombre del cliente'}),
+                'placeholder': 'Ingrese el nombre del cliente'
+            }),
             'apellido': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el apellido del cliente'}),
+                'placeholder': 'Ingrese el apellido del cliente'
+            }),
             'telefono': forms.TextInput(attrs={
-                'placeholder': 'Ingrese el teléfono del cliente'}),
+                'placeholder': 'Ingrese el teléfono del cliente'
+            }),
             'correo_electronico': forms.EmailInput(attrs={
-                'placeholder': 'Ingrese el correo electrónico del cliente'}),
+                'placeholder': 'Ingrese el correo electrónico del cliente'
+            }),
             'direccion': forms.TextInput(attrs={
-                'placeholder': 'Ingrese la dirección del cliente'}),
-            'tipo_cliente': forms.Select(attrs={
-                'placeholder': 'Seleccione el tipo de cliente'}),
+                'placeholder': 'Ingrese la dirección del cliente'
+            }),
+            'tipo_cliente': forms.Select(),
         }
+
+    #Nombre obligatorio y solo letras
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+
+        if not nombre:
+            raise forms.ValidationError("El nombre no puede estar vacío.")
+
+        if not nombre.replace(" ", "").isalpha():
+            raise forms.ValidationError("El nombre solo debe contener letras.")
+
+        return nombre
+    
+    def clean_apellido(self):
+        apellido = self.cleaned_data.get('apellido')
+
+        if not apellido:
+            raise forms.ValidationError("El apellido no puede estar vacío.")
+
+        if not apellido.replace(" ", "").isalpha():
+            raise forms.ValidationError("El apellido solo debe contener letras.")
+
+        return apellido
+
+
+    #Correo solo gmail o hotmail
+    def clean_correo_electronico(self):
+        correo = self.cleaned_data.get('correo_electronico')
+
+        if not correo:
+            raise forms.ValidationError("El correo es obligatorio.")
+
+        if not (correo.endswith("@gmail.com") or correo.endswith("@hotmail.com")):
+            raise forms.ValidationError("El correo debe ser gmail.com o hotmail.com.")
+
+        return correo
+
+
+    # ✅ 3️⃣ Teléfono solo números y 10 dígitos
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get('telefono')
+
+        if not telefono.isdigit():
+            raise forms.ValidationError("El teléfono solo debe contener números.")
+
+        if len(telefono) != 10:
+            raise forms.ValidationError("El teléfono debe tener 10 dígitos.")
+
+        return telefono
+
+
+    # ✅ 4️⃣ Documento positivo y mínimo 6 dígitos
+    def clean_numero_documento(self):
+        numero = self.cleaned_data.get('numero_documento')
+
+        if numero <= 0:
+            raise forms.ValidationError("El número de documento debe ser positivo.")
+
+        if len(str(numero)) < 6:
+            raise forms.ValidationError("El número de documento debe tener mínimo 6 dígitos.")
+
+        return numero
 class PedidoForm(ModelForm):
     class Meta:
         model = Pedido
@@ -182,12 +255,7 @@ class MesaForm(ModelForm):
                 'placeholder': 'Ingrese el número de la mesa'}),
             'estado': forms.Select(attrs={
                 'placeholder': 'Seleccione el estado de la mesa'}),
-            'capacidad': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese la capacidad de la mesa'}),
-            'cliente_id': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el ID del cliente asignado a la mesa'}),
-            'menu_id': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el ID del menú asignado a la mesa'}),
+            
         }
 class ComandaForm(ModelForm):
     class Meta:

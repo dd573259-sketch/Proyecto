@@ -16,6 +16,15 @@ class ClienteListView(ListView):
         context['crear_url'] = reverse_lazy('app:crear_cliente')
         return context
 
+    def get_queryset(self):
+        queryset = Cliente.objects.all()
+        buscar = self.request.GET.get('buscar')
+
+        if buscar:
+            queryset = queryset.filter(numero_documento__icontains=buscar)
+
+        return queryset
+
 # Crear una nueva cliente
 class ClienteCreateView(CreateView):
     model = Cliente
