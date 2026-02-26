@@ -13,19 +13,24 @@ class ComandaListView(ListView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Gestión de Comandas'
         context['crear_url'] = reverse_lazy('app:crear_comanda')
-        return context
+        context['buscar'] = self.request.GET.get('buscar', '')
+        context['fecha'] = self.request.GET.get('fecha', '')
 
-# Crear una nueva comanda
-class ComandaCreateView(CreateView):
-    model = Comanda
-    form_class = ComandaForm
-    template_name = 'Comanda/crear.html'
-    success_url = reverse_lazy('app:listar_comandas')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Registrar Nueva Comanda'
         return context
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        estado = self.request.GET.get('buscar')
+        fecha = self.request.GET.get('fecha')
+
+        if estado:
+            queryset = queryset.filter(estado__icontains=estado)
+        
+        
+        if fecha: 
+            queryset = queryset.filter(fecha_hora__date=fecha)
+
+
+        return queryset
 
 
 class ComandaUpdateView(UpdateView):
