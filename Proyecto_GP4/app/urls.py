@@ -56,20 +56,20 @@ urlpatterns = [
     path('eliminar_insumos/<int:pk>/', InsumosDeleteView.as_view(), name='eliminar_insumos'),
     
 # FACTURAS
-    path('facturas/', FacturaListView.as_view() , name='listar_facturas'),
+    path('listar_facturas/', FacturaListView.as_view() , name='listar_facturas'),
     path('crear_factura/', FacturaCreateView.as_view() , name='crear_factura'),
     path('editar_factura/<int:pk>/', FacturaUpdateView.as_view(), name='editar_factura'),
     path('eliminar_factura/<int:pk>/', FacturaDeleteView.as_view(), name='eliminar_factura'),
     
 # VENTAS
-    path('ventas/', VentaListView.as_view(), name='listar_ventas'),
-    path('ventas/crear/', VentaCreateView.as_view(), name='crear_venta'),
+    path('listar_ventas/', VentaListView.as_view(), name='listar_ventas'),
+    path('crear_venta/', VentaCreateView.as_view(), name='crear_venta'),
     path('eliminar_venta/<int:pk>/', VentaDeleteView.as_view(), name='eliminar_venta'),
     
 # PAGOS
-    path('pagos/', PagoListView.as_view(), name='listar_pagos'),
-    path('crear_pagos/', PagoCreateView.as_view(), name='crear_pago'),
-    path('pagos/editar/<int:pk>/', PagoUpdateView.as_view(), name='editar_pago'),
+    path('listar_pagos/', PagoListView.as_view(), name='listar_pagos'),
+    path('crear_pago/', PagoCreateView.as_view(), name='crear_pago'),
+    path('editar_pago/<int:pk>/', PagoUpdateView.as_view(), name='editar_pago'),
     path('eliminar_pago/<int:pk>/', PagoDeleteView.as_view(), name='eliminar_pago'),
     
 # USUARIOS

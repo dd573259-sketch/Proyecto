@@ -16,7 +16,7 @@ class FacturaListView(listView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Listado de Facturas'
+        context['titulo'] = 'Listado de Facturas'
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
         context['crear_url'] = reverse_lazy('app:crear_factura')
         return context   
@@ -30,7 +30,7 @@ class FacturaCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
-        context['title'] = 'Crear Nueva Factura'
+        context['titulo'] = 'Crear Nueva Factura'
         return context
     
 
@@ -42,7 +42,7 @@ class FacturaDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
-        context['title'] = 'Eliminar Factura'
+        context['titulo'] = 'Eliminar Factura'
         return context
 
 
@@ -54,7 +54,7 @@ class FacturaUpdateView(UpdateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Editar Factura'
+        context['titulo'] = 'Editar Factura'
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
         context['listar_url'] = reverse_lazy('app:listar_facturas')
         return context

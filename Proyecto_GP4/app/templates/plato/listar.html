@@ -8,24 +8,28 @@
         <th scope="col">#</th>
         <th scope="col">Id_categoria</th>
         <th scope="col">Nombre</th>
-        <th scope="col">Descripción</th>
+        <th scope="col" data-col="descripcion">Descripción</th>
+        <th scope="col">Precio</th>
         <th scope="col">Editar</th>
         <th scope="col">Eliminar</th>
       </tr>
     </thead>
-  <tbody> 
-    
-    {% for p in object_list %}
+    <tbody>
+
+      {% for p in object_list %}
       <tr>
         <td>{{ p.id_plato }}</td>
         <td>{{ p.categoria_id}}</td>
         <td>{{ p.nombre }}</td>
-        <td>{{ p.descripcion }}</td>
+        <td data-col="descripcion">{{ p.descripcion }}</td>
+        <td>{{ p.precio }}</td>
         <td>
-          <a href="{% url "app:editar_plato" p.id_plato %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+          <a href="{% url "app:editar_plato" p.id_plato %}" class="btn btn-primary btn-xs"><i
+              class="fas fa-edit"></i></a>
         </td>
         <td>
-          <a href="{% url "app:eliminar_plato" p.id_plato %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+          <a href="{% url "app:eliminar_plato" p.id_plato %}" class="btn btn-danger btn-xs"><i
+              class="fas fa-trash"></i></a>
         </td>
       </tr>
       {% endfor %}

@@ -40,7 +40,7 @@ class VentaCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fas fa-plus-circle'
-        context['title'] = 'Crear Nueva Venta'
+        context['titulo'] = 'Crear Nueva Venta'
         return context
 
 class VentaUpdateView(UpdateView):

@@ -84,8 +84,16 @@ class CategoriaForm(ModelForm):
     
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
-        if not re.match(r'^[a-zA-Z\s]+$', nombre):
+        if len(nombre) < 3:
+            raise forms.ValidationError('El nombre debe tener al menos 3 caracteres')
+        if len(nombre) > 30:
+            raise forms.ValidationError('El nombre no puede tener más de 30 caracteres')
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', nombre):
             raise forms.ValidationError('El nombre solo puede contener letras y espacios')
+        if nombre.isspace():
+            raise forms.ValidationError('El nombre no puede ser solo espacios')
+        if nombre != nombre.strip():
+            raise forms.ValidationError('El nombre no puede tener espacios al inicio o al final')
         return nombre
     
     def clean_descripcion(self):
@@ -107,7 +115,48 @@ class PlatoForm(ModelForm):
                     'rows': 3,
                     'cols': 3}),
         }
-        
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        if len(nombre) < 3:
+            raise forms.ValidationError('El nombre debe tener al menos 3 caracteres')
+        if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$', nombre):
+            raise forms.ValidationError('El nombre solo puede contener letras, números y espacios')
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no puede ser solo números')
+        if nombre.isspace():
+            raise forms.ValidationError('El nombre no puede ser solo espacios')
+        if nombre != nombre.strip():
+            raise forms.ValidationError('El nombre no puede tener espacios al inicio o al final')
+        return nombre
+    
+    def clean_descripcion(self):
+        descripcion = self.cleaned_data['descripcion']
+        if len(descripcion) < 10:
+            raise forms.ValidationError('La descripción debe tener al menos 10 caracteres')
+        if len(descripcion) > 200:
+            raise forms.ValidationError('La descripción no puede tener más de 200 caracteres')
+        if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s,\.]+$', descripcion):
+            raise forms.ValidationError("Solo se permiten letras, números, espacios, coma (,) y punto (.)")
+        return descripcion
+    
+    def clean_precio(self):
+        precio = self.cleaned_data['precio']
+        if precio < 0:
+            raise forms.ValidationError('El precio no puede ser negativo')
+        if precio == 0:
+            raise forms.ValidationError('El precio no puede ser cero')
+        if precio is None:
+            raise forms.ValidationError('El precio es obligatorio')
+        if re.match(r'\^[0-9\.]+$', str(precio)):
+            raise forms.ValidationError('El precio solo puede contener números y puntos decimales')
+        return precio
+    
+    def clean_categoria(self):
+        categoria = self.cleaned_data['categoria']
+        if categoria and categoria.estado != 'activo':
+            raise forms.ValidationError('La categoría seleccionada no está activa')
+        return categoria
+
 class NotificacionForm(ModelForm):
     class Meta:
         model = Notificacion

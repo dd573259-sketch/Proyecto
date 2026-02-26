@@ -7,7 +7,7 @@
       <tr>
         <th scope="col">#</th>
         <th scope="col">Nombre</th>
-        <th scope="col">Descripción</th>
+        <th scope="col" data-col="descripcion">Descripción</th>
         <th scope="col">Estado</th>
         <th scope="col">Fecha de Creación</th>
         <th scope="col">Fecha de Actualización</th>
@@ -21,7 +21,7 @@
       <tr>
         <td>{{ c.id }}</td>
         <td>{{ c.nombre }}</td>
-        <td>{{ c.descripcion }}</td>
+        <td data-col="descripcion">{{ c.descripcion }}</td>
         <td>{{ c.estado }}</td>
         <td>{{ c.fecha_creacion }}</td>
         <td>{{ c.fecha_actualizacion }}</td>
