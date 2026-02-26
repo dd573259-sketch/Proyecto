@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from django.core.exceptions import ValidationError
 from datetime import datetime
 from decimal import Decimal
 
@@ -265,42 +266,65 @@ class Pedido(models.Model):
     def __str__(self):
         return f"Pedido {self.id_pedido}"
 
+
 class insumo(models.Model):
+
+    UNIDAD_OPCIONES = [
+        ("kg", "Kilogramo (kg)"),
+        ("g", "Gramo (g)"),
+        ("l", "Litro (L)"),
+        ("ml", "Mililitro (ml)"),
+        ("m", "Metro (m)"),
+        ("cm", "Centímetro (cm)"),
+        ("unidad", "Unidad"),
+    ]
+
     id_insumo = models.AutoField(primary_key=True)
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.CharField(max_length=100)
-    unidad = models.PositiveIntegerField(validators=[MinValueValidator(0)])
-    valor = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
+    unidad = models.CharField( max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField(default=0)
-    
+
     def __str__(self):
         return self.nombre
-    
     class Meta:
-
         verbose_name = 'insumo'
         verbose_name_plural = 'insumos'
         db_table = 'insumo'
 
-class recetas(models.Model):
-    id_receta = models.AutoField(primary_key=True)
-    plato= models.CharField(max_length=100)
-    nombre= models.CharField(max_length=100)
-    descripcion= models.CharField(max_length=100)
-    unidad = models.PositiveIntegerField(validators=[MinValueValidator(0)])
-    valor = models.DecimalField(max_digits=10, decimal_places=2, validators=[MinValueValidator(0)])
-    stock = models.PositiveIntegerField(default=0)
+class Receta(models.Model):
+    plato = models.ForeignKey(Plato, on_delete=models.CASCADE, related_name='recetas')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
-    fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f'{self.nombre}' - {self.insumo}
-    
+        return f"Receta de {self.plato.nombre}"
+        @property
+        def costo_total(self):
+            return sum(
+                detalle.cantidad * detalle.insumo.valor
+                for detalle in self.detalles.all()
+            )
+
     class Meta:
-        verbose_name = 'receta'
-        verbose_name_plural = 'recetas'
         db_table = 'receta'
+        verbose_name = 'Receta'
+        verbose_name_plural = 'Recetas'
+
+class DetalleReceta(models.Model):
+    receta = models.ForeignKey(Receta, on_delete=models.CASCADE, related_name='detalles')
+    insumo = models.ForeignKey(insumo, on_delete=models.CASCADE)
+    cantidad = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+
+    def __str__(self):
+        return f"{self.insumo.nombre} - {self.cantidad}"
+
+    class Meta:
+        db_table = 'detalle_receta'
+        unique_together = ('receta', 'insumo')
+        verbose_name = 'Detalle Receta'
+        verbose_name_plural = 'Detalles Recetas'
 
 class Notificacion(models.Model):
     id_notificacion = models.AutoField(primary_key=True)
