@@ -32,6 +32,16 @@ class ComandaListView(ListView):
 
 
         return queryset
+    
+    def get_queryset(self):
+        return Comanda.objects.select_related(
+            "pedido",
+            "pedido__mesa",
+            "pedido__usuario"
+        ).prefetch_related(
+            "pedido__detalle_platos__plato",
+            "pedido__detalle_productos__producto"
+        )
 
 
 class ComandaUpdateView(UpdateView):

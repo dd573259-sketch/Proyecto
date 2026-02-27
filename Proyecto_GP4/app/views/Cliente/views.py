@@ -15,6 +15,7 @@ class ClienteListView(ListView):
         context['titulo'] = 'Gestión de Clientes'
         context['icono'] = 'fa-solid fa-users'
         context['crear_url'] = reverse_lazy('app:crear_cliente')
+        context['buscar'] = self.request.GET.get('buscar', '')
         return context
 
     def get_queryset(self):

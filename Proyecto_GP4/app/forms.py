@@ -15,10 +15,8 @@ class ClienteForm(ModelForm):
         model = Cliente
         fields = '__all__'
         widgets = {
-            'numero_documento': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el número de documento',
-                'min': '1'
-            }),
+            'numero_documento': forms.TextInput(attrs={
+                'placeholder': 'Ingrese la cédula del cliente'}),
             'nombre': forms.TextInput(attrs={
                 'placeholder': 'Ingrese el nombre del cliente'
             }),
@@ -32,19 +30,17 @@ class ClienteForm(ModelForm):
                 'placeholder': 'Ingrese el correo electrónico del cliente'
             }),
             'direccion': forms.TextInput(attrs={
-                'placeholder': 'Ingrese la dirección del cliente'
-            }),
-            'tipo_cliente': forms.Select(),
+                'placeholder': 'Ingrese la dirección del cliente'}),
+            'tipo_cliente': forms.Select(attrs={
+                'placeholder': 'Seleccione el tipo de cliente'}),
         }
-
-    #Nombre obligatorio y solo letras
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
 
         if not nombre:
             raise forms.ValidationError("El nombre no puede estar vacío.")
 
-        if not nombre.replace(" ", "").isalpha():
+        if not nombre.isalpha():
             raise forms.ValidationError("El nombre solo debe contener letras.")
 
         return nombre
@@ -55,18 +51,18 @@ class ClienteForm(ModelForm):
         if not apellido:
             raise forms.ValidationError("El apellido no puede estar vacío.")
 
-        if not apellido.replace(" ", "").isalpha():
+
+        if not apellido.isalpha():
             raise forms.ValidationError("El apellido solo debe contener letras.")
 
         return apellido
 
 
-    #Correo solo gmail o hotmail
     def clean_correo_electronico(self):
         correo = self.cleaned_data.get('correo_electronico')
 
-        if not correo:
-            raise forms.ValidationError("El correo es obligatorio.")
+        if "@" not in correo:
+            raise forms.ValidationError("El correo debe contener un '@'.")
 
         if not (correo.endswith("@gmail.com") or correo.endswith("@hotmail.com")):
             raise forms.ValidationError("El correo debe ser gmail.com o hotmail.com.")
@@ -74,7 +70,6 @@ class ClienteForm(ModelForm):
         return correo
 
 
-    # ✅ 3️⃣ Teléfono solo números y 10 dígitos
     def clean_telefono(self):
         telefono = self.cleaned_data.get('telefono')
 
@@ -87,7 +82,6 @@ class ClienteForm(ModelForm):
         return telefono
 
 
-    # ✅ 4️⃣ Documento positivo y mínimo 6 dígitos
     def clean_numero_documento(self):
         numero = self.cleaned_data.get('numero_documento')
 
@@ -95,9 +89,10 @@ class ClienteForm(ModelForm):
             raise forms.ValidationError("El número de documento debe ser positivo.")
 
         if len(str(numero)) < 6:
-            raise forms.ValidationError("El número de documento debe tener mínimo 6 dígitos.")
+            raise forms.ValidationError("El número de documento es demasiado corto.")
 
         return numero
+    
 class PedidoForm(ModelForm):
     class Meta:
         model = Pedido

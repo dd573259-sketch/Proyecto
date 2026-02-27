@@ -173,6 +173,63 @@ class Mesa(models.Model):
     id_mesa = models.AutoField(primary_key=True)
     numero_mesa = models.IntegerField(unique=True)
     estado = models.CharField(max_length=20)
+
+    ESTADO = [
+        ("Disponible", "Disponible"),
+        ("No disponible", "No disponible"),
+    ]
+
+    estado = models.CharField(max_length=15, choices=ESTADO, default="Disponible")
+
+    class Meta:
+        verbose_name = "Mesa"
+        verbose_name_plural = "Mesas"
+        db_table = 'mesa'
+
+    def __str__(self):
+        return f"Mesa {self.numero_mesa}"
+
+
+class Pedido(models.Model):
+    
+    ESTADO = [
+        ("Preparación", "Preparación"),
+        ("Entregado", "Entregado"),
+    ]
+    
+    id_pedido = models.AutoField(primary_key=True)
+    mesa = models.ForeignKey(Mesa, on_delete=models.CASCADE)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
+    cantidades = models.IntegerField(validators=[MinValueValidator(1)])
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    fecha_hora = models.DateTimeField(auto_now_add=True)
+    estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación")
+
+    class Meta:
+        verbose_name = "Pedido"
+        verbose_name_plural = "Pedidos"
+        db_table = 'pedido'
+
+    def __str__(self):
+        return f"Pedido {self.id_pedido}"
+
+    @property
+    def total(self):
+        return self.producto.precio * self.cantidades
+    
+class Comanda(models.Model):
+    id_comanda = models.AutoField(primary_key=True)
+    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)    
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    fecha_hora = models.DateTimeField(auto_now_add=True)
+
+    ESTADO = [
+        ("Preparación", "Preparación"),
+        ("Entregado", "Entregado"),
+    ]
+
+    estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación")
+
     ESTADO = [
         ("Disponible", "Disponible"),
         ("No disponible", "No disponible"),
@@ -247,6 +304,7 @@ class DetallePlato(models.Model):
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name="detalle_platos", verbose_name="Pedido")
     plato = models.ForeignKey('Plato', on_delete=models.CASCADE, verbose_name="Plato")
     cantidad = models.PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name="Cantidad")
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Precio Unitario")
 
     class Meta:
         verbose_name = "Detalle de Plato"
@@ -258,14 +316,16 @@ class DetallePlato(models.Model):
 
     @property
     def subtotal(self):
-        """Toma el precio directamente de la BD y multiplica por la cantidad."""
-        return self.cantidad * self.plato.precio
+        """Usa el precio guardado al crear el pedido, o calcula desde BD si no existe."""
+        precio = self.precio_unitario or self.plato.precio
+        return self.cantidad * precio
 
 class DetallePedido(models.Model):
 
     pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE, related_name="detalle_productos", verbose_name="Pedido")
     producto = models.ForeignKey('Producto', on_delete=models.CASCADE, verbose_name="Producto")
     cantidad = models.PositiveIntegerField(default=1, validators=[MinValueValidator(1)], verbose_name="Cantidad")
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Precio Unitario")
 
     class Meta:
         verbose_name = "Detalle de Producto"
@@ -278,12 +338,22 @@ class DetallePedido(models.Model):
 
     @property
     def subtotal(self):
-        return self.cantidad * self.producto.precio
+        """Usa el precio guardado al crear el pedido, o calcula desde BD si no existe."""
+        precio = self.precio_unitario or self.producto.precio
+        return self.cantidad * precio
             
 class Comanda(models.Model):
+
     id_comanda = models.AutoField(primary_key=True)
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)    
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+
+    pedido = models.OneToOneField(
+        Pedido,
+        on_delete=models.CASCADE,
+        related_name="comanda"
+    )
+
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+
     fecha_hora = models.DateTimeField(auto_now_add=True)
 
     ESTADO = [
@@ -294,12 +364,11 @@ class Comanda(models.Model):
     estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación")
 
     class Meta:
-        verbose_name = "Comanda"
-        verbose_name_plural = "Comandas"
-        db_table = 'comanda'
+        db_table = "comanda"
+        ordering = ['-fecha_hora']
 
     def __str__(self):
-        return f"Comanda {self.id_comanda}"
+        return f"Comanda #{self.id_comanda}"
 
 
         

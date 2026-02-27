@@ -3,10 +3,14 @@
 {% block Contenido %}
 <div class="tabla-wrapper">
   <form method="GET" class="mb-3">
-    <input type="text" name="buscar" placeholder="Buscar por estado" value="{{ request.GET.buscar }}"
-      class="form-control" style="width: 300px; display: inline;">
+    <input type="text" name="buscar" placeholder="Buscar por estado" 
+      value="{{ request.GET.buscar }}"
+      class="form-control" 
+      style="width: 300px; display: inline;">
 
-    <input type="date" name="fecha" value="{{ request.GET.fecha }}" class="form-control"
+    <input type="date" name="fecha" 
+      value="{{ request.GET.fecha }}" 
+      class="form-control"
       style="width: 200px; display: inline;">
 
     <button type="submit" class="btn btn-primary">
@@ -23,55 +27,52 @@
   <table class="tabla" id="tabla">
     <thead>
       <tr>
-        <th>id_pedido</th>
+        <th>ID</th>
+        <th>Mesa</th>
+        <th>Platos</th>
+        <th>Productos</th>
+        <th>Empleado</th>
         <th>Fecha</th>
         <th>Estado</th>
-        <th>Usuario</th>
-        <th>Detalle</th>
-        <th>Editar</th>
-        <th>Eliminar</th>
+        <th>Total</th>
       </tr>
     </thead>
 
     <tbody>
-      {% for c in object_list %}
-      <tr>
-        <td>{{ c.id_pedido }}</td>
-        <td>{{ c.fecha_hora|date:"d/m/Y H:i" }}</td>
-        <td>{{ c.estado }}</td>
-        <td>{{ c.usuario }}</td>
+        {% for c in object_list %}
+        <tr>
+            <td>{{ c.id_comanda }}</td>
+            <td>Mesa {{ c.pedido.mesa.numero_mesa }}</td>
 
-        <td>
-          {% if buscar or fecha %}
-          <a href="{% url 'app:detalle_pedido' c.id_pedido %}" class="btn btn-success btn-sm">
-            Detalle
-          </a>
-          {% endif %}
-        </td>
+            <td>
+                {% for d in c.pedido.detalle_platos.all %}
+                    {{ d.plato.nombre }} (x{{ d.cantidad }})<br>
+                {% empty %}
+                    Sin platos
+                {% endfor %}
+            </td>
 
-        <td>
-          <a href="{% url 'app:editar_pedido' c.id_pedido %}" class="btn btn-primary btn-sm">
-            Editar
-          </a>
-        </td>
+            <td>
+                {% for d in c.pedido.detalle_productos.all %}
+                    {{ d.producto.nombre }} (x{{ d.cantidad }})<br>
+                {% empty %}
+                    Sin productos
+                {% endfor %}
+            </td>
 
-        <td>
-          <a href="{% url 'app:eliminar_pedido' c.id_pedido %}" class="btn btn-danger btn-sm">
-            Eliminar
-          </a>
-        </td>
-      </tr>
-
-      {% empty %}
-      <tr>
-        <td colspan="7" class="text-center">
-          No hay pedidos registrados.
-        </td>
-      </tr>
-      {% endfor %}
+            <td>{{ c.pedido.usuario }}</td>
+            <td>{{ c.fecha_hora|date:"d/m/Y H:i" }}</td>
+            <td>{{ c.estado }}</td>
+            <td>${{ c.pedido.total }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" class="text-center">
+                No hay comandas registradas
+            </td>
+        </tr>
+        {% endfor %}
     </tbody>
-  </table>
-</div>
-
+</table>
 
 {% endblock %}
