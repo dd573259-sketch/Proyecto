@@ -10,7 +10,7 @@
         <th scope="col">Nombre</th>
         <th scope="col" data-col="descripcion">Descripción</th>
         <th scope="col">precio</th>
-        <th scope="col">Editar</th>
+        
       </tr>
     </thead>
     <tbody>
@@ -27,14 +27,10 @@
 
 
         <td>
-          $ {{ m.platos.precio }}
+          $ {{ m.plato.precio }}
         </td>
 
-        <td>
-          <a href="{% url 'app:editar_plato' m.plato.id_plato %}" class="btn btn-primary btn-xs">
-            <i class="fas fa-edit"></i>
-          </a>
-        </td>
+        
 
       </tr>
       {% endfor %}
@@ -51,7 +47,7 @@
         <th scope="col">Nombre</th>
         <th scope="col" data-col="descripcion">Descripción</th>
         <th scope="col">precio</th>
-        <th scope="col">Editar</th>
+        
       </tr>
     </thead>
     <tbody>
@@ -72,12 +68,7 @@
           $ {{ m.producto.precio }}
         </td>
 
-        <td>
-          <a href="{% url 'app:editar_producto' m.producto.id_producto %}" class="btn btn-primary btn-xs">
-            <i class="fas fa-edit"></i>
-          </a>
-
-        </td>
+        
       </tr>
       {% endfor %}
     </tbody>

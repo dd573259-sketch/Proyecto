@@ -5,6 +5,9 @@
 <header>
     <a href="#"><img id="logo" src="{% static 'imagenes/logo.png' %}" alt="Logo"></a>
     <div class="header-right">
-        <a href="login.html"><img class="icono" src="{% static 'imagenes/cerrar-sesion.png' %}" alt="Cerrar sesión"></a>
+        <form method="post" action="{% url 'login:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link"><img class="icono" src="{% static 'imagenes/cerrar-sesion.png' %}" alt="Cerrar sesión"></button>   
+        </form>
     </div>
 </header>
