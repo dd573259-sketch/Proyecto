@@ -55,7 +55,7 @@ class ProductoDeleteView(DeleteView):
 class ProductoUpdateView(UpdateView):   
     model = Producto
     form_class = ProductoForm
-    template_name = 'producto/editar.html'
+    template_name = 'producto/crear.html'
     success_url = reverse_lazy('app:listar_productos')
     
     def get_context_data(self, **kwargs):

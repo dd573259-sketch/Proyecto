@@ -2,13 +2,14 @@
 {% load static %}
 {% block Contenido %}
 <div class="tabla-wrapper">
-  <table class="table" id="tabla_platos">
+  <table class="tabla" id="tabla_platos">
+    <h2>Platos del Menú</h2>
     <thead>
       <tr>
         <th scope="col">#</th>
         <th scope="col">Nombre</th>
-        <th scope="col">Descripción</th>
-        <th scope="col">precio</th>d
+        <th scope="col" data-col="descripcion">Descripción</th>
+        <th scope="col">precio</th>
         <th scope="col">Editar</th>
       </tr>
     </thead>
@@ -22,7 +23,7 @@
           {{ m.plato.nombre }}
         </td>
 
-        <th scope="col" data-col="descripcion">Descripción</th>>
+        <td scope="col" data-col="descripcion">Descripción</td>>
 
 
         <td>
@@ -43,12 +44,12 @@
   </table>
 
   <table class="tabla" id="tabla_productos">
-    <h1>Productos</h1>
+    <h2>Productos</h2>
     <thead>
       <tr>
         <th scope="col">#</th>
         <th scope="col">Nombre</th>
-        <th scope="col">Descripción</th>
+        <th scope="col" data-col="descripcion">Descripción</th>
         <th scope="col">precio</th>
         <th scope="col">Editar</th>
       </tr>
@@ -64,7 +65,7 @@
           {{ m.producto.nombre }}
         </td>
 
-        <th scope="col" data-col="descripcion">Descripción</th>
+        <td scope="col" data-col="descripcion">Descripción</td>
 
 
         <td>
@@ -84,24 +85,3 @@
 </div>
 {% endblock %}
 
-{% block js %}
-<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
-<script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
-
-<script>
-  $(document).ready(function () {
-    $('#tabla_platos').DataTable({
-      responsive: true,
-      autoWidth: false,
-    });
-
-    $('#tabla_productos').DataTable({
-      responsive: true,
-      autoWidth: false,
-    });
-  });
-</script>
-{% endblock js %}

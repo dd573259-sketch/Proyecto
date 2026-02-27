@@ -23,12 +23,12 @@
         <td>${{ v.total_venta }}</td>
         <td>{{ v.fecha_venta }}</td>
         <td>
-          <a href="{% url 'app:editar_venta' v.pk %}" class="btn btn-primary btn-xs">
+          <a href="{% url}" class="btn btn-primary btn-xs">
             <i class="fas fa-edit"></i>
           </a>
         </td>
         <td>
-          <a href="{% url 'app:eliminar_venta' v.pk %}" class="btn btn-danger btn-xs">
+          <a href="{% url 'app:eliminar_venta' v.id_venta %}" class="btn btn-danger btn-xs">
             <i class="fas fa-trash"></i>
           </a>
         </td>

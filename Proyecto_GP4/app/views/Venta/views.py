@@ -41,6 +41,7 @@ class VentaCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fas fa-plus-circle'
         context['titulo'] = 'Crear Nueva Venta'
+        context['listar_url'] = reverse_lazy('app:listar_ventas')
         return context
 
 class VentaUpdateView(UpdateView):

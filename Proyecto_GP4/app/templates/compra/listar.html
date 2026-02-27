@@ -20,10 +20,10 @@
       {% for u in object_list %}
       <tr>
         <td>{{ u.id_compra }}</td>
-        <td>{{ u.id_proveedor.nombre_proveedor }}</td>
-        <td>{{ u.id_usuario.nombre }}</td>
-        <td>{{ u.id_producto.nombre }}</td>
-        <td>{{ u.id_insumo.nombre }}</td>
+        <td>{{ u.proveedor_id }}</td>
+        <td>{{ u.usuario_id }}</td>
+        <td>{{ u.producto_id }}</td>
+        <td>{{ u.insumo }}</td>
         <td>{{ u.fecha_compra }}</td>
         <td>{{ u.total_compra }}</td>
         <td>

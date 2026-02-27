@@ -64,6 +64,7 @@ urlpatterns = [
 # VENTAS
     path('listar_ventas/', VentaListView.as_view(), name='listar_ventas'),
     path('crear_venta/', VentaCreateView.as_view(), name='crear_venta'),
+    path('editar_venta/<int:pk>/', VentaUpdateView.as_view(), name='editar_venta'),
     path('eliminar_venta/<int:pk>/', VentaDeleteView.as_view(), name='eliminar_venta'),
     
 # PAGOS
