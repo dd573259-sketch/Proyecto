@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'widget_tweaks',
     'app',
+    'Login',
 ]
 
 MIDDLEWARE = [
@@ -123,3 +124,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_REDIRECT_URL = 'app:listar_categorias'
+LOGOUT_REDIRECT_URL = 'login:login'
+LOGIN_URL = 'login:login'
+LOGOUT_URL = 'login:logout'
