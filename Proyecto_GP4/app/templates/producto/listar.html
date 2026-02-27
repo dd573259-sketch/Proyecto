@@ -7,10 +7,12 @@
       <tr>
         <th>#</th>
         <th>Nombre</th>
-        <th>Descripción</th>
+        <th scope="col" data-col="descripción">Descripción</th>
         <th>Unidad</th>
         <th>Precio</th>
         <th>Stock</th>
+        <th>Fecha de Ingreso</th>
+        <th>Fecha de Vencimiento</th>
         <th>Editar</th>
         <th>Eliminar</th>
       </tr>
@@ -25,7 +27,9 @@
         <td>{{ u.unidad }}</td>
         <td>{{ u.precio }}</td>
         <td>{{ u.stock }}</td>
-        <td>
+        <td>{{ u.fecha_ingreso }}</td>
+        <td>{{ u.fecha_vencimiento }}</td>
+      <td>
 
           <a href="{% url 'app:editar_producto' u.id_producto %}" class="btn btn-primary btn-xs"><i
               class="fas fa-edit"></i></a>

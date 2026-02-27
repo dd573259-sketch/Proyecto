@@ -551,6 +551,7 @@ class PagoForm(ModelForm):
         }
 
 class UsuarioForm(ModelForm):
+    
     class Meta:
         model = Usuario
         fields = '__all__'
@@ -563,10 +564,13 @@ class UsuarioForm(ModelForm):
                 'placeholder': 'Ingrese el correo electrónico del usuario'}),
             'rol': forms.Select(attrs={
                 'placeholder': 'Seleccione el rol del usuario'}),
-            'contraseña': forms.PasswordInput(attrs={
+            'contrasena': forms.PasswordInput(attrs={
                 'placeholder': 'Ingrese la contraseña del usuario'}),
-            'verificar_contraseña': forms.PasswordInput(attrs={
-                'placeholder': 'Verifique la contraseña del usuario'}),
+            'numero_documento': forms.TextInput(attrs={
+                'placeholder': 'Ingrese el número de documento del usuario'}),
+            'contrasena_actual': forms.PasswordInput(attrs={
+                'placeholder': 'Ingrese la contraseña actual del usuario'}),
+    
         }
     def clean_nombre(self): 
         nombre = self.cleaned_data.get('nombre')
@@ -583,14 +587,52 @@ class UsuarioForm(ModelForm):
         if not re.match(r'^[a-zA-Z\s]+$', apellido):
             raise forms.ValidationError('El apellido solo puede contener letras y espacios')   
         return apellido
+
+    def clean_correo_electronico(self):
+        correo = self.cleaned_data.get('correo_electronico')
+
+        if not correo:
+            raise forms.ValidationError("El correo electrónico es obligatorio.")
+        correo = correo.lower().strip()
+        usuarios = Usuario.objects.filter(correo_electronico__iexact=correo)
+        if self.instance.pk:
+            usuarios = usuarios.exclude(pk=self.instance.pk)
+        if usuarios.exists():
+            raise forms.ValidationError("El correo electrónico ya está registrado.")
+        return correo
     
     def clean_contrasena(self):
         contrasena = self.cleaned_data.get('contrasena')
         if len(contrasena) < 8:
             raise forms.ValidationError('La contraseña debe tener al menos 8 caracteres')
-        return contrasena
+        if not re.search(r'[A-Z]', contrasena):
+            raise forms.ValidationError('La contraseña debe contener al menos una letra mayúscula')
 
+        if not re.search(r'[a-z]', contrasena):
+            raise forms.ValidationError('La contraseña debe contener al menos una letra minúscula')
+
+        if not re.search(r'[0-9]', contrasena):
+            raise forms.ValidationError('La contraseña debe contener al menos un número')
+        
+        if not re.search(r'[!@#$%^&*(),.?":{}|<>]', contrasena):
+            raise forms.ValidationError('La contraseña debe contener al menos un carácter especial')
+
+        if re.search(r'(.)\1{3,}', contrasena):
+            raise forms.ValidationError('La contraseña no puede contener caracteres repetidos más de 3 veces')
+
+        if contrasena in ['123456', 'password', 'qwerty', 'admin123']:
+            raise forms.ValidationError('La contraseña es demasiado común')
+        
+        return contrasena
     
+    def clean_numero_documento(self):
+        numero_documento = self.cleaned_data.get('numero_documento')
+        if not re.match(r'^[0-9]+$', numero_documento):
+            raise forms.ValidationError('El número de documento solo puede contener números')
+        if len(numero_documento) < 10:
+            raise forms.ValidationError('El número de documento debe tener al menos 10 caracteres') 
+        return numero_documento
+
     
     
 class ProveedorForm(ModelForm):
@@ -608,7 +650,67 @@ class ProveedorForm(ModelForm):
                 'placeholder': 'Ingrese la dirección del proveedor',
                 'rows': 3,
                 'cols': 3}),
+            'numero_documento': forms.TextInput(attrs={
+                'placeholder': 'Ingrese el número de documento del proveedor'}),
         }
+
+    def clean_nombre_proveedor(self):
+        nombre = (self.cleaned_data.get('nombre_proveedor') or "").strip()
+
+        if not nombre:
+            raise forms.ValidationError('El nombre es obligatorio.')
+
+        if len(nombre) < 3:
+            raise forms.ValidationError('El nombre del proveedor debe tener al menos 3 caracteres')
+        if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\.\-&]+$', nombre):
+            raise forms.ValidationError('El nombre contiene caracteres no permitidos')
+
+        return nombre
+
+    def clean_telefono(self):
+        telefono = (self.cleaned_data.get('telefono') or "").strip()
+
+        if not telefono:
+            raise forms.ValidationError('El teléfono es obligatorio.')
+
+        if not telefono.isdigit():
+            raise forms.ValidationError('El teléfono solo puede contener números')
+
+        if len(telefono) < 10:
+            raise forms.ValidationError('El teléfono debe tener al menos 10 caracteres')
+
+        return telefono
+
+    def clean_correo_electronico(self):
+        correo = (self.cleaned_data.get('correo_electronico') or "").strip().lower()
+
+        if not correo:
+            raise forms.ValidationError('El correo electrónico es obligatorio.')
+
+        proveedores = Proveedor.objects.filter(correo_electronico__iexact=correo)
+        if self.instance.pk:
+            proveedores = proveedores.exclude(pk=self.instance.pk)
+
+        if proveedores.exists():
+            raise forms.ValidationError('El correo electrónico ya está registrado.')
+
+        return correo
+
+    def clean_direccion(self):
+        direccion = (self.cleaned_data.get('direccion') or "").strip()
+
+        if len(direccion) < 10:
+            raise forms.ValidationError('La dirección debe tener al menos 10 caracteres')
+
+        return direccion
+
+    def clean_numero_documento(self):
+        numero = (self.cleaned_data.get('numero_documento') or "").strip()
+
+        if not numero.isdigit():
+            raise forms.ValidationError('El número de documento debe contener solo números.')
+
+        return numero
 
 class ProductoForm(ModelForm):
     class Meta:
@@ -621,13 +723,60 @@ class ProductoForm(ModelForm):
                 'placeholder': 'Ingrese la descripción del producto',
                 'rows': 3,
                 'cols': 3}),
-            'unidad': forms.TextInput(attrs={
-                'placeholder': 'Ingrese la unidad del producto'}),
             'precio': forms.NumberInput(attrs={
                 'placeholder': 'Ingrese el precio del producto'}),
             'stock': forms.NumberInput(attrs={
                 'placeholder': 'Ingrese el stock del producto'}),
+            'fecha_ingreso': forms.DateInput(attrs={'type': 'date',}),
+            'fecha_vencimiento': forms.DateInput(attrs={'type': 'date',
+                'placeholder': 'Ingrese la fecha de vencimiento del producto'}),
         }
+
+    def clean_nombre(self):
+        nombre = (self.cleaned_data.get('nombre') or "").strip()
+        if not nombre:
+            raise forms.ValidationError('El nombre es obligatorio.')
+
+        if len(nombre) < 3:
+            raise forms.ValidationError('El nombre del producto debe tener al menos 3 caracteres')
+
+        if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\.\-&]+$', nombre):
+            raise forms.ValidationError('El nombre contiene caracteres no permitidos')
+        return nombre
+
+    def clean_descripcion(self):
+        descripcion = (self.cleaned_data.get('descripcion') or "").strip()
+
+        if not descripcion:
+            raise forms.ValidationError('La descripción es obligatoria.')
+
+        if len(descripcion) < 5:
+            raise forms.ValidationError('La descripción debe tener al menos 5 caracteres')
+        return descripcion
+
+
+
+    def clean_precio(self):
+        precio = self.cleaned_data.get('precio')
+
+        if precio is None:
+            raise forms.ValidationError('El precio es obligatorio.')
+
+        if precio <= 0:
+            raise forms.ValidationError('El precio debe ser mayor a 0')
+        return precio
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        fecha_ingreso = cleaned_data.get('fecha_ingreso')
+        fecha_vencimiento = cleaned_data.get('fecha_vencimiento')
+
+        if fecha_vencimiento and fecha_ingreso:
+            if fecha_vencimiento <= fecha_ingreso:
+                self.add_error('fecha_vencimiento', 'La fecha de vencimiento debe ser posterior a la fecha de ingreso.')
+        return cleaned_data
+
 class CompraForm(ModelForm):
     class Meta:
         model = Compra
