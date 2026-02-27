@@ -15,7 +15,7 @@
     </thead>
     <tbody>
 
-      {% for m in plato_menu %}
+      {% for m in platos_menu %}
       <tr>
         <td>{{ m.id_menu }}</td>
 
@@ -23,11 +23,11 @@
           {{ m.plato.nombre }}
         </td>
 
-        <td scope="col" data-col="descripcion">Descripción</td>>
+        <td scope="col" data-col="descripcion">Descripción</td>
 
 
         <td>
-          $ {{ m.plato.precio }}
+          $ {{ m.platos.precio }}
         </td>
 
         <td>
