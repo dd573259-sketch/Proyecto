@@ -1,6 +1,13 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
+<form method="GET" class="mb-3 d-flex gap-2 align-items-center">
+    <input type="text" name="buscar" placeholder="Buscar por numero documento"
+           value="{{ request.GET.buscar }}"
+           class="form-control"
+           style="width: 300px;">
+
+</form>
 <table class="table" id="tabla">
   <thead>
     <tr>
@@ -21,7 +28,7 @@
     {% for c in object_list %}
     <tr>
       <td>{{ c.id_cliente }}</td>
-      <td>{{ c.cedula }}</td>
+      <td>{{ c.numero_documento }}</td>
       <td>{{ c.nombre }}</td>
       <td>{{ c.apellido }}</td>
       <td>{{ c.telefono }}</td>
@@ -44,20 +51,3 @@
   </a>
 </div>
 {% endblock %}
-
-{% block js %}
-<script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/jquery.dataTables.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/js/dataTables.bootstrap4.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/dataTables.responsive.min.js' %}"></script>
-    <script src="{% static 'lib/datatables-1.10.20/plugins/responsive-2.2.3/js/responsive.bootstrap4.min.js' %}"></script>
-
-<script>
-  $(document).ready(function () {
-    $('#tabla').DataTable({
-      responsive: true,
-      autoWidth: false,
-    });
-  });
-</script>
-{% endblock js %}

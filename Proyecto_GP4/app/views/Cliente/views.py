@@ -14,6 +14,7 @@ class ClienteListView(ListView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Gestión de Clientes'
         context['crear_url'] = reverse_lazy('app:crear_cliente')
+        context['buscar'] = self.request.GET.get('buscar', '')
         return context
 
 # Crear una nueva cliente

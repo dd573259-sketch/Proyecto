@@ -3,7 +3,7 @@
 
 {% block Contenido %}
 
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="{% static 'css/select2.min.css' %}" rel="stylesheet" />
 
 <div class="container mt-4">
     <h2 class="mb-4">{{ titulo }}</h2>
@@ -135,7 +135,7 @@
 {% endblock Contenido %}
 
 {% block js %}
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="{% static 'js/select2.min.js' %}"></script>
 
 <script>
     // Obtener datos JSON del context
@@ -206,6 +206,72 @@
             }
         }
     }
+    function validarDuplicadoPlato(filaActual) {
+        const selectActual = filaActual.find('select[name$="-plato"]');
+        const platoId = selectActual.val();
+        if (!platoId) return false;
+
+        let duplicado = false;
+        $('.fila-plato').not(filaActual).each(function() {
+            const otroId = $(this).find('select[name$="-plato"]').val();
+            if (otroId && otroId === platoId) {
+                duplicado = true;
+                return false; // break
+            }
+        });
+
+        if (duplicado) {
+            const nombrePlato = selectActual.find('option:selected').text();
+            Swal.fire({
+                icon: 'warning',
+                title: '¡Plato repetido!',
+                html: `El plato <strong>${nombrePlato}</strong> ya está en el pedido.<br>
+                        Si quieres más cantidad, edita la fila que ya existe 😊`,
+                confirmButtonText: 'Entendido'
+            });
+            selectActual.val('').trigger('change');
+            filaActual.find('input[name$="-cantidad"]').val(1);
+            filaActual.find('.subtotal-plato').val('');
+            recalcularTotal();
+        }
+
+        return duplicado;
+    }
+
+// Valida si el producto ya fue seleccionado en otra fila
+    function validarDuplicadoProducto(filaActual) {
+        const selectActual = filaActual.find('select[name$="-producto"]');
+        const productoId = selectActual.val();
+        if (!productoId) return false;
+
+        let duplicado = false;
+        $('.fila-producto').not(filaActual).each(function() {
+            const otroId = $(this).find('select[name$="-producto"]').val();
+            if (otroId && otroId === productoId) {
+                duplicado = true;
+                return false; // break
+            }
+        });
+
+        if (duplicado) {
+            const nombreProducto = selectActual.find('option:selected').text();
+            Swal.fire({
+                icon: 'warning',
+                title: '¡Producto repetido!',
+                html: `El producto <strong>${nombreProducto}</strong> ya está en el pedido.<br>
+                Si quieres más cantidad, edita la fila que ya existe`,
+                confirmButtonText: 'Entendido'
+            });
+            selectActual.val('').trigger('change');
+            filaActual.find('input[name$="-cantidad"]').val(1);
+                filaActual.find('.subtotal-producto').val('');
+            recalcularTotal();
+        }
+
+        return duplicado;
+    }
+
+
 
     // --- 3. LÓGICA DINÁMICA (AGREGAR FILAS) ---
 
@@ -370,6 +436,9 @@
     $(document).on('change', '.fila-plato select, .fila-plato input', function(e) {
         const fila = $(this).closest('.fila-plato');
         if (fila.length) {
+            if ($(this).is('select')) {
+                if (validarDuplicadoPlato(fila)) return;
+            }
             calcularSubtotalPlato(fila);
             recalcularTotal();
         }
@@ -379,6 +448,9 @@
     $(document).on('change', '.fila-producto select, .fila-producto input', function(e) {
         const fila = $(this).closest('.fila-producto');
         if (fila.length) {
+            if ($(this).is('select')) {
+                if (validarDuplicadoProducto(fila)) return;
+            }
             validarStock(fila);
             calcularSubtotalProducto(fila);
             recalcularTotal();
@@ -389,8 +461,12 @@
     $(document).on('select2:select select2:unselect', '.select2', function() {
         const fila = $(this).closest('.fila-plato, .fila-producto');
         if (fila.length) {
-            if (fila.hasClass('fila-plato')) calcularSubtotalPlato(fila);
+            if (fila.hasClass('fila-plato')) {
+                validarDuplicadoPlato(fila);
+                calcularSubtotalPlato(fila);
+            }
             if (fila.hasClass('fila-producto')) {
+                validarDuplicadoProducto(fila);
                 validarStock(fila);
                 calcularSubtotalProducto(fila);
             }

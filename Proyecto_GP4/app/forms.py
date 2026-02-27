@@ -8,7 +8,7 @@ class ClienteForm(ModelForm):
         model = Cliente
         fields = '__all__'
         widgets = {
-            'cedula': forms.TextInput(attrs={
+            'numero_documento': forms.TextInput(attrs={
                 'placeholder': 'Ingrese la cédula del cliente'}),
             'nombre': forms.TextInput(attrs={
                 'placeholder': 'Ingrese el nombre del cliente'}),
@@ -23,6 +23,65 @@ class ClienteForm(ModelForm):
             'tipo_cliente': forms.Select(attrs={
                 'placeholder': 'Seleccione el tipo de cliente'}),
         }
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+
+        if not nombre:
+            raise forms.ValidationError("El nombre no puede estar vacío.")
+
+        if not nombre.isalpha():
+            raise forms.ValidationError("El nombre solo debe contener letras.")
+
+        return nombre
+    
+    def clean_apellido(self):
+        apellido = self.cleaned_data.get('apellido')
+
+        if not apellido:
+            raise forms.ValidationError("El apellido no puede estar vacío.")
+
+
+        if not apellido.isalpha():
+            raise forms.ValidationError("El apellido solo debe contener letras.")
+
+        return apellido
+
+
+    def clean_correo_electronico(self):
+        correo = self.cleaned_data.get('correo_electronico')
+
+        if "@" not in correo:
+            raise forms.ValidationError("El correo debe contener un '@'.")
+
+        if not (correo.endswith("@gmail.com") or correo.endswith("@hotmail.com")):
+            raise forms.ValidationError("El correo debe ser gmail.com o hotmail.com.")
+
+        return correo
+
+
+    def clean_telefono(self):
+        telefono = self.cleaned_data.get('telefono')
+
+        if not telefono.isdigit():
+            raise forms.ValidationError("El teléfono solo debe contener números.")
+
+        if len(telefono) != 10:
+            raise forms.ValidationError("El teléfono debe tener 10 dígitos.")
+
+        return telefono
+
+
+    def clean_numero_documento(self):
+        numero = self.cleaned_data.get('numero_documento')
+
+        if numero <= 0:
+            raise forms.ValidationError("El número de documento debe ser positivo.")
+
+        if len(str(numero)) < 6:
+            raise forms.ValidationError("El número de documento es demasiado corto.")
+
+        return numero
+    
 class PedidoForm(ModelForm):
     class Meta:
         model = Pedido

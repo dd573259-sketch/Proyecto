@@ -1,7 +1,7 @@
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import *
-from app.models import Pedido, Plato, Producto
+from app.models import Pedido, Plato, Producto, Comanda
 import json
 from app.forms import PedidoForm, DetallePedidoFormSet, DetallePlatoFormSet
 
@@ -103,11 +103,19 @@ class PedidoCreateView(CreateView):
                 if cleaned.get('producto') and not cleaned.get('DELETE', False):
                     form_producto.instance.precio_unitario = cleaned['producto'].precio
             formset_productos.save()
+            
+            Comanda.objects.create(
+                pedido=self.object,
+                usuario=self.object.usuario,
+                estado="Preparación"
+            )
 
             return redirect(self.success_url)
 
         # Si algo falló, volvemos al formulario con los errores
         return self.render_to_response(self.get_context_data(form=form))
+        
+    
 
 
 class PedidoUpdateView(UpdateView):

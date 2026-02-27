@@ -339,9 +339,17 @@ class DetallePedido(models.Model):
         return self.cantidad * precio
             
 class Comanda(models.Model):
+
     id_comanda = models.AutoField(primary_key=True)
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)    
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+
+    pedido = models.OneToOneField(
+        Pedido,
+        on_delete=models.CASCADE,
+        related_name="comanda"
+    )
+
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+
     fecha_hora = models.DateTimeField(auto_now_add=True)
 
     ESTADO = [
@@ -352,12 +360,11 @@ class Comanda(models.Model):
     estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación")
 
     class Meta:
-        verbose_name = "Comanda"
-        verbose_name_plural = "Comandas"
-        db_table = 'comanda'
+        db_table = "comanda"
+        ordering = ['-fecha_hora']
 
     def __str__(self):
-        return f"Comanda {self.id_comanda}"
+        return f"Comanda #{self.id_comanda}"
 
 
         
