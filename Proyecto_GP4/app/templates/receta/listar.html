@@ -9,6 +9,7 @@
         <th>#</th>
         <th>Plato</th>
         <th>Insumos</th>
+        <th>Detalle</th>
         <th>Editar</th>
         <th>Eliminar</th>
       </tr>
@@ -31,6 +32,17 @@
           </ul>
         </td>
         <td>
+            <button 
+                      class="btn btn-dark btn-sm"
+                      data-plato="{{ receta.plato.nombre }}"
+                      data-insumos="{% for detalle in receta.detalles.all %}
+                  {{ detalle.insumo.nombre }}|{{ detalle.cantidad }}|{{ detalle.insumo.valor }}{% if not forloop.last %},{% endif %}
+                  {% endfor %}"
+                      onclick="abrirModal(this)">
+                      Ver detalle
+            </button>
+        </td>
+        <td>
           <a href="{% url 'app:editar_receta' receta.id %}" class="btn btn-warning btn-sm">
             <i class="fas fa-edit"></i>
           </a>
@@ -44,6 +56,39 @@
       {% endfor %}
     </tbody>
   </table>
+  <div class="modal fade" id="detalleModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content rounded-4 shadow">
+
+      <div class="modal-header bg-dark text-white">
+        <h5 class="modal-title">Detalle de Receta</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <h4 id="nombrePlato"></h4>
+
+        <table class="table table-bordered mt-3">
+            <thead class="table-dark">
+                <tr>
+                    <th>Insumo</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="tablaInsumos">
+            </tbody>
+        </table>
+
+        <h5 class="text-end mt-3">
+            Total: $<span id="totalReceta"></span>
+        </h5>
+      </div>
+
+    </div>
+  </div>
+</div>
 </div>
 <div class="card-footer">
   <a href="{% url 'app:crear_receta' %}" class="btn btn-success">
@@ -51,3 +96,51 @@
   </a>
 </div>
 {% endblock %}
+{% block js %}
+<script>
+function abrirModal(boton) {
+
+    let plato = boton.dataset.plato;
+    let insumosData = boton.dataset.insumos;
+
+    document.getElementById("nombrePlato").innerText = plato;
+
+    let tbody = document.getElementById("tablaInsumos");
+    tbody.innerHTML = "";
+
+    let total = 0;
+
+    let insumos = insumosData.split(",");
+
+    insumos.forEach(item => {
+
+        if(!item.includes("|")) return;  // evita filas basura
+
+        let partes = item.split("|");
+
+        if(partes.length < 3) return;
+
+        let nombre = partes[0];
+        let cantidad = parseFloat(partes[1]) || 0;
+        let precio = parseFloat(partes[2]) || 0;
+        let subtotal = cantidad * precio;
+
+        total += subtotal;
+
+        tbody.innerHTML += `
+            <tr>
+                <td>${nombre}</td>
+                <td>${cantidad}</td>
+                <td>$${precio}</td>
+                <td>$${subtotal}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("totalReceta").innerText = total.toLocaleString();
+
+    let modal = new bootstrap.Modal(document.getElementById('detalleModal'));
+    modal.show();
+}
+</script>
+{% endblock js %}

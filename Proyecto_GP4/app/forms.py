@@ -351,7 +351,7 @@ class PlatoForm(ModelForm):
     
     def clean_categoria(self):
         categoria = self.cleaned_data['categoria']
-        if categoria and categoria.estado != 'activo':
+        if categoria and categoria.estado != 'Activo':
             raise forms.ValidationError('La categoría seleccionada no está activa')
         return categoria
 
