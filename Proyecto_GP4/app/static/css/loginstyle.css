@@ -1,0 +1,155 @@
+body {
+    background-image: url(../imagenes/fondo.png);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* ===== CONTENEDOR ===== */
+.contenedor {
+    width: 420px;
+    max-width: 95%;
+    background-color: #FEF8E8;
+    border: 2px solid #e5c07b; 
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* ===== BANNER SUPERIOR ===== */
+.banner {
+    background: linear-gradient(90deg, #fc4141, #ff7043);
+    text-align: center;
+    padding: 18px;
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.abaner {
+    background-color: #FFEABB;
+    height: 30px;
+}
+
+/* ===== SECCIÓN LOGIN ===== */
+.login {
+    background-color: white;
+    padding: 25px;
+    text-align: center;
+}
+
+/* Logo circular */
+.logo {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin: 10px auto 20px auto;
+    display: block;
+    border: 4px solid #fc4141;
+    box-shadow: 0 0 12px rgba(0,0,0,0.3);
+    transition: transform 0.3s;
+}
+.logo:hover {
+    transform: scale(1.05) rotate(3deg);
+}
+
+/* Títulos */
+h2 {
+    margin: 15px 0 10px 0;
+    font-size: 20px;
+    color: #333;
+}
+
+/* Inputs */
+.formulario input {
+    width: 90%;
+    padding: 12px;
+    margin: 8px auto;
+    display: block;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    background: #fdfdfd;
+    transition: 0.3s;
+}
+.formulario input:focus {
+    border-color: #107E38;
+    box-shadow: 0 0 6px rgba(16,126,56,0.6);
+}
+
+/* Mensajes de error */
+.error {
+    color: red;
+    font-size: 14px;
+    margin: 4px 0;
+    height: 18px;
+}
+
+/* Links */
+.link {
+    display: block;
+    font-size: 14px;
+    margin: 5px 0 15px 0;
+    text-decoration: none;
+    color: #107E38;
+    transition: 0.3s;
+}
+.link:hover {
+    color: #0b5727;
+    text-decoration: underline;
+}
+
+/* Botón */
+button {
+    width: 90%;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 25px;
+    background: linear-gradient(90deg, #107E38, #1ca049);
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+}
+button:hover {
+    background: linear-gradient(90deg, #0b5727, #158a3d);
+    transform: scale(1.05);
+}
+
+/* ===== Animaciones ===== */
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(-20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+    .banner {
+        font-size: 20px;
+        padding: 12px;
+    }
+    .logo {
+        width: 100px;
+        height: 100px;
+    }
+    h2 {
+        font-size: 18px;
+    }
+    .formulario input, button {
+        font-size: 14px;
+    }
+}
