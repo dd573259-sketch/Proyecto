@@ -10,7 +10,6 @@
       <th scope="col">Correo Electrónico</th>
       <th scope="col">Rol</th>
       <th scope="col">Contraseña</th>
-      <th scope="col">Verificar Contraseña</th>
       <th scope="col">Fecha Registro</th>
       <th scope="col">Editar</th>
       <th scope="col">Eliminar</th>
@@ -23,10 +22,9 @@
       <td>{{ u.id_usuario }}</td>
       <td>{{ u.nombre }}</td>
       <td>{{ u.apellido }}</td>
-      <td>{{ u.correo_electronico }}</td>
+      <td>{{ u.correo_electronico }}</td> 
+      <td>••••••••</td>
       <td>{{ u.rol }}</td>
-      <td>{{ u.contrasena }}</td>
-      <td>{{ u.verificar_contrasena }}</td>
       <td>{{ u.fecha_registro }}</td>
       <td>
         <a href="{% url 'app:editar_usuario' u.id_usuario %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>

@@ -3,6 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from django.core.validators import RegexValidator
 from datetime import datetime
+from django.utils import timezone
 
 # Create your models here.
 class Usuario(models.Model):
@@ -26,8 +27,7 @@ class Usuario(models.Model):
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
     correo_electronico = models.EmailField(unique=True)
-    contrasena = models.CharField(max_length=50)
-    verificar_contrasena = models.CharField(max_length=50)
+    contrasena = models.CharField(max_length=128)
     rol = models.CharField(max_length=20, choices=ROL_OPCIONES)
     fecha_registro = models.DateTimeField(default=datetime.now)
 
@@ -46,16 +46,16 @@ class Proveedor(models.Model):
 
     TIPO_DE_DOCUMENTO = [
         ("CC", "Cédula de Ciudadanía"),
-        ("TI", "Tarjeta de Identidad"),
+        ("NIT", "NIT"),
         ("CE", "Cédula de Extranjería"),
         ("Pasaporte", "Pasaporte"),
     ]
 
-    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO, null=True)
-    numero_documento = models.IntegerField(unique=True, null=True)
+    tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO)
+    numero_documento = models.CharField(max_length=20, unique=True)
     nombre_proveedor = models.CharField(max_length=150)
     telefono = models.CharField(max_length=15)
-    correo_electronico = models.CharField(max_length=150)
+    correo_electronico = models.EmailField(unique=True)
     direccion = models.CharField(max_length=200)
 
     class Meta:
@@ -67,16 +67,27 @@ class Proveedor(models.Model):
         return self.nombre_proveedor
 
 class Producto(models.Model):
+
+    UNIDAD_OPCIONES = [
+        ("", "Seleccione una unidad 🡇"),
+        ("kg", "Kilogramo (kg)"),
+        ("g", "Gramo (g)"),
+        ("l", "Litro (L)"),
+        ("ml", "Mililitro (ml)"),
+        ("m", "Metro (m)"),
+        ("cm", "Centímetro (cm)"),
+    ]
+
     id_producto = models.AutoField(primary_key=True)
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField()
-    unidad = models.CharField(max_length=50)
+    unidad = models.CharField(max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
     precio = models.DecimalField(max_digits=10, decimal_places=2)
-    stock = models.IntegerField()
+    stock = models.PositiveIntegerField(default=0)
+    fecha_ingreso = models.DateField(default=timezone.now)
+    fecha_vencimiento = models.DateField()
 
     class Meta:
-        verbose_name = "Producto"
-        verbose_name_plural = "Productos"
         db_table = "producto"
 
     def __str__(self):

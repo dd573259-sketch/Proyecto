@@ -51,7 +51,7 @@ class ProveedorDeleteView(DeleteView):
 class ProveedorUpdateView(UpdateView):
     model = Proveedor
     form_class = ProveedorForm
-    template_name = 'proveedor/editar.html'
+    template_name = 'proveedor/crear.html'
     success_url = reverse_lazy('app:listar_proveedores')
     def form_valid(self, form):
         return super().form_valid(form)

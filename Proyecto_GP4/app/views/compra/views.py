@@ -50,7 +50,7 @@ class CompraDeleteView(DeleteView):
 class CompraUpdateView(UpdateView):   
     model = Compra
     form_class = CompraForm
-    template_name = 'compra/editar.html'
+    template_name = 'compra/crear.html'
     success_url = reverse_lazy('app:listar_compras')
     def form_valid(self, form):
         return super().form_valid(form)

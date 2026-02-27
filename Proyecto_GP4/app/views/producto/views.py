@@ -52,7 +52,7 @@ class ProductoDeleteView(DeleteView):
 class ProductoUpdateView(UpdateView):   
     model = Producto
     form_class = ProductoForm
-    template_name = 'producto/editar.html'
+    template_name = 'producto/crear.html'
     success_url = reverse_lazy('app:listar_productos')
     def form_valid(self, form):
         return super().form_valid(form)
