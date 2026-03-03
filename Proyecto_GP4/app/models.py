@@ -199,9 +199,6 @@ class Mesa(models.Model):
 
     def __str__(self):
         return f"Mesa {self.numero_mesa}"
-
-
-class Pedido(models.Model):
     
     ESTADO = [
         ("Preparación", "Preparación"),
@@ -228,34 +225,6 @@ class Pedido(models.Model):
     def total(self):
         return self.producto.precio * self.cantidades
     
-class Comanda(models.Model):
-    id_comanda = models.AutoField(primary_key=True)
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)    
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    fecha_hora = models.DateTimeField(auto_now_add=True)
-
-    ESTADO = [
-        ("Preparación", "Preparación"),
-        ("Entregado", "Entregado"),
-    ]
-
-    estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación")
-
-    ESTADO = [
-        ("Disponible", "Disponible"),
-        ("No disponible", "No disponible"),
-    ]
-
-    estado = models.CharField(max_length=15, choices=ESTADO, default="Disponible")
-
-    class Meta:
-        verbose_name = "Mesa"
-        verbose_name_plural = "Mesas"
-        db_table = 'mesa'
-
-    def __str__(self):
-        return f"Mesa {self.numero_mesa}"
-
 class Plato(models.Model):
     id_plato = models.AutoField(primary_key=True)
     categoria = models.ForeignKey(Categoria, on_delete=models.CASCADE)
@@ -308,7 +277,6 @@ class Pedido(models.Model):
     def total(self):
         #Total general del pedido = total platos + total productos.
         return self.total_platos + self.total_productos
-
 
 class DetallePlato(models.Model):
 
@@ -380,9 +348,7 @@ class Comanda(models.Model):
 
     def __str__(self):
         return f"Comanda #{self.id_comanda}"
-
-
-        
+       
 class Menu(models.Model):
     id_menu = models.AutoField(primary_key=True)
 
@@ -401,8 +367,6 @@ class Menu(models.Model):
         verbose_name = "Menu"
         verbose_name_plural = "Menus"
         db_table = "menu"
-
-
 
 class insumo(models.Model):
 
