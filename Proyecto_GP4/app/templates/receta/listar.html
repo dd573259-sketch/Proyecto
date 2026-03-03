@@ -62,7 +62,12 @@
 
       <div class="modal-header bg-dark text-white">
         <h5 class="modal-title">Detalle de Receta</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" 
+        
+      onclick="cerrarmodal(this)">
+      </button>
+        
+                     
       </div>
 
       <div class="modal-body">
@@ -141,6 +146,15 @@ function abrirModal(boton) {
 
     let modal = new bootstrap.Modal(document.getElementById('detalleModal'));
     modal.show();
+}
+
+function cerrarmodal(boton) {
+
+    let tbody = document.getElementById("tablaInsumos");
+    tbody.innerHTML = "";
+
+    let modal = new bootstrap.Modal(document.getElementById('detalleModal'));
+    modal.hide();
 }
 </script>
 {% endblock js %}
