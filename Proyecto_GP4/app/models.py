@@ -420,31 +420,42 @@ class Notificacion(models.Model):
         db_table = "notificacion"
 
 class Venta(models.Model):
+
+    METODOS = [
+        ('EFECTIVO', 'Efectivo'),
+        ('TARJETA', 'Tarjeta'),
+        ('TRANSFERENCIA', 'Transferencia'),
+    ]
+
     id_venta = models.AutoField(primary_key=True)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
-    fecha_venta = models.DateTimeField(auto_now_add=True)
-    total_venta = models.DecimalField(max_digits=10, decimal_places=2)
+    pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE)
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    metodo_pago = models.CharField(max_length=20, choices=METODOS)
 
     class Meta:
-        verbose_name = "Venta"
-        verbose_name_plural = "Ventas"
         db_table = "venta"
 
     def __str__(self):
-        return f"Venta {self.id_venta} - {self.usuario.nombre} - ${self.total_venta}"
+        return f"Venta #{self.id_venta} - Pedido {self.pedido.id_pedido}"
 
 class Pago(models.Model):
     id_pago = models.AutoField(primary_key=True)
-    venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
-    factura = models.ForeignKey(Factura, on_delete=models.CASCADE)
-    fecha = models.DateTimeField(auto_now_add=True)
+    venta = models.ForeignKey('Venta', on_delete=models.CASCADE)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        verbose_name = "Pago"
-        verbose_name_plural = "Pagos"   
-        db_table = "pago"
+    ESTADOS = (
+        ('PENDIENTE', 'Pendiente'),
+        ('PAGADA', 'Pagada'),
+    )
+
+    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
 
     def __str__(self):
         return f"Pago {self.id_pago} - ${self.monto}"
+
+    class Meta:
+        verbose_name = "Pago"
+        verbose_name_plural = "Pagos"
+        db_table = "pago"

@@ -1,48 +1,61 @@
 {% extends 'main.html' %}
-{% load widget_tweaks %}
+{% load static %}
 
 {% block Contenido %}
 
-<form method="post" action=".">
-    <div class="card card-default">
-
-
-
-        {% csrf_token %}
-        {% if form.errors %}
-        <div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert"
-                aria-hidden="true">×</button>{{ form.errors }}
-            <h5><i class="icon fas fa-ban"></i> Alert!</h5>
-        </div>
-        {% endif %}
-        {% for field in form.visible_fields %}
-        <div class="form-group"></div>
-        <label for='name'>{{field.label}}:</label>
-        {{ field|add_class:"form-control"|attr:"autocomplete:off" }}
-    </div>
-    {% endfor %}
-
-    <div class="card-footer">
-        <button type="submit" class="btn btn-primary btn-xs">
-            <i class="fas fa-plus"></i> Guardar registro
-    </button>
-    </div>
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Lista de Ventas</h3>
     </div>
 
-</form>
-
+    <div class="card-body">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID Venta</th>
+                    <th>Cliente</th>
+                    <th>Fecha</th>
+                    <th>Total</th>
+                    <th>Acciones</th>  <!-- Aquí van los botones -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.id }}</td>
+                    <td>{{ venta.cliente.nombre }}</td>
+                    <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
+                    <td>${{ venta.total }}</td>
+                    <td>
+                        <
+                        <a href="{% url 'pago/crear' venta.id %}" class="btn btn-success btn-sm">
+                            <i class="fas fa-money-bill"></i> Pagar
+                        </a>
+                        
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center">No hay ventas registradas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 
 {% endblock %}
- 
+
 {% block js %}
-    
-        <script>
-            {% if form.errors %}
-            Swal.fire({
-                title: "Error!",
-                text: "Verificar los campos!",
-                icon: "error"
-            });
-            {% endif %}
-        </script>
-        {% endblock %}
+
+<script>
+{% if form.errors %}
+Swal.fire({
+    title: "Error!",
+    text: "Verifica los campos!",
+    icon: "error"
+});
+{% endif %}
+</script>
+
+{% endblock %}

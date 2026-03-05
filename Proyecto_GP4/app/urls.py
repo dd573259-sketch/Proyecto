@@ -66,12 +66,11 @@ urlpatterns = [
     path('crear_venta/', VentaCreateView.as_view(), name='crear_venta'),
     path('editar_venta/<int:pk>/', VentaUpdateView.as_view(), name='editar_venta'),
     path('eliminar_venta/<int:pk>/', VentaDeleteView.as_view(), name='eliminar_venta'),
+    path('pagar_venta/<int:venta_id>/',pagar_venta,name='pagar_venta'),
     
 # PAGOS
-    path('listar_pagos/', PagoListView.as_view(), name='listar_pagos'),
-    path('crear_pago/', PagoCreateView.as_view(), name='crear_pago'),
-    path('editar_pago/<int:pk>/', PagoUpdateView.as_view(), name='editar_pago'),
-    path('eliminar_pago/<int:pk>/', PagoDeleteView.as_view(), name='eliminar_pago'),
+path('listar_pagos/', PagoListView.as_view(), name='listar_pagos'),
+path('pago/crear/<int:venta_id>/', PagoCreateView.as_view(), name='crear_pago'),
     
 # USUARIOS
     path('listar_usuarios/', UsuarioListView.as_view(), name='listar_usuarios'),
