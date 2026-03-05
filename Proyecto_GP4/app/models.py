@@ -361,7 +361,7 @@ class insumo(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.CharField(max_length=100)
     unidad = models.CharField( max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
-    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    valor = models.DecimalField(max_digits=100 ,decimal_places=2, error_messages={'max_digits': 'El valor es demasiado alto.'})
     stock = models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -372,17 +372,17 @@ class insumo(models.Model):
         db_table = 'insumo'
 
 class Receta(models.Model):
-    plato = models.ForeignKey(Plato, on_delete=models.CASCADE, related_name='recetas')
+    plato = models.OneToOneField(Plato, on_delete=models.CASCADE, related_name='recetas')
     fecha_creacion = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Receta de {self.plato.nombre}"
-        @property
-        def costo_total(self):
-            return sum(
-                detalle.cantidad * detalle.insumo.valor
-                for detalle in self.detalles.all()
-            )
+    @property
+    def costo_total(self):
+        return sum(
+            detalle.cantidad * detalle.insumo.valor
+            for detalle in self.detalles.all()
+        )
 
     class Meta:
         db_table = 'receta'

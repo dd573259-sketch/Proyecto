@@ -29,6 +29,7 @@ class InsumosListView(listView):
 
         categoria = self.request.GET.get('categoria')
         stock_bajo = self.request.GET.get('stock_bajo')
+        orden = self.request.GET.get('orden')
 
         if categoria:
             queryset = queryset.filter(categoria_id=categoria)
@@ -36,38 +37,24 @@ class InsumosListView(listView):
         if stock_bajo == "1":
             queryset = queryset.filter(stock__lt=10)
 
+        if orden == "desc":
+            queryset = queryset.order_by('-stock')
+        elif orden == "asc":
+            queryset = queryset.order_by('stock')
+
         return queryset
 
-
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Listado de insumos'
-        context['crear_url'] = reverse_lazy('app:crear_insumos')
-        context['categorias'] = Categoria.objects.all()
-        context['categoria_seleccionada'] = self.request.GET.get('categoria', '')
-        context['stock_bajo'] = self.request.GET.get('stock_bajo')
-        return context
-    
-    #METODO DISPATCH
-    #@method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        #if request.method == 'GET':
-            #return redirect('app:listar_categorias')    
-        return super().dispatch(request, *args, **kwargs)
-        
-    
-    #METODO POST
-    def post(sefl, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-    
-    #METODO GET CONTEXT DATA
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
+
         context['titulo'] = 'Listado de insumos'
         context['icono'] = 'fa-solid fa-boxes-stacked'
         context['crear_url'] = reverse_lazy('app:crear_insumos')
-        context['buscar'] = self.request.GET.get('buscar', '')
+        context['Categoria'] = Categoria.objects.all()
+        context['categoria_seleccionada'] = self.request.GET.get('categoria', '')
+        context['stock_bajo'] = self.request.GET.get('stock_bajo', '')
+        context['orden'] = self.request.GET.get('orden', '')
+
         return context
     
 class InsumosCreateView(CreateView):
