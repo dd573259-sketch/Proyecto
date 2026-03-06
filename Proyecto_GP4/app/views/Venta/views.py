@@ -7,7 +7,8 @@ from django.views.generic import ListView, UpdateView, DeleteView, CreateView
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from app.models import Venta, Usuario
+from app.models import Venta, Usuario, Pedido
+from django.contrib import messages
 from app.forms import VentaForm
 
 
@@ -17,26 +18,20 @@ class VentaListView(ListView):
     context_object_name = 'ventas'
 
     def get_queryset(self):
-
+        # Solo trae ventas que ya existen
         queryset = Venta.objects.select_related('usuario', 'pedido')
-
         usuario = self.request.GET.get('usuario')
         fecha = self.request.GET.get('fecha')
         estado = self.request.GET.get('estado')
 
-        # filtro por usuario
         if usuario:
             queryset = queryset.filter(usuario__nombre__icontains=usuario)
-
-        # filtro por fecha
         if fecha:
             queryset = queryset.filter(fecha_venta__date=fecha)
-
-        # filtro por estado de pago
         if estado == 'pagado':
-            queryset = queryset.filter(pago__estado='PAGADA')
+            queryset = queryset.filter(estado='PAGADA')
         elif estado == 'pendiente':
-            queryset = queryset.exclude(pago__estado='PAGADA')
+            queryset = queryset.exclude(estado='PAGADA')
 
         return queryset
 
@@ -54,7 +49,35 @@ class VentaListView(ListView):
         return context
 
 
+class VentaListView(ListView):
+    model = Venta
+    template_name = 'venta/listar.html'
+    context_object_name = 'ventas'
+
+    def get_queryset(self):
+        queryset = Venta.objects.select_related('usuario', 'pedido')
+
+        usuario = self.request.GET.get('usuario')
+        fecha = self.request.GET.get('fecha')
+        estado = self.request.GET.get('estado')
+
+        if usuario:
+            queryset = queryset.filter(usuario__nombre__icontains=usuario)
+        if fecha:
+            queryset = queryset.filter(fecha_venta__date=fecha)
+        if estado == 'pagado':
+            queryset = queryset.filter(estado='PAGADA')
+        elif estado == 'pendiente':
+            queryset = queryset.exclude(estado='PAGADA')
+
+        return queryset
+    
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib import messages
+from django.views.generic import CreateView
+from django.urls import reverse_lazy
+from app.models import Venta, Pedido, Usuario
+from app.forms import VentaForm
 
 class VentaCreateView(CreateView):
     model = Venta
@@ -63,39 +86,29 @@ class VentaCreateView(CreateView):
     success_url = reverse_lazy('app:listar_ventas')
 
     def form_valid(self, form):
-
         pedido = form.cleaned_data['pedido']
 
-        # VALIDACION 1: verificar si ya existe una venta para ese pedido
+        # Validar que no exista venta para ese pedido
         if Venta.objects.filter(pedido=pedido).exists():
-
-            messages.error(self.request, "⚠ Este pedido ya tiene una venta registrada.")
-
+            messages.error(self.request, f"⚠ El pedido #{pedido.id_pedido} ya tiene una venta registrada.")
             return redirect('app:crear_venta')
 
-        # VALIDACION 2: verificar que el pedido tenga productos
-        detalles = pedido.detalle_productos.all()
-
-        if not detalles.exists():
-
-            messages.error(self.request, "⚠ No se puede crear una venta sin productos en el pedido.")
-
+        # Validar que el pedido tenga productos o platos
+        if not pedido.detalle_productos.exists() and not pedido.detalle_platos.exists():
+            messages.error(self.request, f"⚠ No se puede crear una venta sin items en el pedido #{pedido.id_pedido}.")
             return redirect('app:crear_venta')
 
-        # usuario temporal
+        # Asignar usuario (puedes cambiarlo según tu lógica)
         usuario = Usuario.objects.first()
+        if not usuario:
+            messages.error(self.request, "⚠ No hay usuarios disponibles para asignar a la venta.")
+            return redirect('app:crear_venta')
 
-        total = 0
-
-        for detalle in detalles:
-            total += detalle.subtotal
-
+        # Asignar total del pedido
         form.instance.usuario = usuario
-        form.instance.total = total
+        form.instance.total = pedido.total
 
         return super().form_valid(form)
-
-
 class VentaUpdateView(UpdateView):
     model = Venta
     fields = '__all__'
@@ -109,13 +122,31 @@ class VentaDeleteView(DeleteView):
     success_url = reverse_lazy('app:listar_ventas')
 
 
-# pagar venta
+# oagar venta
 def pagar_venta(request, venta_id):
-
     venta = get_object_or_404(Venta, id_venta=venta_id)
-
     venta.estado = 'PAGADA'
     venta.save()
-
     return redirect('app:listar_ventas')
 
+def crear_venta_desde_pedido(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id_pedido=pedido_id)
+
+    if Venta.objects.filter(pedido=pedido).exists():
+        messages.error(request, f"⚠ El pedido #{pedido.id_pedido} ya tiene una venta registrada.")
+        return redirect('app:listar_ventas')
+
+    if not pedido.detalle_productos.exists() and not pedido.detalle_platos.exists():
+        messages.error(request, f"⚠ No se puede crear una venta sin items en el pedido #{pedido.id_pedido}.")
+        return redirect('app:listar_ventas')
+
+    usuario = Usuario.objects.first()
+
+    Venta.objects.create(
+        pedido=pedido,
+        usuario=usuario,
+        total=pedido.total
+    )
+
+    messages.success(request, f"Venta creada correctamente para el pedido #{pedido.id_pedido}.")
+    return redirect('app:listar_ventas')

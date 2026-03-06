@@ -54,3 +54,54 @@ class PagoCreateView(CreateView):
         pago.save()
 
         return super().form_valid(form)
+    
+class EliminarPagoView(DeleteView):
+    model = Pago
+    template_name = 'pago/eliminar.html'  # Tu template de eliminar
+    context_object_name = 'object'
+    success_url = reverse_lazy('app:listar_ventas')  # A dónde redirigir después de eliminar
+
+    def delete(self, request, *args, **kwargs):
+        """Agregar mensaje de éxito al eliminar"""
+        self.object = self.get_object()
+        pago_id = self.object.id_pago
+        venta_id = self.object.venta.id_venta if self.object.venta else None
+        response = super().delete(request, *args, **kwargs)
+        messages.success(request, f"Pago #{pago_id} de la venta #{venta_id} eliminado correctamente.")
+        return response
+
+    def get_context_data(self, **kwargs):
+        """Pasar la URL de listado al template para el botón Cancelar"""
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Eliminar Pago'
+        context['listar_url'] = reverse_lazy('app:listar_ventas')
+        return context
+
+def registrar_pago(request, venta_id):
+    venta = get_object_or_404(Venta, id_venta=venta_id)
+
+    if request.method == "POST":
+        metodo = request.POST.get('metodo_pago')
+
+        if not metodo:
+            messages.error(request, "⚠ Debes seleccionar un método de pago.")
+            return redirect('app:crear_pago', venta_id=venta.id_venta)
+
+        # Crear el pago
+        Pago.objects.create(
+            venta=venta,
+            monto=venta.total,
+            metodo_pago=metodo
+        )
+
+        # Marcar la venta como pagada
+        venta.estado = "PAGADA"
+        venta.save()
+
+        messages.success(request, f"Pago registrado correctamente para la venta #{venta.id_venta}.")
+
+        # Redirigir a listar pagos
+        return redirect('app:listar_pagos')
+
+    # Si no es POST, mostramos el formulario
+    return render(request, 'pago/crear.html', {'venta': venta})

@@ -424,7 +424,7 @@ class Venta(models.Model):
     id_venta = models.AutoField(primary_key=True)
     pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE)
     usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
+    total= models.DecimalField(max_digits=10, decimal_places=2)
     fecha_venta = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -435,24 +435,20 @@ class Venta(models.Model):
 
 
 class Pago(models.Model):
-
     METODOS = [
-        ('EFECTIVO', 'Efectivo'),
-        ('TARJETA', 'Tarjeta'),
-        ('TRANSFERENCIA', 'Transferencia'),
+        ('Efectivo', 'Efectivo'),
+        ('Tarjeta', 'Tarjeta'),
+        ('Transferencia', 'Transferencia'),
     ]
 
-    ESTADOS = [
-        ('PENDIENTE', 'Pendiente'),
-        ('PAGADA', 'Pagada'),
-    ]
-
-    id_pago = models.AutoField(primary_key=True)
-    venta = models.ForeignKey('Venta', on_delete=models.CASCADE)
+    venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
-    metodo_pago = models.CharField(max_length=20, choices=METODOS)
     fecha = models.DateTimeField(auto_now_add=True)
-    estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
+    metodo_pago = models.CharField(max_length=20, choices=METODOS)
+    factura = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        db_table = 'pago'
 
     class Meta:
         db_table = "pago"

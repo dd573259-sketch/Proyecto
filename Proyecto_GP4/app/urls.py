@@ -71,6 +71,7 @@ urlpatterns = [
 # PAGOS
 path('listar_pagos/', PagoListView.as_view(), name='listar_pagos'),
 path('pago/crear/<int:venta_id>/', PagoCreateView.as_view(), name='crear_pago'),
+path('eliminar_pago/<int:pk>/', EliminarPagoView.as_view(), name='eliminar_pago'),
     
 # USUARIOS
     path('listar_usuarios/', UsuarioListView.as_view(), name='listar_usuarios'),

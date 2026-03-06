@@ -516,7 +516,6 @@ class FacturaForm(ModelForm):
         }
 
 class VentaForm(forms.ModelForm):
-
     class Meta:
         model = Venta
         fields = ['pedido']
@@ -524,7 +523,10 @@ class VentaForm(forms.ModelForm):
 class PagoForm(forms.ModelForm):
     class Meta:
         model = Pago
-        fields = []
+        fields = ['metodo_pago']
+        widgets = {
+            'metodo_pago': forms.Select(attrs={'class': 'form-control'})
+        }
 
 class UsuarioForm(ModelForm):
     

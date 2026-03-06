@@ -11,15 +11,31 @@
     <div class="card-body">
 
         <p><strong>Venta:</strong> {{ venta.id_venta }}</p>
-
         <p><strong>Total a pagar:</strong> ${{ venta.total }}</p>
 
         <form method="POST">
             {% csrf_token %}
 
+            <div class="form-group">
+                <label for="metodo_pago"><strong>Metodo de pago:</strong></label>
+                <select id="metodo_pago" name="metodo_pago" class="form-control" required>
+                    <option value="">Seleccione un método</option>
+                    <option value="Efectivo">Efectivo</option>
+                    <option value="Tarjeta">Tarjeta</option>
+                    <option value="Transferencia">Transferencia</option>
+                </select>
+            </div>
+
+            <br>
+
             <button type="submit" class="btn btn-success">
                 Registrar Pago
             </button>
+
+            <!-- Botón Cancelar -->
+            <a href="{% url 'app:listar_ventas' %}" class="btn btn-secondary">
+                Cancelar
+            </a>
 
         </form>
 

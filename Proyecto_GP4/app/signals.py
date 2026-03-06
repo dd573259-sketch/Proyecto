@@ -16,16 +16,3 @@ def crear_menu_producto(sender, instance, created, **kwargs):
         Menu.objects.create(producto=instance)
 
 
-# SIGNAL PARA CREAR VENTA CUANDO EL PEDIDO SE ENTREGA
-@receiver(post_save, sender=Pedido)
-def crear_venta_desde_pedido(sender, instance, created, **kwargs):
-
-    if instance.estado == "Entregado":
-
-        if not Venta.objects.filter(pedido=instance).exists():
-
-            Venta.objects.create(
-                usuario=instance.usuario,
-                pedido=instance,
-                total_venta=instance.total
-            )
