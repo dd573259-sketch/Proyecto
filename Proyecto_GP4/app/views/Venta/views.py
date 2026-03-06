@@ -17,14 +17,44 @@ class VentaListView(ListView):
     context_object_name = 'ventas'
 
     def get_queryset(self):
-        return Venta.objects.select_related('usuario', 'pedido')
+
+        queryset = Venta.objects.select_related('usuario', 'pedido')
+
+        usuario = self.request.GET.get('usuario')
+        fecha = self.request.GET.get('fecha')
+        estado = self.request.GET.get('estado')
+
+        # filtro por usuario
+        if usuario:
+            queryset = queryset.filter(usuario__nombre__icontains=usuario)
+
+        # filtro por fecha
+        if fecha:
+            queryset = queryset.filter(fecha_venta__date=fecha)
+
+        # filtro por estado de pago
+        if estado == 'pagado':
+            queryset = queryset.filter(pago__estado='PAGADA')
+        elif estado == 'pendiente':
+            queryset = queryset.exclude(pago__estado='PAGADA')
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         context['titulo'] = 'Listado de Ventas'
         context['icono'] = 'fas fa-cash-register'
+
+        # mantener filtros en el input
+        context['usuario'] = self.request.GET.get('usuario', '')
+        context['fecha'] = self.request.GET.get('fecha', '')
+        context['estado'] = self.request.GET.get('estado', '')
+
         return context
 
+
+from django.contrib import messages
 
 class VentaCreateView(CreateView):
     model = Venta
@@ -36,30 +66,34 @@ class VentaCreateView(CreateView):
 
         pedido = form.cleaned_data['pedido']
 
-        # usuario temporal para pruebas
+        # VALIDACION 1: verificar si ya existe una venta para ese pedido
+        if Venta.objects.filter(pedido=pedido).exists():
+
+            messages.error(self.request, "⚠ Este pedido ya tiene una venta registrada.")
+
+            return redirect('app:crear_venta')
+
+        # VALIDACION 2: verificar que el pedido tenga productos
+        detalles = pedido.detalle_productos.all()
+
+        if not detalles.exists():
+
+            messages.error(self.request, "⚠ No se puede crear una venta sin productos en el pedido.")
+
+            return redirect('app:crear_venta')
+
+        # usuario temporal
         usuario = Usuario.objects.first()
 
         total = 0
 
-        # obtener detalles del pedido
-        detalles = pedido.detalle_productos.all()
-
-        # sumar subtotales
         for detalle in detalles:
             total += detalle.subtotal
 
-        # asignar datos
         form.instance.usuario = usuario
         form.instance.total = total
 
         return super().form_valid(form)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Crear Venta'
-        context['icono'] = 'fas fa-plus'
-        context['listar_url'] = reverse_lazy('app:listar_ventas')
-        return context
 
 
 class VentaUpdateView(UpdateView):

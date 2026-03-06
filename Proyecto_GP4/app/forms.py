@@ -524,7 +524,7 @@ class VentaForm(forms.ModelForm):
 class PagoForm(forms.ModelForm):
     class Meta:
         model = Pago
-        fields = ['venta']
+        fields = []
 
 class UsuarioForm(ModelForm):
     

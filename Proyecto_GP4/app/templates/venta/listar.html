@@ -3,8 +3,33 @@
 
 {% block Contenido %}
 
+<!-- FILTROS -->
+<div style="margin-bottom:15px;">
+
+  <form method="GET">
+
+    <input type="text" name="usuario"
+      placeholder="Buscar usuario"
+      value="{{ usuario }}">
+
+    <input type="date" name="fecha"
+      value="{{ fecha }}">
+
+
+    </select>
+
+    <button type="submit" class="btn btn-primary btn-xs">
+      <i class="fas fa-search"></i> Filtrar
+    </button>
+
+  </form>
+
+</div>
+
+
 <div class="tabla-wrapper">
   <table class="tabla" id="tabla">
+
     <thead>
       <tr>
         <th>#</th>
@@ -18,6 +43,7 @@
     </thead>
 
     <tbody>
+
       {% for v in ventas %}
       <tr>
 
@@ -34,9 +60,8 @@
         </td>
 
         <td>
-          {{ v.fecha_venta }}
+          {{ v.fecha_venta|date:"Y-m-d H:i" }}
         </td>
-
 
         <td>
           <a href="{% url 'app:eliminar_venta' v.pk %}" class="btn btn-danger btn-xs">
@@ -45,14 +70,35 @@
         </td>
 
         <td>
-          <a href="{% url 'app:crear_pago' v.id_venta %}" class="btn btn-success btn-xs">
-            <i class="fas fa-dollar-sign"></i> Pagar
-          </a>
+
+          {% if v.pago_set.exists %}
+
+            <span class="btn btn-secondary btn-xs">
+              <i class="fas fa-check"></i> Pagado
+            </span>
+
+          {% else %}
+
+            <a href="{% url 'app:crear_pago' v.id_venta %}" class="btn btn-success btn-xs">
+              <i class="fas fa-dollar-sign"></i> Pagar
+            </a>
+
+          {% endif %}
+
         </td>
 
       </tr>
+
+      {% empty %}
+
+      <tr>
+        <td colspan="7">No hay ventas registradas</td>
+      </tr>
+
       {% endfor %}
+
     </tbody>
+
   </table>
 </div>
 

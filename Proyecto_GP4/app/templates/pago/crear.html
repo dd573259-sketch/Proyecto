@@ -1,61 +1,30 @@
-{% extends 'main.html' %}
-{% load static %}
+{% extends "main.html" %}
 
 {% block Contenido %}
 
 <div class="card">
+
     <div class="card-header">
-        <h3 class="card-title">Lista de Ventas</h3>
+        <h3>Registrar Pago</h3>
     </div>
 
     <div class="card-body">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>ID Venta</th>
-                    <th>Cliente</th>
-                    <th>Fecha</th>
-                    <th>Total</th>
-                    <th>Acciones</th>  <!-- Aquí van los botones -->
-                </tr>
-            </thead>
-            <tbody>
-                {% for venta in ventas %}
-                <tr>
-                    <td>{{ venta.id }}</td>
-                    <td>{{ venta.cliente.nombre }}</td>
-                    <td>{{ venta.fecha|date:"d/m/Y H:i" }}</td>
-                    <td>${{ venta.total }}</td>
-                    <td>
-                        <
-                        <a href="{% url 'pago/crear' venta.id %}" class="btn btn-success btn-sm">
-                            <i class="fas fa-money-bill"></i> Pagar
-                        </a>
-                        
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">No hay ventas registradas.</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+
+        <p><strong>Venta:</strong> {{ venta.id_venta }}</p>
+
+        <p><strong>Total a pagar:</strong> ${{ venta.total }}</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <button type="submit" class="btn btn-success">
+                Registrar Pago
+            </button>
+
+        </form>
+
     </div>
+
 </div>
-
-{% endblock %}
-
-{% block js %}
-
-<script>
-{% if form.errors %}
-Swal.fire({
-    title: "Error!",
-    text: "Verifica los campos!",
-    icon: "error"
-});
-{% endif %}
-</script>
 
 {% endblock %}

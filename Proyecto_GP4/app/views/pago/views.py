@@ -32,16 +32,25 @@ class PagoCreateView(CreateView):
     form_class = PagoForm
     success_url = reverse_lazy('app:listar_pagos')
 
-    def get_initial(self):
-        initial = super().get_initial()
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
         venta_id = self.kwargs.get('venta_id')
-        if venta_id:
-            initial['venta'] = get_object_or_404(Venta, id_venta=venta_id)
-        return initial
+        venta = get_object_or_404(Venta, id_venta=venta_id)
+
+        context['venta'] = venta
+
+        return context
 
     def form_valid(self, form):
+
+        venta_id = self.kwargs.get('venta_id')
+        venta = get_object_or_404(Venta, id_venta=venta_id)
+
         pago = form.save(commit=False)
-        pago.monto = pago.venta.total
+        pago.venta = venta
+        pago.monto = venta.total   # 👈 se toma automáticamente
         pago.estado = 'PAGADA'
         pago.save()
 
+        return super().form_valid(form)

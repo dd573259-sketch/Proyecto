@@ -421,17 +421,11 @@ class Notificacion(models.Model):
 
 class Venta(models.Model):
 
-    METODOS = [
-        ('EFECTIVO', 'Efectivo'),
-        ('TARJETA', 'Tarjeta'),
-        ('TRANSFERENCIA', 'Transferencia'),
-    ]
-
     id_venta = models.AutoField(primary_key=True)
     pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE)
     usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
     total = models.DecimalField(max_digits=10, decimal_places=2)
-    metodo_pago = models.CharField(max_length=20, choices=METODOS)
+    fecha_venta = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "venta"
@@ -439,23 +433,31 @@ class Venta(models.Model):
     def __str__(self):
         return f"Venta #{self.id_venta} - Pedido {self.pedido.id_pedido}"
 
+
 class Pago(models.Model):
+
+    METODOS = [
+        ('EFECTIVO', 'Efectivo'),
+        ('TARJETA', 'Tarjeta'),
+        ('TRANSFERENCIA', 'Transferencia'),
+    ]
+
+    ESTADOS = [
+        ('PENDIENTE', 'Pendiente'),
+        ('PAGADA', 'Pagada'),
+    ]
+
     id_pago = models.AutoField(primary_key=True)
     venta = models.ForeignKey('Venta', on_delete=models.CASCADE)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
+    metodo_pago = models.CharField(max_length=20, choices=METODOS)
     fecha = models.DateTimeField(auto_now_add=True)
-
-    ESTADOS = (
-        ('PENDIENTE', 'Pendiente'),
-        ('PAGADA', 'Pagada'),
-    )
-
     estado = models.CharField(max_length=10, choices=ESTADOS, default='PENDIENTE')
+
+    class Meta:
+        db_table = "pago"
+        verbose_name = "Pago"
+        verbose_name_plural = "Pagos"
 
     def __str__(self):
         return f"Pago {self.id_pago} - ${self.monto}"
-
-    class Meta:
-        verbose_name = "Pago"
-        verbose_name_plural = "Pagos"
-        db_table = "pago"
