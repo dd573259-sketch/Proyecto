@@ -151,17 +151,20 @@ class Cliente(models.Model):
         return f"{self.nombre} {self.apellido}"
 
 class Factura(models.Model):
+
+    venta = models.ForeignKey('Venta', on_delete=models.CASCADE)
+
     fecha_hora = models.DateTimeField(auto_now_add=True)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     metodo_pago = models.CharField(max_length=50)
 
     class Meta:
+        db_table = "factura"
         verbose_name = "Factura"
         verbose_name_plural = "Facturas"
-        db_table = "factura"
 
     def __str__(self):
-        return f"Factura {self.id} - Total: {self.valor_total}"
+        return f"Factura {self.id} - Venta {self.venta.id_venta}"
     
 #modelos debiles
 class Compra(models.Model):
@@ -440,7 +443,7 @@ class Pago(models.Model):
         ('Tarjeta', 'Tarjeta'),
         ('Transferencia', 'Transferencia'),
     ]
-
+    id_pago = models.AutoField(primary_key=True)
     venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
     fecha = models.DateTimeField(auto_now_add=True)

@@ -57,9 +57,10 @@ class PagoCreateView(CreateView):
     
 class EliminarPagoView(DeleteView):
     model = Pago
-    template_name = 'pago/eliminar.html'  # Tu template de eliminar
+    template_name = 'pago/eliminar.html'
     context_object_name = 'object'
-    success_url = reverse_lazy('app:listar_ventas')  # A dónde redirigir después de eliminar
+    success_url = reverse_lazy('app:listar_pagos')
+    pk_url_kwarg = 'pk'
 
     def delete(self, request, *args, **kwargs):
         """Agregar mensaje de éxito al eliminar"""

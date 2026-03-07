@@ -57,7 +57,7 @@ urlpatterns = [
     
 # FACTURAS
     path('listar_facturas/', FacturaListView.as_view() , name='listar_facturas'),
-    path('crear_factura/', FacturaCreateView.as_view() , name='crear_factura'),
+    path('crear_factura/<int:pago_id>/', crear_factura , name='crear_factura'),
     path('editar_factura/<int:pk>/', FacturaUpdateView.as_view(), name='editar_factura'),
     path('eliminar_factura/<int:pk>/', FacturaDeleteView.as_view(), name='eliminar_factura'),
     

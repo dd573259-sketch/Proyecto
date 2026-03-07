@@ -14,6 +14,7 @@
           <th>Fecha</th>
           <th>Método de Pago</th>
           <th>Eliminar</th>
+          <th>Generar Factura</th>
         </tr>
       </thead>
 
@@ -53,16 +54,20 @@
             <td>{{ p.metodo_pago }}</td>
 
             <td>
-              {% if p.id_pago %}
-                <a href="{% url 'app:eliminar_pago' p.id_pago %}" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></a>
+              <a href="{% url 'app:eliminar_pago' p.id_pago %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+            </td>
+
+            <td>
+              {% if p.factura %}
+                Factura #{{ p.factura }}
               {% else %}
-                -
+                <a href="{% url 'app:crear_factura' p.id_pago %}" class="btn btn-success btn-xs"><i class="fas fa-file-invoice"></i></a>
               {% endif %}
             </td>
           </tr>
         {% empty %}
           <tr>
-            <td colspan="8">No hay pagos registrados</td>
+            <td colspan="9">No hay pagos registrados</td>
           </tr>
         {% endfor %}
       </tbody>
