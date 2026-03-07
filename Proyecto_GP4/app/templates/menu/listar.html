@@ -1,9 +1,9 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<div class="tabla-wrapper">
+<div class="tabla-wrapper_menu">
   <table class="tabla" id="tabla_platos">
-    <h2>Platos del Menú</h2>
+    <h2 id="platos_menu">Platos del Menú</h2>
     <thead>
       <tr>
         <th scope="col">#</th>
@@ -23,7 +23,9 @@
           {{ m.plato.nombre }}
         </td>
 
-        <td scope="col" data-col="descripcion">Descripción</td>
+        <td>
+          {{ m.plato.descripcion }}
+        </td>
 
 
         <td>
@@ -35,12 +37,18 @@
       </tr>
       {% endfor %}
     </tbody>
-
-
   </table>
+ 
+</div>
 
-  <table class="tabla" id="tabla_productos">
-    <h2>Productos</h2>
+<section class="separador">
+  <div class="linea"></div>
+  <div class="circulo"></div>
+</section>
+
+
+ <table class="tabla" id="tabla_productos">
+    <h2 id="productos_menu">Productos</h2>
     <thead>
       <tr>
         <th scope="col">#</th>
@@ -61,7 +69,9 @@
           {{ m.producto.nombre }}
         </td>
 
-        <td scope="col" data-col="descripcion">Descripción</td>
+        <td>
+          {{ m.producto.descripcion }}
+        </td>
 
 
         <td>
@@ -73,6 +83,6 @@
       {% endfor %}
     </tbody>
   </table>
-</div>
-{% endblock %}
+  {% endblock %}
+  
 

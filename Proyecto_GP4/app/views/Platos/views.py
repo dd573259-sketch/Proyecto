@@ -41,8 +41,15 @@ class PlatoListView(listView):
         context['titulo'] = 'Listado de Platos'
         context['icono'] = 'fa-solid fa-utensils'
         context['crear_url'] = reverse_lazy('app:crear_plato')
+        context['buscar'] = self.request.GET.get('buscar', '')
         return context
     
+    def get_queryset(self):
+        queryset = Plato.objects.all()
+        nombre = self.request.GET.get('buscar', '')
+        if nombre:
+            queryset = queryset.filter(nombre__icontains=nombre)
+        return queryset
 class PlatoCreateView(CreateView):
     model = Plato
     template_name = 'Plato/crear.html'

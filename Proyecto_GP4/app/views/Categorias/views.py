@@ -41,8 +41,19 @@ class categoriaListView(listView):
         context['titulo'] = 'Listado de Categorias'
         context['icono'] = 'list'
         context['crear_url'] = reverse_lazy('app:crear_categoria')
+        context['buscar'] = self.request.GET.get('buscar', '')
+        context['estado'] = self.request.GET.get('estado', '')
         return context
     
+    def get_queryset(self):
+        queryset = Categoria.objects.all()
+        nombre = self.request.GET.get('buscar', '')
+        estado = self.request.GET.get('estado', '')
+        if nombre:
+            queryset = queryset.filter(nombre__icontains=nombre)
+        if estado:
+            queryset = queryset.filter(estado=estado)
+        return queryset
 class CategoriaCreateView(CreateView):
     model = Categoria
     template_name = 'Categoria/crear.html'

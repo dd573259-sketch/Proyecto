@@ -58,10 +58,7 @@ class RecetaCreateView(CreateView):
         context = super().get_context_data(**kwargs)
 
         if self.request.POST:
-            context['formset'] = DetalleFormSet(
-                self.request.POST,
-                instance=self.object
-            )
+            context['formset'] = DetalleFormSet(self.request.POST or None)
         else:
             context['formset'] = DetalleFormSet()
 
@@ -70,16 +67,17 @@ class RecetaCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        context = self.get_context_data()
-        formset = context['formset']
+        self.object = form.save()
+
+        formset = DetalleFormSet(self.request.POST, instance=self.object)
 
         if formset.is_valid():
-            self.object = form.save()
-            formset.instance = self.object
             formset.save()
             return redirect(self.success_url)
 
-        return self.render_to_response(self.get_context_data(form=form))
+        return self.render_to_response(
+            self.get_context_data(form=form)
+        )
     
     
 class RecetaUpdateView(UpdateView):
@@ -90,9 +88,6 @@ class RecetaUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Editar Receta'
-        context['icono'] = 'fas fa-edit'
-        context['listar_url'] = reverse_lazy('app:listar_receta')
 
         if self.request.POST:
             context['formset'] = DetalleFormSet(
@@ -104,6 +99,8 @@ class RecetaUpdateView(UpdateView):
                 instance=self.object
             )
 
+        context['titulo'] = 'Editar Receta'
+        context['icono'] = 'fas fa-edit'
         return context
 
     def form_valid(self, form):
@@ -116,10 +113,7 @@ class RecetaUpdateView(UpdateView):
             formset.save()
             return redirect(self.success_url)
 
-        # 🔥 IMPORTANTE: mostrar errores
-        print(formset.errors)
-
-        return self.render_to_response(self.get_context_data(form=form))
+        return self.render_to_response(context)
 class RecetaDeleteView(DeleteView):
     model = Receta
     template_name = 'receta/eliminar.html'

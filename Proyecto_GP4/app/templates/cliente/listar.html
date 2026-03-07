@@ -47,6 +47,12 @@
               class="fas fa-trash"></i></a>
         </td>
       </tr>
+      {% empty %}
+        <tr>
+            <td colspan="11" class="text-center text-muted">
+                No hay clientes registrados.
+            </td>
+        </tr>
       {% endfor %}
     </tbody>
   </table>

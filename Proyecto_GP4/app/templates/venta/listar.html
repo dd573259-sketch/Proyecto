@@ -1,8 +1,35 @@
 {% extends "main.html" %}
 {% load static %}
+
 {% block Contenido %}
+
+<!-- FILTROS -->
+<div style="margin-bottom:15px;">
+
+  <form method="GET">
+
+    <input type="text" name="usuario"
+      placeholder="Buscar usuario"
+      value="{{ usuario }}">
+
+    <input type="date" name="fecha"
+      value="{{ fecha }}">
+
+
+    </select>
+
+    <button type="submit" class="btn btn-primary btn-xs">
+      <i class="fas fa-search"></i> Filtrar
+    </button>
+
+  </form>
+
+</div>
+
+
 <div class="tabla-wrapper">
   <table class="tabla" id="tabla">
+
     <thead>
       <tr>
         <th>#</th>
@@ -10,37 +37,75 @@
         <th>Pedido</th>
         <th>Total</th>
         <th>Fecha</th>
-        <th>Editar</th>
         <th>Eliminar</th>
+        <th>Pagar</th>
       </tr>
     </thead>
+
     <tbody>
-      {% for v in object_list %}
+
+      {% for v in ventas %}
       <tr>
+
         <td>{{ v.id_venta }}</td>
+
         <td>{{ v.usuario }}</td>
-        <td>{{ v.pedido }}</td>
-        <td>${{ v.total_venta }}</td>
-        <td>{{ v.fecha_venta }}</td>
+
         <td>
-          <a href="{% url}" class="btn btn-primary btn-xs">
-            <i class="fas fa-edit"></i>
-          </a>
+          Pedido #{{ v.pedido.id_pedido }}
         </td>
+
         <td>
-          <a href="{% url 'app:eliminar_venta' v.id_venta %}" class="btn btn-danger btn-xs">
+          ${{ v.total }}
+        </td>
+
+        <td>
+          {{ v.fecha_venta|date:"Y-m-d H:i" }}
+        </td>
+
+        <td>
+          <a href="{% url 'app:eliminar_venta' v.pk %}" class="btn btn-danger btn-xs">
             <i class="fas fa-trash"></i>
           </a>
         </td>
+
+        <td>
+
+          {% if v.pago_set.exists %}
+
+            <span class="btn btn-secondary btn-xs">
+              <i class="fas fa-check"></i> Pagado
+            </span>
+
+          {% else %}
+
+            <a href="{% url 'app:crear_pago' v.id_venta %}" class="btn btn-success btn-xs">
+              <i class="fas fa-dollar-sign"></i> Pagar
+            </a>
+
+          {% endif %}
+
+        </td>
+
       </tr>
+
+      {% empty %}
+
+      <tr>
+        <td colspan="7">No hay ventas registradas</td>
+      </tr>
+
       {% endfor %}
+
     </tbody>
+
   </table>
 </div>
 
+
 <div class="card-footer">
-  <a href="{% url 'app:crear_venta' %}" class="btn btn-success btn-xs">
-    <i class="fas fa-plus"></i> Crear nueva venta
+  <a href="{% url 'app:crear_venta' %}" class="btn btn-primary btn-xs">
+    <i class="fas fa-plus"></i> Crear Venta
   </a>
 </div>
 

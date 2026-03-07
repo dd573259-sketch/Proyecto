@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import *
+from django.shortcuts import get_object_or_404
+from django.contrib import messages
 
 class FacturaListView(listView):
     model = Factura
@@ -59,3 +61,23 @@ class FacturaUpdateView(UpdateView):
         context['listar_url'] = reverse_lazy('app:listar_facturas')
         return context
 
+def crear_factura(request, pago_id):
+
+    pago = get_object_or_404(Pago, id_pago=pago_id)
+
+    if pago.factura:
+        messages.warning(request, "Este pago ya tiene factura generada.")
+        return redirect('app:listar_pagos')
+
+    factura = Factura.objects.create(
+        venta=pago.venta,
+        valor_total=pago.monto,
+        metodo_pago=pago.metodo_pago
+    )
+
+    pago.factura = factura.id
+    pago.save()
+
+    messages.success(request, f"Factura #{factura.id} creada correctamente.")
+
+    return redirect('app:listar_facturas')

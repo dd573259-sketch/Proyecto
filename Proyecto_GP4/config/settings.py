@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
-    'app',
+    'app.apps.AppConfig',
     'Login',
 ]
 
@@ -64,6 +64,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'app.context_processors.notificaciones_admin',
             ],
         },
     },
@@ -123,8 +124,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-LOGIN_REDIRECT_URL = 'app:listar_categorias'
+LOGIN_REDIRECT_URL = 'app:dashboard'
 LOGOUT_REDIRECT_URL = 'login:login'
 LOGIN_URL = 'login:login'
 LOGOUT_URL = 'login:logout'

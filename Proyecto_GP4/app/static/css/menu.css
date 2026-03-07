@@ -1,0 +1,9 @@
+.tabla-wrapper_menu{
+    margin-bottom: 70px; /* separa más las tablas */
+}
+
+.producto_menu {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}

@@ -2,6 +2,17 @@
 {% load static %}
 {% block Contenido %}
 <div class="tabla-wrapper">
+  <form method="GET" class="buscador">
+      <input
+        type="text" 
+        name="buscar" 
+        placeholder="Buscar por nombre de plato" 
+        value="{{ request.GET.buscar }}">
+      
+      <button type="submit" class="btn btn-primary">
+        Buscar
+      </button>
+    </form>
   <table class="tabla" id="tabla">
     <thead>
       <tr>

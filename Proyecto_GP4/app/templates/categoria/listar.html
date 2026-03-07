@@ -2,12 +2,29 @@
 {% load static %}
 {% block Contenido %}
 <div class="tabla-wrapper">
+  <form method="GET" class="buscador">
+      <input
+        type="text" 
+        name="buscar" 
+        placeholder="Buscar por nombre de categoria" 
+        value="{{ request.GET.buscar }}">
+
+      <input
+        type="text" 
+        name="estado" 
+        placeholder="Buscar por estado" 
+        value="{{ request.GET.estado }}">
+      
+      <button type="submit" class="btn btn-primary">
+        Buscar
+      </button>
+    </form>
   <table class="tabla" id="tabla">
     <thead>
       <tr>
         <th scope="col">#</th>
         <th scope="col">Nombre</th>
-        <th scope="col" data-col="descripcion">Descripción</th>
+        <th scope="col">Descripción</th>
         <th scope="col">Estado</th>
         <th scope="col">Fecha de Creación</th>
         <th scope="col">Fecha de Actualización</th>
@@ -33,6 +50,10 @@
               class="fas fa-trash"></i></a>
         </td>
       </tr>
+      <tr>
+      {% empty %}
+        <td colspan="9" class="text-center">No se encontraron categorias.</td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
@@ -43,4 +64,3 @@
   </a>
 </div>
 {% endblock %}
-

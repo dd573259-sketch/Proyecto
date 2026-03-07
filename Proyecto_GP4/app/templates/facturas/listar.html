@@ -1,49 +1,32 @@
-{% extends "main.html" %}
+{% extends 'main.html' %}
 {% load static %}
 {% block Contenido %}
-<div class="tabla-wrapper">
-  <table class="tabla" id="tabla">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Total</th>
-        <th>Método de Pago</th>
-        <th>Fecha</th>
-        <th>Editar</th>
-        <th>Eliminar</th>
-      </tr>
-    </thead>
-    <tbody>
+  <div class="tabla-wrapper">
+    <table class="tabla" id="tabla">
+      <thead>
+        <tr>
+          <th>id</th>
+          <th>Venta</th>
+          <th>Total</th>
+          <th>Método de Pago</th>
+          <th>Fecha</th>
+          <th>Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for f in facturas %}
+          <tr>
+            <td>{{ f.id }}</td>
+            <td>Venta #{{ f.venta.id_venta }}</td>
+            <td>${{ f.valor_total }}</td>
+            <td>{{ f.metodo_pago }}</td>
+            <td>{{ f.fecha_hora }}</td>
 
-      {% for f in object_list %}
-      <tr>
-        <td>{{ f.id }}</td>
-        <td>${{ f.valor_total }}</td>
-        <td>{{ f.metodo_pago }}</td>
-        <td>{{ f.fecha_hora }}</td>
-
-        <td>
-          <a href="{% url 'app:editar_factura' f.id %}" class="btn btn-warning btn-sm">
-            <i class="fas fa-edit"></i>
-          </a>
-        </td>
-
-        <td>
-          <a href="{% url 'app:eliminar_factura' f.id %}" class="btn btn-danger btn-sm">
-            <i class="fas fa-trash"></i>
-          </a>
-        </td>
-      </tr>
-      {% endfor %}
-
-    </tbody>
-  </table>
-</div>
-
-<div class="card-footer">
-  <a href="{% url 'app:crear_factura' %}" class="btn btn-success btn-sm">
-    <i class="fas fa-plus"></i> Crear Nueva Factura
-  </a>
-</div>
-
+            <td>
+              <a href="{% url 'app:eliminar_factura' f.id %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock %}

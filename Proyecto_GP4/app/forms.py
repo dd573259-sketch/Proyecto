@@ -85,11 +85,14 @@ class ClienteForm(ModelForm):
     def clean_numero_documento(self):
         numero = self.cleaned_data.get('numero_documento')
 
-        if numero <= 0:
-            raise forms.ValidationError("El número de documento debe ser positivo.")
+        if not numero.isdigit():
+            raise forms.ValidationError("El número de documento solo debe contener dígitos.")
 
-        if len(str(numero)) < 6:
+        if len(numero) < 6:
             raise forms.ValidationError("El número de documento es demasiado corto.")
+
+        if len(numero) > 12:
+            raise forms.ValidationError("El número de documento es demasiado largo.")
 
         return numero
     
@@ -98,13 +101,22 @@ class PedidoForm(ModelForm):
         model = Pedido
         fields = ['mesa', 'usuario', 'estado']
         widgets = {
-            'mesa': forms.Select(attrs={'class': 'form-control'}),
-            'usuario': forms.Select(attrs={'class': 'form-control'}),
+            'mesa': forms.Select(attrs={
+            'class': 'form-control select2', 
+            'data-placeholder': 'Seleccione una mesa',
+            }),
+            'usuario': forms.Select(attrs={
+            'class': 'form-control select2',
+            'data-placeholder': 'Seleccione un empleado',
+            }),
             'estado': forms.Select(attrs={'class': 'form-control'}),
         }
 
     def clean_mesa(self):
         mesa = self.cleaned_data.get('mesa')
+        
+        if not mesa:
+            raise forms.ValidationError('Por favor seleccione una mesa.')
 
         # Solo validamos disponibilidad al crear un pedido nuevo
         # Al editar no bloqueamos porque la mesa ya estaba asignada
@@ -115,6 +127,12 @@ class PedidoForm(ModelForm):
                     f'Por favor seleccione otra mesa.'
                 )
         return mesa
+    
+    def clean_usuario(self):
+        Usuario = self.cleaned_data.get('usuario')
+        if not Usuario:
+            raise forms.ValidationError('Por favor seleccione un usuario.')
+        return Usuario
 
 
 # ==============================================================
@@ -406,7 +424,7 @@ DetalleFormSet = inlineformset_factory(
     Receta,
     DetalleReceta,
     form=DetalleRecetaForm,
-    extra=1,
+    extra=1,  # 🔥 IMPORTANTE
     can_delete=True
 )
 
@@ -428,22 +446,41 @@ class InsumosForm(ModelForm):
     # 🔹 Validaciones de NOMBRE
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
+        
+        if insumo.objects.filter(nombre__iexact=nombre).exists():
+            raise forms.ValidationError('Este insumo ya está registrado.')
 
         if len(nombre) < 3:
             raise forms.ValidationError(
                 'El nombre debe tener al menos 3 caracteres'
             )
 
+        # 🔹 Solo letras, números y espacios
+        if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$', nombre):
+            raise forms.ValidationError(
+                'El nombre solo puede contener letras, números y espacios'
+            )
+
+        # 🔹 No puede ser solo números
         if nombre.isdigit():
             raise forms.ValidationError(
                 'El nombre no puede ser solo números'
             )
 
-        if nombre.startswith(' '):
+        # 🔹 No permitir espacios dobles seguidos
+        if "  " in nombre:
             raise forms.ValidationError(
-                'El nombre no puede iniciar con espacio'
+                'No se permiten espacios dobles'
             )
+
+        # 🔹 No permitir que empiece o termine en espacio
+        if nombre.startswith(' ') or nombre.endswith(' '):
+            raise forms.ValidationError(
+                'El nombre no puede iniciar ni terminar con espacio'
+            )
+
         return nombre
+    
 
     def clean_descripcion(self):
         descripcion = self.cleaned_data.get('descripcion')
@@ -456,6 +493,11 @@ class InsumosForm(ModelForm):
         if descripcion.isdigit():
             raise forms.ValidationError(
                 'La descripcion no puede ser solo números'
+            )
+        
+        if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$', descripcion):
+            raise forms.ValidationError(
+                'La descripcion solo puede contener letras, números y espacios'
             )
 
         return descripcion
@@ -475,7 +517,7 @@ class InsumosForm(ModelForm):
     def clean_stock(self):
         stock = self.cleaned_data.get('stock')
 
-        if stock is not None and stock > 10000:
+        if stock is not None and stock > 1000000:
             raise forms.ValidationError(
                 'El stock es demasiado alto'
             )
@@ -515,39 +557,17 @@ class FacturaForm(ModelForm):
             ])
         }
 
-class VentaForm(ModelForm):
+class VentaForm(forms.ModelForm):
     class Meta:
         model = Venta
-        fields = '__all__'
+        fields = ['pedido']
         
-        widgets = {
-            'usuario': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'pedido': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'total_venta': forms.NumberInput(attrs={
-                'class': 'form-control'
-            }),
-        }
-        
-class PagoForm(ModelForm):
+class PagoForm(forms.ModelForm):
     class Meta:
         model = Pago
-        fields = '__all__'
+        fields = ['metodo_pago']
         widgets = {
-            'venta': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'factura': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'monto': forms.NumberInput(attrs={
-                
-                
-                'class': 'form-control'
-            }),
+            'metodo_pago': forms.Select(attrs={'class': 'form-control'})
         }
 
 class UsuarioForm(ModelForm):
@@ -564,16 +584,18 @@ class UsuarioForm(ModelForm):
                 'placeholder': 'Ingrese el correo electrónico del usuario'}),
             'rol': forms.Select(attrs={
                 'placeholder': 'Seleccione el rol del usuario'}),
-            'contrasena': forms.PasswordInput(attrs={
+            'contrasena': forms.PasswordInput(render_value=True, attrs={
                 'placeholder': 'Ingrese la contraseña del usuario'}),
             'numero_documento': forms.TextInput(attrs={
                 'placeholder': 'Ingrese el número de documento del usuario'}),
-            'contrasena_actual': forms.PasswordInput(attrs={
-                'placeholder': 'Ingrese la contraseña actual del usuario'}),
     
         }
     def clean_nombre(self): 
         nombre = self.cleaned_data.get('nombre')
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no puede ser solo números')
+        if nombre.startswith(' '):
+            raise forms.ValidationError('El nombre no puede iniciar con espacio')
         if len(nombre) < 3:
             raise forms.ValidationError('El nombre debe tener al menos 3 caracteres')
         if not re.match(r'^[a-zA-Z\s]+$', nombre):
@@ -602,6 +624,7 @@ class UsuarioForm(ModelForm):
         return correo
     
     def clean_contrasena(self):
+        
         contrasena = self.cleaned_data.get('contrasena')
         if len(contrasena) < 8:
             raise forms.ValidationError('La contraseña debe tener al menos 8 caracteres')
@@ -627,10 +650,28 @@ class UsuarioForm(ModelForm):
     
     def clean_numero_documento(self):
         numero_documento = self.cleaned_data.get('numero_documento')
+
+        if not numero_documento:
+            raise forms.ValidationError('Debe ingresar un número de documento')
+
+        numero_documento = numero_documento.strip()
+
         if not re.match(r'^[0-9]+$', numero_documento):
             raise forms.ValidationError('El número de documento solo puede contener números')
+
         if len(numero_documento) < 10:
-            raise forms.ValidationError('El número de documento debe tener al menos 10 caracteres') 
+            raise forms.ValidationError('El número de documento debe tener al menos 10 caracteres')
+
+        if len(numero_documento) > 15:
+            raise forms.ValidationError('El número de documento no puede tener más de 15 caracteres')
+
+        if numero_documento == numero_documento[0] * len(numero_documento):
+            raise forms.ValidationError('Número de documento inválido')
+
+        numeros_invalidos = ['123456789', '1234567890', '0000000000']
+        if numero_documento in numeros_invalidos:
+            raise forms.ValidationError('Número de documento inválido')
+
         return numero_documento
 
     
@@ -664,7 +705,6 @@ class ProveedorForm(ModelForm):
             raise forms.ValidationError('El nombre del proveedor debe tener al menos 3 caracteres')
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\.\-&]+$', nombre):
             raise forms.ValidationError('El nombre contiene caracteres no permitidos')
-
         return nombre
 
     def clean_telefono(self):
@@ -778,17 +818,57 @@ class ProductoForm(ModelForm):
         return cleaned_data
 
 class CompraForm(ModelForm):
+
     class Meta:
         model = Compra
         fields = '__all__'
         widgets = {
             'producto': forms.Select(attrs={
                 'placeholder': 'Seleccione el producto'}),
+            'insumo': forms.Select(attrs={
+                'placeholder': 'Seleccione el insumo'}),
             'proveedor': forms.Select(attrs={
                 'placeholder': 'Seleccione el proveedor'}),
             'cantidad': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese la cantidad de la compra'}),
+                'placeholder': 'Ingrese la cantidad de la compra',
+                'id': 'id_cantidad'}),
+            'precio_unitario': forms.NumberInput(attrs={
+                'placeholder': 'Ingrese el precio unitario',
+                'id': 'id_precio_unitario'}),
             'fecha_compra': forms.DateInput(attrs={
                 'placeholder': 'Ingrese la fecha de la compra',
                 'type': 'date'}),
+            'estado_pago': forms.Select(),
+            'total_compra': forms.NumberInput(attrs={
+                'readonly': True,
+                'id': 'id_total_compra'}),
         }
+
+    def clean_cantidad(self):
+        cantidad = self.cleaned_data.get('cantidad')
+        if cantidad <= 0:
+            raise forms.ValidationError("La cantidad debe ser mayor a 0")
+        return cantidad
+
+
+    def clean_precio_unitario(self):
+        precio = self.cleaned_data.get('precio_unitario')
+        if precio <= 0:
+            raise forms.ValidationError("El precio unitario debe ser mayor a 0")
+        return precio
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        producto = cleaned_data.get("producto")
+        insumo = cleaned_data.get("insumo")
+
+        if producto and insumo:
+            raise forms.ValidationError(
+                "Debe seleccionar solo un producto o un insumo, no ambos."
+            )
+        if not producto and not insumo:
+            raise forms.ValidationError(
+                "Debe seleccionar un producto o un insumo."
+            )
+        return cleaned_data
