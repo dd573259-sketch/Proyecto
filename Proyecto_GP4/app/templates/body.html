@@ -10,19 +10,14 @@
   {% block main %}
   {% endblock main %}
   {%include 'footer.html'%}
-  <script src="{% static 'lib/sweetalert2/sweetalert2.all.min.js' %}"></script>
-
   <script src="{% static 'lib/jquery/jquery-3.6.0.min.js' %}"></script>
   <script src="{% static 'lib/bootstrap-4.4.1-dist/js/bootstrap.min.js' %}"></script>
   <script src="{% static 'lib/adminlte-3.0.4/js/adminlte.min.js' %}"></script>
+  <script src="{% static 'lib/sweetalert2/sweetalert2.all.min.js' %}"></script>
 
-
-
+{% block js %}
+{% endblock %}
 
 </body>
 
-
-{% block js %}
-
-{% endblock %}
 {% endblock %}

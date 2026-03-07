@@ -18,8 +18,18 @@ class ComandaListView(ListView):
         context['fecha'] = self.request.GET.get('fecha', '')
 
         return context
+        
+    
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = Comanda.objects.select_related(
+            "pedido",
+            "pedido__mesa",
+            "pedido__usuario"
+        ).prefetch_related(
+            "pedido__detalle_platos__plato",
+            "pedido__detalle_productos__producto"
+        )
+        
         estado = self.request.GET.get('buscar')
         fecha = self.request.GET.get('fecha')
 
@@ -32,16 +42,8 @@ class ComandaListView(ListView):
 
 
         return queryset
-    
-    def get_queryset(self):
-        return Comanda.objects.select_related(
-            "pedido",
-            "pedido__mesa",
-            "pedido__usuario"
-        ).prefetch_related(
-            "pedido__detalle_platos__plato",
-            "pedido__detalle_productos__producto"
-        )
+        
+        
 
 
 class ComandaUpdateView(UpdateView):

@@ -1,5 +1,5 @@
 from django.db import models
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator,  MaxValueValidator
 from django.core.exceptions import ValidationError
 from datetime import datetime
 from decimal import Decimal
@@ -133,7 +133,7 @@ class Cliente(models.Model):
     ]
 
     tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO, null=True)
-    numero_documento = models.IntegerField(unique=True, null=True)
+    numero_documento = models.CharField(max_length=15, unique=True, null=True)
     nombre = models.CharField(max_length=50)
     apellido = models.CharField(max_length=50)
     telefono = models.CharField(max_length=15)
@@ -182,7 +182,7 @@ class Compra(models.Model):
         return f"Compra #{self.id_compra} {self.proveedor}{self.usuario}{self.producto} {self.insumo}"
 class Mesa(models.Model):
     id_mesa = models.AutoField(primary_key=True)
-    numero_mesa = models.IntegerField(unique=True)
+    numero_mesa = models.IntegerField(unique=True, validators=[MinValueValidator(1), MaxValueValidator(10)])
     estado = models.CharField(max_length=20)
 
     ESTADO = [

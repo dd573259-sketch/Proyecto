@@ -5,9 +5,14 @@
 
 <link href="{% static "css/select2.min.css" %}" rel="stylesheet">
 
-<div class="container mt-4">
-    <h2 class="mb-4">{{ titulo }}</h2>
+<div class="d-flex align-items-center mb-4">
 
+    <a href="{% url 'app:listar_pedidos' %}" class="btn btn-dark btn-sm me-3">
+        <i class="fas fa-arrow-left"></i> Regresar
+    </a>
+
+
+</div>
     <form method="post" id="form-pedido">
         {% csrf_token %}
 
@@ -143,6 +148,35 @@
     const preciosProductos = {{ productos_json|safe|default:"{}" }};
     const stockProductos = {{ stock_json|safe|default:"{}" }};
 
+    // --- 0. VALIDACIÓN MESA ANTES DE EMPLEADO ---
+    $(document).on('select2:select', '#id_usuario', function () {
+        const mesaVal = $('#id_mesa').val();
+
+        if (!mesaVal) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Mesa requerida',
+                html: 'Debe <strong>seleccionar una mesa</strong> antes de asignar un empleado.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#f0ad4e'
+            });
+
+            // Resaltar el campo mesa en rojo para guiar al usuario
+            $('#id_mesa').next('.select2').find('.select2-selection').css({
+                'border': '2px solid red',
+                'border-radius': '4px'
+            });
+
+            // Quitar borde rojo cuando seleccione la mesa
+            $('#id_mesa').one('select2:select', function () {
+                $(this).next('.select2').find('.select2-selection').css({
+                    'border': '',
+                    'border-radius': ''
+                });
+            });
+        }
+    });
+
     // --- 1. FUNCIONES CORE ---
 
     // Inicializa Select2 en los selects visibles
@@ -226,7 +260,7 @@
                 icon: 'warning',
                 title: '¡Plato repetido!',
                 html: `El plato <strong>${nombrePlato}</strong> ya está en el pedido.<br>
-                        Si quieres más cantidad, edita la fila que ya existe 😊`,
+                        Si quieres más cantidad, edita la fila que ya existe`,
                 confirmButtonText: 'Entendido'
             });
             selectActual.val('').trigger('change');
@@ -422,13 +456,158 @@
     // Eventos de botones "Agregar" (delegados para asegurar que funcionan aunque el script se cargue antes)
     $(document).on('click', '#agregar-plato', function(e) {
         e.preventDefault();
+        // Verificar que todos los platos existentes tengan un plato seleccionado
+        let filaVacia = null;
+        $('.fila-plato').each(function() {
+            const platoVal = $(this).find('select[name$="-plato"]').val();
+            if (!platoVal) {
+                filaVacia = $(this);
+                return false; // break
+            }
+        });
+
+        if (filaVacia) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Plato sin seleccionar',
+                html: 'Debe <strong>seleccionar un plato</strong> en todas las filas antes de agregar otra.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#f0ad4e'
+            });
+
+            // Resaltar la fila vacía
+            filaVacia.find('select[name$="-plato"]').next('.select2').find('.select2-selection').css({
+                'border': '2px solid red',
+                'border-radius': '4px'
+            });
+
+            // Quitar borde al seleccionar
+            filaVacia.find('select[name$="-plato"]').one('select2:select', function() {
+                $(this).next('.select2').find('.select2-selection').css({
+                    'border': '',
+                    'border-radius': ''
+                });
+            });
+
+            // Scroll a la fila vacía
+            $('html, body').animate({
+                scrollTop: filaVacia.offset().top - 100
+            }, 400);
+
+            return;
+        }
+        // Verificar cantidad válida en platos
+    let filaSinCantidad = null;
+    $('.fila-plato').each(function() {
+        const fila = $(this);
+        const platoVal = fila.find('select[name$="-plato"]').val();
+        const inputcantidad = fila.find('input').filter(function() {
+            const name = $(this).attr('name') || '';
+            return name.indexOf('-cantidad') !== -1;
+        });
+        const cantidad = inputcantidad.val();
+        if (platoVal && (cantidad === '' || cantidad === undefined || isNaN(Number(cantidad)) || Number(cantidad) <= 0)) {
+            filaSinCantidad = fila;
+            return false; // break
+        }
+    });
+
+    if (filaSinCantidad) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Cantidad requerida',
+            html: 'Debe ingresar una <strong>cantidad válida</strong> en todos los platos.',
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#f0ad4e'
+        });
+        const inputError = filaSinCantidad.find('input').filter(function() {
+            const name = $(this).attr('name') || '';
+            return name.indexOf('-cantidad') !== -1;
+        });
+        $(inputError).css({ 'border': '2px solid red', 'border-radius': '4px' });
+        $(inputError).one('input', function() {
+            $(this).css({ 'border': '', 'border-radius': '' });
+        });
+        $('html, body').animate({ scrollTop: filaSinCantidad.offset().top - 100 }, 400);
+        return;
+    }
+
+
         agregarFila('.fila-plato', 'detalle_platos', '#contenedor-platos', '#id_detalle_platos-TOTAL_FORMS');
     });
 
     $(document).on('click', '#agregar-producto', function(e) {
-        e.preventDefault();
-        agregarFila('.fila-producto', 'detalle_productos', '#contenedor-productos', '#id_detalle_productos-TOTAL_FORMS');
+    e.preventDefault();
+
+    // 1. Validar que todos los platos tengan cantidad válida
+    let filaSinCantidad = null;
+
+    $('.fila-plato').each(function() {
+        const fila = $(this);
+        const platoVal = fila.find('select[name$="-plato"]').val();
+
+        const inputCantidad = fila.find('input[name$="-cantidad"]');
+        const cantidad = inputCantidad.val();
+
+        if (platoVal && (cantidad === '' || isNaN(cantidad) || Number(cantidad) <= 0)) {
+            filaSinCantidad = fila;
+            return false;
+        }
     });
+
+    if (filaSinCantidad) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Cantidad faltante',
+            html: 'Debe ingresar una <strong>cantidad válida</strong> en todos los platos antes de agregar productos.',
+            confirmButtonText: 'Entendido'
+        });
+
+        const inputError = filaSinCantidad.find('input[name$="-cantidad"]');
+
+        inputError.css({
+            'border': '2px solid red',
+            'border-radius': '4px'
+        });
+
+        inputError.one('input', function() {
+            $(this).css({
+                'border': '',
+                'border-radius': ''
+            });
+        });
+
+        $('html, body').animate({
+            scrollTop: filaSinCantidad.offset().top - 100
+        }, 400);
+
+        return;
+    }
+
+    // 2. Validar que todos los productos tengan uno seleccionado
+    let filaVacia = null;
+
+    $('.fila-producto').each(function() {
+        const productoVal = $(this).find('select[name$="-producto"]').val();
+        if (!productoVal) {
+            filaVacia = $(this);
+            return false;
+        }
+    });
+
+    if (filaVacia) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Producto sin seleccionar',
+            html: 'Debe <strong>seleccionar un producto</strong> en todas las filas antes de agregar otra.',
+            confirmButtonText: 'Entendido'
+        });
+        return;
+    }
+    
+
+    agregarFila('.fila-producto', 'detalle_productos', '#contenedor-productos', '#id_detalle_productos-TOTAL_FORMS');
+});
 
     // --- 4. EVENTOS DE CAMBIO ---
 
@@ -507,5 +686,44 @@
             recalcularTotal();
         }, 100);
     });
+
+    $('#form-pedido').on('submit', function(e) {
+
+    let filaSinCantidad = null;
+
+    $('.fila-plato').each(function() {
+        const fila = $(this);
+        const plato = fila.find('select[name$="-plato"]').val();
+        const cantidad = fila.find('input[name$="-cantidad"]').val();
+
+        if (plato && (!cantidad || Number(cantidad) <= 0)) {
+            filaSinCantidad = fila;
+            return false;
+        }
+    });
+
+    if (filaSinCantidad) {
+        e.preventDefault(); // evita que se recargue la página
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Cantidad faltante',
+            text: 'Debe ingresar una cantidad válida en todos los platos.'
+        });
+
+        const inputError = filaSinCantidad.find('input[name$="-cantidad"]');
+
+        inputError.css({
+            'border': '2px solid red'
+        });
+
+        $('html, body').animate({
+            scrollTop: filaSinCantidad.offset().top - 100
+        }, 400);
+
+        return false;
+    }
+
+});
 </script>
 {% endblock js %}
