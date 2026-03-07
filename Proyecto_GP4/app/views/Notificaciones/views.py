@@ -23,6 +23,9 @@ class notificacionListView(listView):
     model = Notificacion
     template_name = 'Notificacion/listar.html'
     
+    def get_queryset(self):
+        return Notificacion.objects.all()
+    
     #METODO DISPATCH
     #@method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):

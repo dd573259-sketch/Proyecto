@@ -424,7 +424,7 @@ DetalleFormSet = inlineformset_factory(
     Receta,
     DetalleReceta,
     form=DetalleRecetaForm,
-    extra=1,
+    extra=1,  # 🔥 IMPORTANTE
     can_delete=True
 )
 
@@ -446,22 +446,41 @@ class InsumosForm(ModelForm):
     # 🔹 Validaciones de NOMBRE
     def clean_nombre(self):
         nombre = self.cleaned_data.get('nombre')
+        
+        if insumo.objects.filter(nombre__iexact=nombre).exists():
+            raise forms.ValidationError('Este insumo ya está registrado.')
 
         if len(nombre) < 3:
             raise forms.ValidationError(
                 'El nombre debe tener al menos 3 caracteres'
             )
 
+        # 🔹 Solo letras, números y espacios
+        if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$', nombre):
+            raise forms.ValidationError(
+                'El nombre solo puede contener letras, números y espacios'
+            )
+
+        # 🔹 No puede ser solo números
         if nombre.isdigit():
             raise forms.ValidationError(
                 'El nombre no puede ser solo números'
             )
 
-        if nombre.startswith(' '):
+        # 🔹 No permitir espacios dobles seguidos
+        if "  " in nombre:
             raise forms.ValidationError(
-                'El nombre no puede iniciar con espacio'
+                'No se permiten espacios dobles'
             )
+
+        # 🔹 No permitir que empiece o termine en espacio
+        if nombre.startswith(' ') or nombre.endswith(' '):
+            raise forms.ValidationError(
+                'El nombre no puede iniciar ni terminar con espacio'
+            )
+
         return nombre
+    
 
     def clean_descripcion(self):
         descripcion = self.cleaned_data.get('descripcion')
@@ -474,6 +493,11 @@ class InsumosForm(ModelForm):
         if descripcion.isdigit():
             raise forms.ValidationError(
                 'La descripcion no puede ser solo números'
+            )
+        
+        if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$', descripcion):
+            raise forms.ValidationError(
+                'La descripcion solo puede contener letras, números y espacios'
             )
 
         return descripcion
@@ -493,7 +517,7 @@ class InsumosForm(ModelForm):
     def clean_stock(self):
         stock = self.cleaned_data.get('stock')
 
-        if stock is not None and stock > 10000:
+        if stock is not None and stock > 1000000:
             raise forms.ValidationError(
                 'El stock es demasiado alto'
             )
