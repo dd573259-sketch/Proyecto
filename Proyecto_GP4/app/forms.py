@@ -584,16 +584,18 @@ class UsuarioForm(ModelForm):
                 'placeholder': 'Ingrese el correo electrónico del usuario'}),
             'rol': forms.Select(attrs={
                 'placeholder': 'Seleccione el rol del usuario'}),
-            'contrasena': forms.PasswordInput(attrs={
+            'contrasena': forms.PasswordInput(render_value=True, attrs={
                 'placeholder': 'Ingrese la contraseña del usuario'}),
             'numero_documento': forms.TextInput(attrs={
                 'placeholder': 'Ingrese el número de documento del usuario'}),
-            'contrasena_actual': forms.PasswordInput(attrs={
-                'placeholder': 'Ingrese la contraseña actual del usuario'}),
     
         }
     def clean_nombre(self): 
         nombre = self.cleaned_data.get('nombre')
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no puede ser solo números')
+        if nombre.startswith(' '):
+            raise forms.ValidationError('El nombre no puede iniciar con espacio')
         if len(nombre) < 3:
             raise forms.ValidationError('El nombre debe tener al menos 3 caracteres')
         if not re.match(r'^[a-zA-Z\s]+$', nombre):
@@ -622,6 +624,7 @@ class UsuarioForm(ModelForm):
         return correo
     
     def clean_contrasena(self):
+        
         contrasena = self.cleaned_data.get('contrasena')
         if len(contrasena) < 8:
             raise forms.ValidationError('La contraseña debe tener al menos 8 caracteres')
@@ -647,10 +650,28 @@ class UsuarioForm(ModelForm):
     
     def clean_numero_documento(self):
         numero_documento = self.cleaned_data.get('numero_documento')
+
+        if not numero_documento:
+            raise forms.ValidationError('Debe ingresar un número de documento')
+
+        numero_documento = numero_documento.strip()
+
         if not re.match(r'^[0-9]+$', numero_documento):
             raise forms.ValidationError('El número de documento solo puede contener números')
+
         if len(numero_documento) < 10:
-            raise forms.ValidationError('El número de documento debe tener al menos 10 caracteres') 
+            raise forms.ValidationError('El número de documento debe tener al menos 10 caracteres')
+
+        if len(numero_documento) > 15:
+            raise forms.ValidationError('El número de documento no puede tener más de 15 caracteres')
+
+        if numero_documento == numero_documento[0] * len(numero_documento):
+            raise forms.ValidationError('Número de documento inválido')
+
+        numeros_invalidos = ['123456789', '1234567890', '0000000000']
+        if numero_documento in numeros_invalidos:
+            raise forms.ValidationError('Número de documento inválido')
+
         return numero_documento
 
     
@@ -684,7 +705,6 @@ class ProveedorForm(ModelForm):
             raise forms.ValidationError('El nombre del proveedor debe tener al menos 3 caracteres')
         if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s\.\-&]+$', nombre):
             raise forms.ValidationError('El nombre contiene caracteres no permitidos')
-
         return nombre
 
     def clean_telefono(self):
@@ -798,17 +818,57 @@ class ProductoForm(ModelForm):
         return cleaned_data
 
 class CompraForm(ModelForm):
+
     class Meta:
         model = Compra
         fields = '__all__'
         widgets = {
             'producto': forms.Select(attrs={
                 'placeholder': 'Seleccione el producto'}),
+            'insumo': forms.Select(attrs={
+                'placeholder': 'Seleccione el insumo'}),
             'proveedor': forms.Select(attrs={
                 'placeholder': 'Seleccione el proveedor'}),
             'cantidad': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese la cantidad de la compra'}),
+                'placeholder': 'Ingrese la cantidad de la compra',
+                'id': 'id_cantidad'}),
+            'precio_unitario': forms.NumberInput(attrs={
+                'placeholder': 'Ingrese el precio unitario',
+                'id': 'id_precio_unitario'}),
             'fecha_compra': forms.DateInput(attrs={
                 'placeholder': 'Ingrese la fecha de la compra',
                 'type': 'date'}),
+            'estado_pago': forms.Select(),
+            'total_compra': forms.NumberInput(attrs={
+                'readonly': True,
+                'id': 'id_total_compra'}),
         }
+
+    def clean_cantidad(self):
+        cantidad = self.cleaned_data.get('cantidad')
+        if cantidad <= 0:
+            raise forms.ValidationError("La cantidad debe ser mayor a 0")
+        return cantidad
+
+
+    def clean_precio_unitario(self):
+        precio = self.cleaned_data.get('precio_unitario')
+        if precio <= 0:
+            raise forms.ValidationError("El precio unitario debe ser mayor a 0")
+        return precio
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        producto = cleaned_data.get("producto")
+        insumo = cleaned_data.get("insumo")
+
+        if producto and insumo:
+            raise forms.ValidationError(
+                "Debe seleccionar solo un producto o un insumo, no ambos."
+            )
+        if not producto and not insumo:
+            raise forms.ValidationError(
+                "Debe seleccionar un producto o un insumo."
+            )
+        return cleaned_data
