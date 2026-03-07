@@ -1,5 +1,5 @@
 {% load static %}
 <nav>
-    <a href="index-admin.html "><img class="icono" src="{% static 'imagenes/inicio.png' %}" alt="Inicio"></a>
-    <a href="perfil-admin.html"><img class="icono" src="{% static 'imagenes/usuario.png' %}" alt="Usuario"></a>
+    <a href="{% url 'app:dashboard' %}"><img class="icono" src="{% static 'imagenes/inicio.png' %}" alt="Inicio"></a>
+    <a href="{% url 'app:listar_usuarios' %}"><img class="icono" src="{% static 'imagenes/usuario.png' %}" alt="Usuario"></a>
 </nav>

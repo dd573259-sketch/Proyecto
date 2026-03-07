@@ -1,0 +1,33 @@
+{% extends "main.html" %}
+{% load static %}
+{% block Contenido %}
+
+<div class="item">
+    <a href="{% url 'app:listar_insumos' %}">
+        <img src="{% static 'imagenes/cajas.png' %}" alt="Inventario">
+        <p>INSUMOS</p>
+    </a>
+</div>
+
+<div class="item">
+    <a href="{% url 'app:listar_proveedores' %}">
+        <img src="{% static 'imagenes/camion.png' %}" alt="Proveedores">
+        <p>PROVEEDORES</p>
+    </a>
+</div>
+
+<div class="item">
+    <a href="{% url 'app:listar_ventas' %}">
+        <img src="{% static 'imagenes/punto-de-venta.png' %}" alt="Control Ventas">
+        <p>CONTROL VENTAS</p>
+    </a>
+</div>
+
+<div class="item">
+    <a href="{% url 'app:listar_usuarios' %}">
+        <img src="{% static 'imagenes/perfil.png' %}" alt="Usuarios">
+        <p>USUARIOS</p>
+    </a>
+</div>
+
+{% endblock %}

@@ -3,12 +3,8 @@
   padding: 0;
   box-sizing: border-box;
   font-family: 'Jokerman', cursive;
-  transition: all 0.3s ease; /* Animación general */
 }
 
-html, body {
-  height: 100%;
-}
 
 body {
   display: flex;
@@ -24,6 +20,10 @@ header {
   justify-content: space-between; 
   align-items: center;
   padding: 1% 5%;
+  height: 110px;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 #logo {
@@ -56,6 +56,9 @@ nav {
   justify-content: space-between; 
   align-items: center;
   padding: 10px 20%;
+  position: sticky;
+  top: 110px; /* ajusta si tu header es más alto */
+  z-index: 999;
 }
 
 main{

@@ -5,6 +5,39 @@
   border-spacing: 0.3rem;
 }
 
+.buscador{
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.buscador input{
+  width: 300px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 2px solid #cccccc;
+  outline: none;
+}
+
+.buscador input:focus{
+  border-color: #2e8b57;
+  box-shadow: 0 0 4px rgba(46,139,87,0.4);
+}
+
+.buscador button{
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  background-color: #2e8b57;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.buscador button:hover{
+  background-color: #256f45;
+}
+
 .tabla th,
 .tabla td {
   padding: 0.5rem;

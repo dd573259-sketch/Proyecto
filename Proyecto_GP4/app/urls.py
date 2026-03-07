@@ -16,6 +16,7 @@ from app.views.Comanda.views import *
 from app.views.Mesa.views import *
 from app.views.Pedido.views import *
 from app.views.Cliente.views import *
+from app.views.Dashborad.views import *
 
 app_name = 'app'
 urlpatterns = [
@@ -120,7 +121,10 @@ urlpatterns = [
     path('listar_cliente/', ClienteListView.as_view() , name='listar_clientes'),
     path('crear_cliente/', ClienteCreateView.as_view() , name='crear_cliente'),
     path('editar_cliente/<int:pk>/', ClienteUpdateView.as_view(), name='editar_cliente'),
-    path('eliminar_cliente/<int:pk>/', ClienteDeleteView.as_view(), name='eliminar_cliente'),   
+    path('eliminar_cliente/<int:pk>/', ClienteDeleteView.as_view(), name='eliminar_cliente'),  
+    
+# DASHBOARD
+    path('dashboard/', dashboardView.as_view(), name='dashboard'),
 ]
 
 
