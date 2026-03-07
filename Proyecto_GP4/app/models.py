@@ -404,15 +404,23 @@ class DetalleReceta(models.Model):
         verbose_name_plural = 'Detalles Recetas'
 
 class Notificacion(models.Model):
+
     id_notificacion = models.AutoField(primary_key=True)
+
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True)
     insumo = models.ForeignKey(insumo, on_delete=models.CASCADE, null=True, blank=True)
+
     tipo_notificacion = models.CharField(max_length=100)
     mensaje = models.TextField()
-    fecha = models.DateTimeField(auto_now=True)
+
+    leido = models.BooleanField(default=False)
+
+    fecha = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Notificacion {self.id} - {self.tipo_notificacion}"
+        return f"{self.tipo_notificacion} - {self.mensaje}"
 
     class Meta:
         verbose_name = "notificacion"
