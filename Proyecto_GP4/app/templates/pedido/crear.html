@@ -155,7 +155,7 @@
         if (!mesaVal) {
             Swal.fire({
                 icon: 'warning',
-                title: '⚠️ Mesa requerida',
+                title: 'Mesa requerida',
                 html: 'Debe <strong>seleccionar una mesa</strong> antes de asignar un empleado.',
                 confirmButtonText: 'Entendido',
                 confirmButtonColor: '#f0ad4e'
@@ -260,7 +260,7 @@
                 icon: 'warning',
                 title: '¡Plato repetido!',
                 html: `El plato <strong>${nombrePlato}</strong> ya está en el pedido.<br>
-                        Si quieres más cantidad, edita la fila que ya existe 😊`,
+                        Si quieres más cantidad, edita la fila que ya existe`,
                 confirmButtonText: 'Entendido'
             });
             selectActual.val('').trigger('change');
@@ -469,7 +469,7 @@
         if (filaVacia) {
             Swal.fire({
                 icon: 'warning',
-                title: '⚠️ Plato sin seleccionar',
+                title: 'Plato sin seleccionar',
                 html: 'Debe <strong>seleccionar un plato</strong> en todas las filas antes de agregar otra.',
                 confirmButtonText: 'Entendido',
                 confirmButtonColor: '#f0ad4e'
@@ -515,7 +515,7 @@
     if (filaSinCantidad) {
         Swal.fire({
             icon: 'warning',
-            title: '⚠️ Cantidad requerida',
+            title: 'Cantidad requerida',
             html: 'Debe ingresar una <strong>cantidad válida</strong> en todos los platos.',
             confirmButtonText: 'Entendido',
             confirmButtonColor: '#f0ad4e'
@@ -558,7 +558,7 @@
     if (filaSinCantidad) {
         Swal.fire({
             icon: 'warning',
-            title: '⚠️ Cantidad faltante',
+            title: 'Cantidad faltante',
             html: 'Debe ingresar una <strong>cantidad válida</strong> en todos los platos antes de agregar productos.',
             confirmButtonText: 'Entendido'
         });
@@ -598,7 +598,7 @@
     if (filaVacia) {
         Swal.fire({
             icon: 'warning',
-            title: '⚠️ Producto sin seleccionar',
+            title: 'Producto sin seleccionar',
             html: 'Debe <strong>seleccionar un producto</strong> en todas las filas antes de agregar otra.',
             confirmButtonText: 'Entendido'
         });
@@ -703,7 +703,7 @@
     });
 
     if (filaSinCantidad) {
-        e.preventDefault(); // 🚨 evita que se recargue la página
+        e.preventDefault(); // evita que se recargue la página
 
         Swal.fire({
             icon: 'warning',
