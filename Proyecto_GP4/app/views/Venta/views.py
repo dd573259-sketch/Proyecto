@@ -71,13 +71,6 @@ class VentaListView(ListView):
             queryset = queryset.exclude(estado='PAGADA')
 
         return queryset
-    
-from django.shortcuts import get_object_or_404, redirect
-from django.contrib import messages
-from django.views.generic import CreateView
-from django.urls import reverse_lazy
-from app.models import Venta, Pedido, Usuario
-from app.forms import VentaForm
 
 class VentaCreateView(CreateView):
     model = Venta
