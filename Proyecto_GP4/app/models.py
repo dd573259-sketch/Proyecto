@@ -8,6 +8,7 @@ from django.core.validators import RegexValidator
 from datetime import datetime
 from django.utils import timezone
 
+
 # Create your models here.
 class Usuario(models.Model):
 
@@ -56,7 +57,7 @@ class Proveedor(models.Model):
 
     tipo_de_documento = models.CharField(max_length=20, choices=TIPO_DE_DOCUMENTO)
     numero_documento = models.CharField(max_length=20, unique=True)
-    nombre_proveedor = models.CharField(max_length=150)
+    nombre_proveedor = models.CharField(max_length=20)
     telefono = models.CharField(max_length=15)
     correo_electronico = models.EmailField(unique=True)
     direccion = models.CharField(max_length=200)
@@ -164,22 +165,43 @@ class Factura(models.Model):
         return f"Factura {self.id} - Total: {self.valor_total}"
     
 #modelos debiles
+
 class Compra(models.Model):
+
+    ESTADO_PAGO = [
+        ('pendiente', 'Pendiente'),
+        ('pagado', 'Pagado'),
+        ('anticipado', 'Pagado anticipadamente'),
+    ]
     id_compra = models.AutoField(primary_key=True)
     proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE)
-    insumo = models.IntegerField(null=True, blank=True)
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True)
+    insumo = models.ForeignKey( 'insumo', on_delete=models.CASCADE, null=True, blank=True)
+    cantidad = models.IntegerField()
+    precio_unitario = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_compra = models.DateTimeField(auto_now=True)
-    total_compra = models.DecimalField(max_digits=10, decimal_places=2)
+
+    estado_pago = models.CharField(
+        max_length=20,
+        choices=ESTADO_PAGO,
+        default='pendiente'
+    )
+
+    total_compra = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     class Meta:
         verbose_name = "Compra"
         verbose_name_plural = "Compras"
         db_table = "compra"
 
+    def save(self, *args, **kwargs):
+        self.total_compra = self.cantidad * self.precio_unitario
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f"Compra #{self.id_compra} {self.proveedor}{self.usuario}{self.producto} {self.insumo}"
+        return f"Compra #{self.id_compra} - {self.proveedor} - {self.producto}"
+
 class Mesa(models.Model):
     id_mesa = models.AutoField(primary_key=True)
     numero_mesa = models.IntegerField(unique=True)
