@@ -85,11 +85,14 @@ class ClienteForm(ModelForm):
     def clean_numero_documento(self):
         numero = self.cleaned_data.get('numero_documento')
 
-        if numero <= 0:
-            raise forms.ValidationError("El número de documento debe ser positivo.")
+        if not numero.isdigit():
+            raise forms.ValidationError("El número de documento solo debe contener dígitos.")
 
-        if len(str(numero)) < 6:
+        if len(numero) < 6:
             raise forms.ValidationError("El número de documento es demasiado corto.")
+
+        if len(numero) > 12:
+            raise forms.ValidationError("El número de documento es demasiado largo.")
 
         return numero
     
@@ -98,13 +101,22 @@ class PedidoForm(ModelForm):
         model = Pedido
         fields = ['mesa', 'usuario', 'estado']
         widgets = {
-            'mesa': forms.Select(attrs={'class': 'form-control'}),
-            'usuario': forms.Select(attrs={'class': 'form-control'}),
+            'mesa': forms.Select(attrs={
+            'class': 'form-control select2', 
+            'data-placeholder': 'Seleccione una mesa',
+            }),
+            'usuario': forms.Select(attrs={
+            'class': 'form-control select2',
+            'data-placeholder': 'Seleccione un empleado',
+            }),
             'estado': forms.Select(attrs={'class': 'form-control'}),
         }
 
     def clean_mesa(self):
         mesa = self.cleaned_data.get('mesa')
+        
+        if not mesa:
+            raise forms.ValidationError('Por favor seleccione una mesa.')
 
         # Solo validamos disponibilidad al crear un pedido nuevo
         # Al editar no bloqueamos porque la mesa ya estaba asignada
@@ -115,6 +127,12 @@ class PedidoForm(ModelForm):
                     f'Por favor seleccione otra mesa.'
                 )
         return mesa
+    
+    def clean_usuario(self):
+        Usuario = self.cleaned_data.get('usuario')
+        if not Usuario:
+            raise forms.ValidationError('Por favor seleccione un usuario.')
+        return Usuario
 
 
 # ==============================================================
