@@ -1,48 +1,76 @@
-{% extends "main.html" %}
+{% extends 'main.html' %}
 {% load static %}
+
 {% block Contenido %}
-<div class="tabla-wrapper">
-  <table class="tabla" id="tabla">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Venta</th>
-        <th>Factura</th>
-        <th>Monto</th>
-        <th>Fecha</th>
-        <th>Editar</th>
-        <th>Eliminar</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in object_list %}
-      <tr>
-        <td>{{ p.id_pago }}</td>
-        <td>{{ p.venta }}</td>
-        <td>{{ p.factura }}</td>
-        <td>${{ p.monto }}</td>
-        <td>{{ p.fecha }}</td>
+  <div class="tabla-wrapper">
+    <table class="tabla" id="tabla">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Venta</th>
+          <th>Factura</th>
+          <th>Total Venta</th>
+          <th>Monto Pagado</th>
+          <th>Fecha</th>
+          <th>Método de Pago</th>
+          <th>Eliminar</th>
+          <th>Generar Factura</th>
+        </tr>
+      </thead>
 
-        <td>
-          <a href="{% url 'app:editar_pago' p.pk %}" class="btn btn-warning btn-sm">
-            <i class="fas fa-edit"></i>
-          </a>
-        </td>
+      <tbody>
+        {% for p in object_list %}
+          <tr>
+            <td>{{ p.id_pago }}</td>
 
-        <td>
-          <a href="{% url 'app:eliminar_pago' p.pk %}" class="btn btn-danger btn-sm">
-            <i class="fas fa-trash"></i>
-          </a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</div>
-<div class="card-footer">
-  <a href="{% url 'app:crear_pago' %}" class="btn btn-success btn-sm">
-    <i class="fas fa-plus"></i> Crear Nuevo Pago
-  </a>
-</div>
+            <td>
+              {% if p.venta %}
+                Venta #{{ p.venta.id_venta }}
+              {% else %}
+                Sin venta
+              {% endif %}
+            </td>
 
+            <td>
+              {% if p.factura %}
+                {{ p.factura }}
+              {% else %}
+                Sin factura
+              {% endif %}
+            </td>
+
+            <td>
+              {% if p.venta %}
+                ${{ p.venta.total }}
+              {% else %}
+                $0
+              {% endif %}
+            </td>
+
+            <td>${{ p.monto }}</td>
+
+            <td>{{ p.fecha|date:'Y-m-d H:i' }}</td>
+
+            <td>{{ p.metodo_pago }}</td>
+
+            <td>
+              <a href="{% url 'app:eliminar_pago' p.id_pago %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+            </td>
+
+            <td>
+              {% if p.factura %}
+                Factura #{{ p.factura }}
+              {% else %}
+                <a href="{% url 'app:crear_factura' p.id_pago %}" class="btn btn-success btn-xs"><i class="fas fa-file-invoice"></i></a>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="9">No hay pagos registrados</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock %}

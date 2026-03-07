@@ -151,17 +151,20 @@ class Cliente(models.Model):
         return f"{self.nombre} {self.apellido}"
 
 class Factura(models.Model):
+
+    venta = models.ForeignKey('Venta', on_delete=models.CASCADE)
+
     fecha_hora = models.DateTimeField(auto_now_add=True)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     metodo_pago = models.CharField(max_length=50)
 
     class Meta:
+        db_table = "factura"
         verbose_name = "Factura"
         verbose_name_plural = "Facturas"
-        db_table = "factura"
 
     def __str__(self):
-        return f"Factura {self.id} - Total: {self.valor_total}"
+        return f"Factura {self.id} - Venta {self.venta.id_venta}"
     
 #modelos debiles
 class Compra(models.Model):
@@ -420,31 +423,40 @@ class Notificacion(models.Model):
         db_table = "notificacion"
 
 class Venta(models.Model):
+
     id_venta = models.AutoField(primary_key=True)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    pedido = models.ForeignKey(Pedido, on_delete=models.CASCADE)
+    pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE)
+    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+    total= models.DecimalField(max_digits=10, decimal_places=2)
     fecha_venta = models.DateTimeField(auto_now_add=True)
-    total_venta = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
-        verbose_name = "Venta"
-        verbose_name_plural = "Ventas"
         db_table = "venta"
 
     def __str__(self):
-        return f"Venta {self.id_venta} - {self.usuario.nombre} - ${self.total_venta}"
+        return f"Venta #{self.id_venta} - Pedido {self.pedido.id_pedido}"
+
 
 class Pago(models.Model):
+    METODOS = [
+        ('Efectivo', 'Efectivo'),
+        ('Tarjeta', 'Tarjeta'),
+        ('Transferencia', 'Transferencia'),
+    ]
     id_pago = models.AutoField(primary_key=True)
     venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
-    factura = models.ForeignKey(Factura, on_delete=models.CASCADE)
-    fecha = models.DateTimeField(auto_now_add=True)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
+    fecha = models.DateTimeField(auto_now_add=True)
+    metodo_pago = models.CharField(max_length=20, choices=METODOS)
+    factura = models.CharField(max_length=50, blank=True, null=True)
 
     class Meta:
-        verbose_name = "Pago"
-        verbose_name_plural = "Pagos"   
+        db_table = 'pago'
+
+    class Meta:
         db_table = "pago"
+        verbose_name = "Pago"
+        verbose_name_plural = "Pagos"
 
     def __str__(self):
         return f"Pago {self.id_pago} - ${self.monto}"

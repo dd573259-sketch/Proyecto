@@ -533,39 +533,17 @@ class FacturaForm(ModelForm):
             ])
         }
 
-class VentaForm(ModelForm):
+class VentaForm(forms.ModelForm):
     class Meta:
         model = Venta
-        fields = '__all__'
+        fields = ['pedido']
         
-        widgets = {
-            'usuario': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'pedido': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'total_venta': forms.NumberInput(attrs={
-                'class': 'form-control'
-            }),
-        }
-        
-class PagoForm(ModelForm):
+class PagoForm(forms.ModelForm):
     class Meta:
         model = Pago
-        fields = '__all__'
+        fields = ['metodo_pago']
         widgets = {
-            'venta': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'factura': forms.Select(attrs={
-                'class': 'form-control'
-            }),
-            'monto': forms.NumberInput(attrs={
-                
-                
-                'class': 'form-control'
-            }),
+            'metodo_pago': forms.Select(attrs={'class': 'form-control'})
         }
 
 class UsuarioForm(ModelForm):
