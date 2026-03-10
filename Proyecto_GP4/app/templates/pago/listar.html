@@ -2,75 +2,116 @@
 {% load static %}
 
 {% block Contenido %}
-  <div class="tabla-wrapper">
-    <table class="tabla" id="tabla">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Venta</th>
-          <th>Factura</th>
-          <th>Total Venta</th>
-          <th>Monto Pagado</th>
-          <th>Fecha</th>
-          <th>Método de Pago</th>
-          <th>Eliminar</th>
-          <th>Generar Factura</th>
-        </tr>
-      </thead>
 
-      <tbody>
-        {% for p in object_list %}
-          <tr>
-            <td>{{ p.id_pago }}</td>
+<h2 class="titulo-principal">Lista de Pagos</h2>
 
-            <td>
-              {% if p.venta %}
-                Venta #{{ p.venta.id_venta }}
-              {% else %}
-                Sin venta
-              {% endif %}
-            </td>
+<!-- BOTONES DE EXPORTACION -->
+<div style="margin-bottom:15px; display:flex; gap:10px;">
 
-            <td>
-              {% if p.factura %}
-                {{ p.factura }}
-              {% else %}
-                Sin factura
-              {% endif %}
-            </td>
+  <a href="{% url 'app:reporte_pagos_pdf' %}" class="btn btn-danger btn-xs">
+    <i class="fas fa-file-pdf"></i> Exportar PDF
+  </a>
 
-            <td>
-              {% if p.venta %}
-                ${{ p.venta.total }}
-              {% else %}
-                $0
-              {% endif %}
-            </td>
+  <a href="{% url 'app:reporte_pagos_excel' %}" class="btn btn-success btn-xs">
+    <i class="fas fa-file-excel"></i> Exportar Excel
+  </a>
 
-            <td>${{ p.monto }}</td>
+</div>
 
-            <td>{{ p.fecha|date:'Y-m-d H:i' }}</td>
 
-            <td>{{ p.metodo_pago }}</td>
+<div class="tabla-wrapper">
+  <table class="tabla" id="tabla">
 
-            <td>
-              <a href="{% url 'app:eliminar_pago' p.id_pago %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
-            </td>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Venta</th>
+        <th>Factura</th>
+        <th>Total Venta</th>
+        <th>Monto Pagado</th>
+        <th>Fecha</th>
+        <th>Método de Pago</th>
+        <th>Eliminar</th>
+        <th>Generar Factura</th>
+      </tr>
+    </thead>
 
-            <td>
-              {% if p.factura %}
-                Factura #{{ p.factura }}
-              {% else %}
-                <a href="{% url 'app:crear_factura' p.id_pago %}" class="btn btn-success btn-xs"><i class="fas fa-file-invoice"></i></a>
-              {% endif %}
-            </td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="9">No hay pagos registrados</td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+    <tbody>
+
+      {% for p in object_list %}
+      <tr>
+
+        <td>{{ p.id_pago }}</td>
+
+        <td>
+          {% if p.venta %}
+            Venta #{{ p.venta.id_venta }}
+          {% else %}
+            Sin venta
+          {% endif %}
+        </td>
+
+        <td>
+          {% if p.factura %}
+            {{ p.factura }}
+          {% else %}
+            Sin factura
+          {% endif %}
+        </td>
+
+        <td>
+          {% if p.venta %}
+            ${{ p.venta.total }}
+          {% else %}
+            $0
+          {% endif %}
+        </td>
+
+        <td>${{ p.monto }}</td>
+
+        <td>{{ p.fecha|date:'Y-m-d H:i' }}</td>
+
+        <td>{{ p.metodo_pago }}</td>
+
+        <!-- ELIMINAR -->
+        <td>
+          <a href="{% url 'app:eliminar_pago' p.id_pago %}" class="btn btn-danger btn-xs">
+            <i class="fas fa-trash"></i>
+          </a>
+        </td>
+
+        <!-- GENERAR FACTURA --> 
+        <td>
+          {% if p.factura %}
+
+            <span class="btn btn-secondary btn-xs">
+              <i class="fas fa-check"></i> Facturada
+            </span>
+
+          {% else %}
+
+            <a href="{% url 'app:crear_factura' p.id_pago %}" class="btn btn-success btn-xs">
+              <i class="fas fa-file-invoice"></i> Facturar
+            </a>
+
+          {% endif %}
+        </td>
+
+      </tr>
+
+      {% empty %}
+
+      <tr>
+        <td colspan="9" style="text-align:center;">
+          No hay pagos registrados
+        </td>
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+
+  </table>
+</div>
+
 {% endblock %}

@@ -1,32 +1,83 @@
 {% extends 'main.html' %}
 {% load static %}
-{% block Contenido %}
-  <div class="tabla-wrapper">
-    <table class="tabla" id="tabla">
-      <thead>
-        <tr>
-          <th>id</th>
-          <th>Venta</th>
-          <th>Total</th>
-          <th>Método de Pago</th>
-          <th>Fecha</th>
-          <th>Eliminar</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for f in facturas %}
-          <tr>
-            <td>{{ f.id }}</td>
-            <td>Venta #{{ f.venta.id_venta }}</td>
-            <td>${{ f.valor_total }}</td>
-            <td>{{ f.metodo_pago }}</td>
-            <td>{{ f.fecha_hora }}</td>
 
-            <td>
-              <a href="{% url 'app:eliminar_factura' f.id %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
+{% block Contenido %}
+
+<h2 class="titulo-principal">Lista de Facturas</h2>
+
+<!-- BOTONES DE EXPORTACION -->
+<div style="margin-bottom:15px; display:flex; gap:10px;">
+
+  <a href="{% url 'app:reporte_facturas_pdf' %}" class="btn btn-danger btn-xs">
+    <i class="fas fa-file-pdf"></i> Exportar PDF
+  </a>
+
+  <a href="{% url 'app:reporte_facturas_excel' %}" class="btn btn-success btn-xs">
+    <i class="fas fa-file-excel"></i> Exportar Excel
+  </a>
+
+</div>
+
+
+<div class="tabla-wrapper">
+  <table class="tabla" id="tabla">
+
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Venta</th>
+        <th>Total</th>
+        <th>Método de Pago</th>
+        <th>Fecha</th>
+        <th>Eliminar</th>
+      </tr>
+    </thead>
+
+    <tbody>
+
+      {% for f in facturas %}
+      <tr>
+
+        <td>{{ f.id }}</td>
+
+        <td>
+          Venta #{{ f.venta.id_venta }}
+        </td>
+
+        <td>
+          ${{ f.valor_total }}
+        </td>
+
+        <td>
+          {{ f.metodo_pago }}
+        </td>
+
+        <td>
+          {{ f.fecha_hora|date:'Y-m-d H:i' }}
+        </td>
+
+        <!-- ELIMINAR -->
+        <td>
+          <a href="{% url 'app:eliminar_factura' f.id %}" class="btn btn-danger btn-xs">
+            <i class="fas fa-trash"></i>
+          </a>
+        </td>
+
+      </tr>
+
+      {% empty %}
+
+      <tr>
+        <td colspan="6" style="text-align:center;">
+          No hay facturas registradas
+        </td>
+      </tr>
+
+      {% endfor %}
+
+    </tbody>
+
+  </table>
+</div>
+
 {% endblock %}

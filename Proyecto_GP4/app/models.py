@@ -152,7 +152,7 @@ class Cliente(models.Model):
         return f"{self.nombre} {self.apellido}"
 
 class Factura(models.Model):
-
+    id = models.AutoField(primary_key=True)
     venta = models.ForeignKey('Venta', on_delete=models.CASCADE)
 
     fecha_hora = models.DateTimeField(auto_now_add=True)
