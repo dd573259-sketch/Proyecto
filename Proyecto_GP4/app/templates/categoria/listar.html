@@ -16,8 +16,20 @@
         value="{{ request.GET.estado }}">
       
       <button type="submit" class="btn btn-primary">
-        Buscar
+        <i class="fas fa-search"></i> Buscar
       </button>
+
+      <div>
+
+      <a href="{% url 'app:exportar_categorias_pdf' %}" class="btn btn-danger btn-xs">
+        <i class="fas fa-file-pdf"></i> Exportar PDF
+      </a>
+
+      <a href="{% url 'app:exportar_categorias_excel' %}" class="btn btn-success btn-xs">
+        <i class="fas fa-file-excel"></i> Exportar Excel
+      </a>
+
+    </div>
     </form>
   <table class="tabla" id="tabla">
     <thead>

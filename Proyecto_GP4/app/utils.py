@@ -81,13 +81,11 @@ def exportar_excel(titulo, columnas, datos, nombre_archivo):
     titulo_cell.fill = title_fill
     titulo_cell.alignment = title_alignment
     worksheet.row_dimensions[1].height = 25
-    
-    # Configurar estilos para los encabezados
+
     header_font = Font(name='Arial', size=11, bold=True, color='FFFFFF')
     header_fill = PatternFill(start_color='4472C4', end_color='4472C4', fill_type='solid')
     header_alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
-    
-    # Agregar encabezados de columnas
+
     for col_num, columna in enumerate(columnas, 1):
         cell = worksheet.cell(row=3, column=col_num)
         cell.value = columna
