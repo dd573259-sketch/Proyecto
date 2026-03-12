@@ -34,7 +34,7 @@
         <th>Empleado</th>
         <th>Fecha</th>
         <th>Estado</th>
-        <th>Total</th>
+        <th>Imprimir</th>
       </tr>
     </thead>
 
@@ -63,7 +63,13 @@
             <td>{{ c.pedido.usuario }}</td>
             <td>{{ c.fecha_hora|date:"d/m/Y H:i" }}</td>
             <td>{{ c.estado }}</td>
-            <td>${{ c.pedido.total }}</td>
+
+            <td>
+            <a href="{% url 'app:imprimir_comanda' c.id_comanda %}"
+               class="btn btn-primary btn-sm">
+                <i class="fas fa-print"></i> Imprimir
+            </a>
+            </td>
         </tr>
         {% empty %}
         <tr>

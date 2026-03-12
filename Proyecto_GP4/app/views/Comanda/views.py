@@ -3,7 +3,11 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from app.models import Comanda  
 from app.forms import ComandaForm 
+from django.shortcuts import get_object_or_404, render
 
+def imprimir_comanda(request, pk):
+    comanda = get_object_or_404(Comanda, id_comanda=pk)
+    return render(request, 'Comanda/imprimir.html', {'comanda': comanda})
 # Listar todas las comandas
 class ComandaListView(ListView):
     model = Comanda
