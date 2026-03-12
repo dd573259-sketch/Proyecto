@@ -428,7 +428,7 @@ class ExportarpagosExcel(DjangoView):
         
         # Preparar los datos en formato de tuplas
         datos = [
-            (pago.id_pago, pago.venta, pago.factura, pago.venta.total, pago.monto, pago.fecha, pago.metodo_pago)
+            (pago.id_pago, str(pago.venta), pago.factura, pago.venta.total, pago.monto, pago.fecha.replace(tzinfo=None), pago.metodo_pago)
             for pago in pagos
         ]
         
@@ -558,7 +558,7 @@ class ExportarfacturasExcel(DjangoView):
         
         # Preparar los datos en  tuplas
         datos = [
-            (factura.id, factura.venta, factura.valor_total, factura.metodo_pago, factura.fecha_hora)
+            (factura.id, str(factura.venta), factura.valor_total, factura.metodo_pago, factura.fecha_hora.replace(tzinfo=None))
             for factura in facturas
         ]
         
