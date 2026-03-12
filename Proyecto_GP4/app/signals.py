@@ -71,7 +71,7 @@ def notificacion_stock_insumo(sender, instance, **kwargs):
 
         if not ya_existe:
             if instance.stock == 0:
-                mensaje = f"SIN STOCK: El insumo '{instance.nombre}' está agotado."
+                mensaje = f"SIN STOCK: El insumo '{instance.nombre}' está re paila."
             elif instance.stock < 5:
                 mensaje = f"CRÍTICO: '{instance.nombre}' solo tiene {instance.stock} unidades."
             else:
