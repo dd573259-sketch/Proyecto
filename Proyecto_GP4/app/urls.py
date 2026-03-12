@@ -17,6 +17,9 @@ from app.views.Mesa.views import *
 from app.views.Pedido.views import *
 from app.views.Cliente.views import *
 from app.views.Dashborad.views import *
+from app.reportes import ExportarProveedoresPDF, ExportarProveedoresExcel   
+from app.reportes import ExportarProductosPDF, ExportarProductosExcel
+from app.reportes import ExportarcomprasPDF, ExportarcomprasExcel
 
 app_name = 'app'
 urlpatterns = [
@@ -86,18 +89,24 @@ path('eliminar_pago/<int:pk>/', EliminarPagoView.as_view(), name='eliminar_pago'
     path('crear_proveedor/', ProveedorCreateView.as_view(), name='crear_proveedor'),
     path('eliminar_proveedor/<int:pk>/', ProveedorDeleteView.as_view(), name='eliminar_proveedor'),
     path('editar_proveedor/<int:pk>/', ProveedorUpdateView.as_view(), name='editar_proveedor'),
+    path('exportar_proveedores_pdf/', ExportarProveedoresPDF.as_view(), name='exportar_proveedores_pdf'),
+    path('exportar_proveedores_excel/', ExportarProveedoresExcel.as_view(), name='exportar_proveedores_excel'),
 
 # PRODUCTO
     path('listar_productos/', ProductoListView.as_view(), name='listar_productos'),
     path('crear_producto/', ProductoCreateView.as_view(), name='crear_producto'),
     path('eliminar_producto/<int:pk>/', ProductoDeleteView.as_view(), name='eliminar_producto'),
     path('editar_producto/<int:pk>/', ProductoUpdateView.as_view(), name='editar_producto'),
+    path('exportar_productos_pdf/', ExportarProductosPDF.as_view(), name='exportar_productos_pdf'),
+    path('exportar_productos_excel/', ExportarProductosExcel.as_view(), name='exportar_productos_excel'),
 
 # COMPRA 
     path('listar_compras/', CompraListView.as_view(), name='listar_compras'),
     path('crear_compra/', CompraCreateView.as_view(), name='crear_compra'),
     path('eliminar_compra/<int:pk>/', CompraDeleteView.as_view(), name='eliminar_compra'),
     path('editar_compra/<int:pk>/', CompraUpdateView.as_view(), name='editar_compra'),
+    path('exportar_compras_pdf/', ExportarcomprasPDF.as_view(), name='exportar_compras_pdf'),
+    path('exportar_compras_excel/', ExportarcomprasExcel.as_view(), name='exportar_compras_excel'),
     
 # COMANDA
     path('listar_comanda/', ComandaListView.as_view() , name='listar_comandas'),
