@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView as listView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView as listView, CreateView, UpdateView, DeleteView, View
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -36,16 +36,25 @@ class FacturaCreateView(CreateView):
         return context
     
 
-class FacturaDeleteView(DeleteView):
-    model = Factura
-    template_name = 'facturas/eliminar.html'
-    success_url = reverse_lazy('app:listar_facturas') 
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['icono'] = 'fa-solid fa-file-invoice-dollar'
-        context['titulo'] = 'Eliminar Factura'
-        return context
+class FacturaDesactivarView(View):
+    def get(self, request, pk):
+        factura = get_object_or_404(Factura, pk=pk)
+        return render(request, 'facturas/desactivar.html', {'object': factura})
+
+    def post(self, request, pk):
+        factura = get_object_or_404(Factura, pk=pk)
+        factura.activo = False
+        factura.save()
+        messages.success(request, f"Factura #{factura.id} desactivada.")
+        return redirect('app:listar_facturas')
+
+class FacturaActivarView(View):
+    def post(self, request, pk):
+        factura = get_object_or_404(Factura, pk=pk)
+        factura.activo = True
+        factura.save()
+        messages.success(request, f"Factura #{factura.id} activada nuevamente.")
+        return redirect('app:listar_facturas')
 
 
 class FacturaUpdateView(UpdateView):

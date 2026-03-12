@@ -3,20 +3,42 @@
 
 {% block Contenido %}
 
+<!-- FILTROS -->
+<div style="margin-bottom:15px;">
 
-<!-- BOTONES DE EXPORTACION -->
-<div style="margin-bottom:15px; display:flex; gap:10px;">
+  <form method="GET" style="display:flex; gap:10px;">
 
-  <a href="{% url 'app:reporte_facturas_pdf' %}" class="btn btn-danger btn-xs">
-    <i class="fas fa-file-pdf"></i> Exportar PDF
-  </a>
+    <input 
+      type="text" 
+      name="usuario"
+      placeholder="Buscar usuario"
+      value="{{ usuario }}"
+    >
 
-  <a href="{% url 'app:reporte_facturas_excel' %}" class="btn btn-success btn-xs">
-    <i class="fas fa-file-excel"></i> Exportar Excel
-  </a>
+    <input 
+      type="date" 
+      name="fecha"
+      value="{{ fecha }}"
+    >
+
+    <button type="submit" class="btn btn-primary btn-xs">
+      <i class="fas fa-search"></i> Buscar
+    </button>
+
+    <div style="margin-bottom:15px; display:flex; align-items: center; gap:10px; margin-left: auto;">
+
+      <a href="{% url 'app:reporte_facturas_pdf' %}" class="btn btn-danger btn-xs">
+        <i class="fas fa-file-pdf"></i> Exportar PDF
+      </a>
+
+      <a href="{% url 'app:reporte_facturas_excel' %}" class="btn btn-success btn-xs">
+        <i class="fas fa-file-excel"></i> Exportar Excel
+      </a>
+
+    </div>
+  </form>
 
 </div>
-
 
 <div class="tabla-wrapper">
   <table class="tabla" id="tabla">
@@ -28,7 +50,8 @@
         <th>Total</th>
         <th>Método de Pago</th>
         <th>Fecha</th>
-        <th>Eliminar</th>
+        <th>Estado</th>
+        <th>Acción</th>
       </tr>
     </thead>
 
@@ -39,39 +62,47 @@
 
         <td>{{ f.id }}</td>
 
+        <td>Venta #{{ f.venta.id_venta }}</td>
+
+        <td>${{ f.valor_total }}</td>
+
+        <td>{{ f.metodo_pago }}</td>
+
+        <td>{{ f.fecha_hora|date:'Y-m-d H:i' }}</td>
+
+        <!-- ESTADO -->
         <td>
-          Venta #{{ f.venta.id_venta }}
+          {% if f.activo %}
+            <span class="badge badge-success">Activa</span>
+          {% else %}
+            <span class="badge badge-secondary">Inactiva</span>
+          {% endif %}
         </td>
 
+        <!-- ACCIÓN -->
         <td>
-          ${{ f.valor_total }}
-        </td>
-
-        <td>
-          {{ f.metodo_pago }}
-        </td>
-
-        <td>
-          {{ f.fecha_hora|date:'Y-m-d H:i' }}
-        </td>
-
-        <!-- ELIMINAR -->
-        <td>
-          <a href="{% url 'app:eliminar_factura' f.id %}" class="btn btn-danger btn-xs">
-            <i class="fas fa-trash"></i>
-          </a>
+          {% if f.activo %}
+            <a href="{% url 'app:desactivar_factura' f.id %}" class="btn btn-warning btn-xs">
+              <i class="fas fa-ban"></i> Desactivar
+            </a>
+          {% else %}
+            <form method="post" action="{% url 'app:activar_factura' f.id %}" style="display:inline;">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-success btn-xs">
+                <i class="fas fa-check"></i> Activar
+              </button>
+            </form>
+          {% endif %}
         </td>
 
       </tr>
 
       {% empty %}
-
       <tr>
-        <td colspan="6" style="text-align:center;">
+        <td colspan="7" style="text-align:center;">
           No hay facturas registradas
         </td>
       </tr>
-
       {% endfor %}
 
     </tbody>

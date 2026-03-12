@@ -17,7 +17,7 @@ from app.views.Mesa.views import *
 from app.views.Pedido.views import *
 from app.views.Cliente.views import *
 from app.views.Dashborad.views import *
-from app.reportes import (ExportarventasPDF, ExportarventasExcel,ExportarpagosPDF,ExportarpagosExcel,ExportarfacturasPDF,ExportarfacturasExcel)
+from app.reportes import (ExportarventasPDF, ExportarventasExcel,ExportarpagosPDF,ExportarpagosExcel,ExportarfacturasPDF,ExportarfacturasExcel, )
 
 app_name = 'app'
 urlpatterns = [
@@ -61,9 +61,10 @@ urlpatterns = [
     path('listar_facturas/', FacturaListView.as_view() , name='listar_facturas'),
     path('crear_factura/<int:pago_id>/', crear_factura , name='crear_factura'),
     path('editar_factura/<int:pk>/', FacturaUpdateView.as_view(), name='editar_factura'),
-    path('eliminar_factura/<int:pk>/', FacturaDeleteView.as_view(), name='eliminar_factura'),
     path('reporte_facturas/pdf/', ExportarfacturasPDF.as_view(), name='reporte_facturas_pdf'),
     path('reporte_facturas/excel/', ExportarfacturasExcel.as_view(), name='reporte_facturas_excel'),
+    path('facturas/desactivar/<int:pk>/', FacturaDesactivarView.as_view(), name='desactivar_factura'),
+    path('facturas/activar/<int:pk>/',    FacturaActivarView.as_view(),    name='activar_factura'), 
     
 # VENTAS
     path('listar_ventas/', VentaListView.as_view(), name='listar_ventas'),

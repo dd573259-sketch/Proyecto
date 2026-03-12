@@ -4,18 +4,6 @@
 {% block Contenido %}
 
 
-<!-- BOTONES DE EXPORTACION -->
-<div style="margin-bottom:15px; display:flex; gap:10px; margin-left: auto;">
-
-  <a href="{% url 'app:reporte_ventas_pdf' %}" class="btn btn-danger btn-xs">
-    <i class="fas fa-file-pdf"></i> Exportar PDF
-  </a>
-
-  <a href="{% url 'app:reporte_ventas_excel' %}" class="btn btn-success btn-xs">
-    <i class="fas fa-file-excel"></i> Exportar Excel
-  </a>
-
-</div>
 
 
 <!-- FILTROS -->
@@ -37,9 +25,20 @@
     >
 
     <button type="submit" class="btn btn-primary btn-xs">
-      <i class="fas fa-search"></i> Filtrar
+      <i class="fas fa-search"></i> Buscar
     </button>
 
+    <div style="margin-bottom:15px; display:flex;align-items: center; gap:10px; margin-left: auto;">
+
+  <a href="{% url 'app:reporte_ventas_pdf' %}" class="btn btn-danger btn-xs">
+    <i class="fas fa-file-pdf"></i> Exportar PDF
+  </a>
+
+  <a href="{% url 'app:reporte_ventas_excel' %}" class="btn btn-success btn-xs">
+    <i class="fas fa-file-excel"></i> Exportar Excel
+  </a>
+
+</div>
   </form>
 
 </div>

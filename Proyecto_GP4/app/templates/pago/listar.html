@@ -4,8 +4,29 @@
 {% block Contenido %}
 
 
-<!-- BOTONES DE EXPORTACION -->
-<div style="margin-bottom:15px; display:flex; gap:10px;">
+<!-- FILTROS -->
+<div style="margin-bottom:15px;">
+
+  <form method="GET" style="display:flex; gap:10px;">
+
+    <input 
+      type="text" 
+      name="usuario"
+      placeholder="Buscar por ventas"
+      value="{{ usuario }}"
+    >
+
+    <input 
+      type="date" 
+      name="fecha"
+      value="{{ fecha }}"
+    >
+
+    <button type="submit" class="btn btn-primary btn-xs">
+      <i class="fas fa-search"></i> Buscar
+    </button>
+
+    <div style="margin-bottom:15px; display:flex;align-items: center; gap:10px; margin-left: auto;">
 
   <a href="{% url 'app:reporte_pagos_pdf' %}" class="btn btn-danger btn-xs">
     <i class="fas fa-file-pdf"></i> Exportar PDF
@@ -16,6 +37,7 @@
   </a>
 
 </div>
+  </form>
 
 
 <div class="tabla-wrapper">
