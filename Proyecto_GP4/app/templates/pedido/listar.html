@@ -2,8 +2,10 @@
 {% load static %}
 {% block Contenido %}
 <div class="tabla-wrapper">
-<!-- Formulario de búsqueda por estado y fecha -->
-<form method="GET" class="mb-3 d-flex gap-2 align-items-center">
+
+ <!-- BARRA DE BÚSQUEDA + BOTONES DE EXPORTACIÓN -->
+<form method="GET" style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+
     <input type="text" name="buscar" placeholder="Buscar por estado"
            value="{{ request.GET.buscar }}"
            class="form-control"
@@ -15,8 +17,19 @@
            style="width: 200px;">
 
     <button type="submit" class="btn btn-primary">
-        Buscar
+        <i class = "fas fa-search"></i> Buscar
     </button>
+
+    <!-- Este div crece y empuja los botones al borde derecho -->
+    <div style="flex: 1;"></div>
+
+    <a href="{% url 'app:exportar_pedido_pdf' %}" class="btn btn-danger btn-sm">
+        <i class="fas fa-file-pdf"></i> Exportar PDF
+    </a>
+    <a href="{% url 'app:exportar_pedido_excel' %}" class="btn btn-success btn-sm">
+        <i class="fas fa-file-excel"></i> Exportar Excel
+    </a>
+
 </form>
 
 <table class="tabla" id="tabla">

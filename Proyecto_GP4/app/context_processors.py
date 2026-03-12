@@ -11,4 +11,4 @@ def notificaciones_admin(request):
         return {
             'contador_notificaciones': notificaciones.count()
         }
-    return {'contador_notificaciones': 0}
+    return {'contador_notificaciones': 0}                                               

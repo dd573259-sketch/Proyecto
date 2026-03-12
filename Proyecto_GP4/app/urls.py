@@ -17,6 +17,8 @@ from app.views.Mesa.views import *
 from app.views.Pedido.views import *
 from app.views.Cliente.views import *
 from app.views.Dashborad.views import *
+from app.reportes import (ExportarpedidoPDF, ReportePedidosExcel)
+
 
 app_name = 'app'
 urlpatterns = [
@@ -101,8 +103,7 @@ path('eliminar_pago/<int:pk>/', EliminarPagoView.as_view(), name='eliminar_pago'
     
 # COMANDA
     path('listar_comanda/', ComandaListView.as_view() , name='listar_comandas'),
-    path('editar_comanda/<int:pk>/', ComandaUpdateView.as_view(), name='editar_comanda'),
-    path('eliminar_comanda/<int:pk>/', ComandaDeleteView.as_view(), name='eliminar_comanda'),
+    path('imprimir_comanda/<int:pk>/', imprimir_comanda, name='imprimir_comanda'),
     
 # MESA
     path('listar_mesa/', MesaListView.as_view() , name='listar_mesas'),
@@ -116,7 +117,9 @@ path('eliminar_pago/<int:pk>/', EliminarPagoView.as_view(), name='eliminar_pago'
     path('editar_pedido/<int:pk>/', PedidoUpdateView.as_view(), name='editar_pedido'),
     path('eliminar_pedido/<int:pk>/', PedidoDeleteView.as_view(), name='eliminar_pedido'),
     path('pedido/detalle/<int:pk>/', DetallePedidoView.as_view(), name='detalle_pedido'),
-    
+    path('exportar_pedido_pdf/', ExportarpedidoPDF.as_view(), name='exportar_pedido_pdf'),
+    path('exportar_pedido_excel/', ReportePedidosExcel.as_view(), name='exportar_pedido_excel'),
+
 # CLIENTE
     path('listar_cliente/', ClienteListView.as_view() , name='listar_clientes'),
     path('crear_cliente/', ClienteCreateView.as_view() , name='crear_cliente'),
