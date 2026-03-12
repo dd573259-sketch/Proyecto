@@ -17,6 +17,7 @@ from app.views.Mesa.views import *
 from app.views.Pedido.views import *
 from app.views.Cliente.views import *
 from app.views.Dashborad.views import *
+from app.reportes import ExportarCategoriasPDF, ExportarCategoriasExcel
 
 app_name = 'app'
 urlpatterns = [
@@ -25,6 +26,8 @@ urlpatterns = [
     path('crear_categoria/', CategoriaCreateView.as_view() , name='crear_categoria'),
     path('editar_categoria/<int:pk>/', CategoriaUpdateView.as_view(), name='editar_categoria'),
     path('eliminar_categoria/<int:pk>/', CategoriaDeleteView.as_view(), name='eliminar_categoria'),
+    path('exportar_categorias_pdf/',    ExportarCategoriasPDF.as_view(),    name='exportar_categorias_pdf'),
+    path('exportar_categorias_excel/',  ExportarCategoriasExcel.as_view(),  name='exportar_categorias_excel'),
 
 #urls de platos
     path('listar_platos/', PlatoListView.as_view() , name='listar_platos'),
