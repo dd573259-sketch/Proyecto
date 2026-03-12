@@ -16,6 +16,7 @@ from app.views.Comanda.views import *
 from app.views.Mesa.views import *
 from app.views.Pedido.views import *
 from app.views.Cliente.views import *
+from app.reportes import ExportarinsumosPDF, ExportarinsumosExcel
 
 app_name = 'app'
 urlpatterns = [
@@ -54,7 +55,9 @@ urlpatterns = [
     path('crear_insumos/', InsumosCreateView.as_view() , name='crear_insumos'),
     path('editar_insumos/<int:pk>/', InsumosUpdateView.as_view(), name='editar_insumos'),
     path('eliminar_insumos/<int:pk>/', InsumosDeleteView.as_view(), name='eliminar_insumos'),
-    
+    path('exportar_insumos_pdf/', ExportarinsumosPDF.as_view(), name='exportar_insumos_pdf'),
+    path('exportar_insumos_excel/', ExportarinsumosExcel.as_view(), name='exportar_insumos_excel'),
+
 # FACTURAS
     path('listar_facturas/', FacturaListView.as_view() , name='listar_facturas'),
     path('crear_factura/', FacturaCreateView.as_view() , name='crear_factura'),

@@ -407,7 +407,7 @@ class Notificacion(models.Model):
 
     id_notificacion = models.AutoField(primary_key=True)
 
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
 
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True)
     insumo = models.ForeignKey(insumo, on_delete=models.CASCADE, null=True, blank=True)
