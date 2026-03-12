@@ -35,7 +35,7 @@ def exportar_pdf(titulo, columnas, datos, nombre_archivo):
     }
     
     # Generar HTML desde el template
-    html_string = render_to_string('reportes/reporte_pdf.html', contexto)
+    html_string = render_to_string('reportes/reportes_pdf.html', contexto)
     
     # Crear documento PDF desde el HTML
     html_object = HTML(string=html_string, base_url='.')
