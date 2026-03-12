@@ -152,12 +152,13 @@ class Cliente(models.Model):
         return f"{self.nombre} {self.apellido}"
 
 class Factura(models.Model):
-
+    id = models.AutoField(primary_key=True)
     venta = models.ForeignKey('Venta', on_delete=models.CASCADE)
 
     fecha_hora = models.DateTimeField(auto_now_add=True)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     metodo_pago = models.CharField(max_length=50)
+    activo = models.BooleanField(default=True)
 
     class Meta:
         db_table = "factura"

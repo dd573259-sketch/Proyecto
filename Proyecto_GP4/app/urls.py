@@ -65,7 +65,10 @@ urlpatterns = [
     path('listar_facturas/', FacturaListView.as_view() , name='listar_facturas'),
     path('crear_factura/<int:pago_id>/', crear_factura , name='crear_factura'),
     path('editar_factura/<int:pk>/', FacturaUpdateView.as_view(), name='editar_factura'),
-    path('eliminar_factura/<int:pk>/', FacturaDeleteView.as_view(), name='eliminar_factura'),
+    path('reporte_facturas/pdf/', ExportarfacturasPDF.as_view(), name='reporte_facturas_pdf'),
+    path('reporte_facturas/excel/', ExportarfacturasExcel.as_view(), name='reporte_facturas_excel'),
+    path('facturas/desactivar/<int:pk>/', FacturaDesactivarView.as_view(), name='desactivar_factura'),
+    path('facturas/activar/<int:pk>/',    FacturaActivarView.as_view(),    name='activar_factura'), 
     
 # VENTAS
     path('listar_ventas/', VentaListView.as_view(), name='listar_ventas'),
@@ -73,11 +76,15 @@ urlpatterns = [
     path('editar_venta/<int:pk>/', VentaUpdateView.as_view(), name='editar_venta'),
     path('eliminar_venta/<int:pk>/', VentaDeleteView.as_view(), name='eliminar_venta'),
     path('pagar_venta/<int:venta_id>/',pagar_venta,name='pagar_venta'),
+    path('reporte_ventas_pdf/', ExportarventasPDF.as_view(), name='reporte_ventas_pdf'),
+    path('reporte_ventas_excel/', ExportarventasExcel.as_view(), name='reporte_ventas_excel'),
     
 # PAGOS
     path('listar_pagos/', PagoListView.as_view(), name='listar_pagos'),
     path('pago/crear/<int:venta_id>/', PagoCreateView.as_view(), name='crear_pago'),
     path('eliminar_pago/<int:pk>/', EliminarPagoView.as_view(), name='eliminar_pago'),
+    path('reporte_pagos/pdf/', ExportarpagosPDF.as_view(), name='reporte_pagos_pdf'),
+    path('reporte_pagos/excel/', ExportarpagosExcel.as_view(), name='reporte_pagos_excel'),
     
 # USUARIOS
     path('listar_usuarios/', UsuarioListView.as_view(), name='listar_usuarios'),

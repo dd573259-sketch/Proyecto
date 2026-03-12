@@ -1,0 +1,40 @@
+{% extends 'main.html' %}
+
+{% block Contenido %}
+
+<form method="post">
+  {% csrf_token %}
+
+  <div class="card card-warning">
+
+    <div class="card-header">
+      <h3 class="card-title">
+        <i class="fas fa-ban"></i> Desactivar Factura
+      </h3>
+    </div>
+
+    <div class="card-body">
+      <p>¿Estás seguro que deseas <strong>desactivar</strong> esta factura?</p>
+      <ul>
+        <li><strong>ID:</strong> {{ object.id }}</li>
+        <li><strong>Total:</strong> {{ object.valor_total }}</li>
+        <li><strong>Método de pago:</strong> {{ object.metodo_pago }}</li>
+        <li><strong>Fecha:</strong> {{ object.fecha_hora }}</li>
+      </ul>
+      <p class="text-warning">La factura quedará inactiva pero no se eliminará.</p>
+    </div>
+
+    <div class="card-footer text-right">
+      <button type="submit" class="btn btn-warning">
+        Sí, desactivar
+      </button>
+      <a href="{% url 'app:listar_facturas' %}" class="btn btn-secondary">
+        Cancelar
+      </a>
+    </div>
+
+  </div>
+
+</form>
+
+{% endblock %}
