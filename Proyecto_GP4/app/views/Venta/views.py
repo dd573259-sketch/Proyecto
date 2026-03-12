@@ -49,7 +49,7 @@ class VentaListView(ListView):
         return context
 
 
-class VentaListView(ListView):
+
     model = Venta
     template_name = 'venta/listar.html'
     context_object_name = 'ventas'

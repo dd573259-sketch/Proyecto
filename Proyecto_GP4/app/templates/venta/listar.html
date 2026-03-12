@@ -3,10 +3,9 @@
 
 {% block Contenido %}
 
-<h2 class="titulo-principal">Lista de Ventas</h2>
 
 <!-- BOTONES DE EXPORTACION -->
-<div style="margin-bottom:15px; display:flex; gap:10px;">
+<div style="margin-bottom:15px; display:flex; gap:10px; margin-left: auto;">
 
   <a href="{% url 'app:reporte_ventas_pdf' %}" class="btn btn-danger btn-xs">
     <i class="fas fa-file-pdf"></i> Exportar PDF
@@ -44,6 +43,7 @@
   </form>
 
 </div>
+<!-- FIN DE LOS FILTORS -->
 
 
 <div class="tabla-wrapper">
