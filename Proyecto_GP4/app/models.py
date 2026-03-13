@@ -387,7 +387,7 @@ class insumo(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.CharField(max_length=100)
     unidad = models.CharField( max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
-    valor = models.DecimalField(max_digits=100 ,decimal_places=2, error_messages={'max_digits': 'El valor es demasiado alto.'})
+    valor = models.DecimalField(max_digits=10, decimal_places=2, error_messages={'max_digits': 'El valor es demasiado alto.'})
     stock = models.PositiveIntegerField(default=0)
 
     def __str__(self):
@@ -454,12 +454,12 @@ class Notificacion(models.Model):
         db_table = "notificacion"
 
 class Venta(models.Model):
-
     id_venta = models.AutoField(primary_key=True)
     pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE)
     usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
-    total= models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_venta = models.DateTimeField(auto_now_add=True)
+    activo = models.BooleanField(default=True)  # ← añadir
 
     class Meta:
         db_table = "venta"
@@ -480,9 +480,10 @@ class Pago(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     metodo_pago = models.CharField(max_length=20, choices=METODOS)
     factura = models.CharField(max_length=50, blank=True, null=True)
+    activo = models.BooleanField(default=True)  # ← añadir
 
     class Meta:
-        db_table = 'pago'
+        db_table = "pago"
 
     class Meta:
         db_table = "pago"

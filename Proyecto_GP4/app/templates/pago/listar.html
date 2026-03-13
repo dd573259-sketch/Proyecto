@@ -52,7 +52,6 @@
         <th>Monto Pagado</th>
         <th>Fecha</th>
         <th>Método de Pago</th>
-        <th>Eliminar</th>
         <th>Generar Factura</th>
       </tr>
     </thead>
@@ -93,13 +92,6 @@
         <td>{{ p.fecha|date:'Y-m-d H:i' }}</td>
 
         <td>{{ p.metodo_pago }}</td>
-
-        <!-- ELIMINAR -->
-        <td>
-          <a href="{% url 'app:eliminar_pago' p.id_pago %}" class="btn btn-danger btn-xs">
-            <i class="fas fa-trash"></i>
-          </a>
-        </td>
 
         <!-- GENERAR FACTURA --> 
         <td>

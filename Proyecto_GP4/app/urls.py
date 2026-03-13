@@ -18,6 +18,7 @@ from app.views.Pedido.views import *
 from app.views.Cliente.views import *
 from app.views.Dashborad.views import *
 from app.reportes import *
+from app.views.backup.views import backup, restaurar_datos, backup_ventas, backup_pagos, backup_facturas
 
 app_name = 'app'
 urlpatterns = [
@@ -144,6 +145,12 @@ urlpatterns = [
     
 # DASHBOARD
     path('dashboard/', dashboardView.as_view(), name='dashboard'),
+    
+    
+# BACKUP
+    path('backup/', backup, name='backup'),
+    path('backup/restaurar/', restaurar_datos, name='restaurar_datos'),
+    path('backup/ventas/', backup_ventas, name='backup_ventas'),
+    path('backup/pagos/', backup_pagos, name='backup_pagos'),
+    path('backup/facturas/', backup_facturas, name='backup_facturas'),
 ]
-
-

@@ -43,19 +43,39 @@ class FacturaDesactivarView(View):
 
     def post(self, request, pk):
         factura = get_object_or_404(Factura, pk=pk)
+
+        # Desactivar factura
         factura.activo = False
         factura.save()
-        messages.success(request, f"Factura #{factura.id} desactivada.")
+
+        # Desactivar pago asociado
+        Pago.objects.filter(venta=factura.venta).update(activo=False)
+
+        # Desactivar venta asociada
+        factura.venta.activo = False
+        factura.venta.save()
+
+        messages.success(request, f"Factura #{factura.id}, pago y venta desactivados.")
         return redirect('app:listar_facturas')
+
 
 class FacturaActivarView(View):
     def post(self, request, pk):
         factura = get_object_or_404(Factura, pk=pk)
+
+        # Activar factura
         factura.activo = True
         factura.save()
-        messages.success(request, f"Factura #{factura.id} activada nuevamente.")
-        return redirect('app:listar_facturas')
 
+        # Activar pago asociado
+        Pago.objects.filter(venta=factura.venta).update(activo=True)
+
+        # Activar venta asociada
+        factura.venta.activo = True
+        factura.venta.save()
+
+        messages.success(request, f"Factura #{factura.id}, pago y venta activados nuevamente.")
+        return redirect('app:listar_facturas')
 
 class FacturaUpdateView(UpdateView):
     model = Factura
