@@ -112,6 +112,14 @@ class PedidoForm(ModelForm):
             'estado': forms.Select(attrs={'class': 'form-control'}),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Si el pedido ya está Entregado, bloquear el campo estado
+        if self.instance and self.instance.pk and self.instance.estado == 'Entregado':
+            self.fields['estado'].disabled = True
+            self.fields['estado'].widget.attrs['title'] = 'No se puede revertir un pedido entregado'
+    
+    
     def clean_mesa(self):
         mesa = self.cleaned_data.get('mesa')
         

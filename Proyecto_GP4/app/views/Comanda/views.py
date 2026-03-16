@@ -7,6 +7,13 @@ from django.shortcuts import get_object_or_404, render
 
 def imprimir_comanda(request, pk):
     comanda = get_object_or_404(Comanda, id_comanda=pk)
+    
+    if comanda.estado != 'Entregado':
+        comanda.estado = 'Entregado'
+        comanda.save()
+        
+        comanda.pedido.estado = 'Entregado'
+        comanda.pedido.save()
     return render(request, 'Comanda/imprimir.html', {'comanda': comanda})
 # Listar todas las comandas
 class ComandaListView(ListView):

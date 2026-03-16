@@ -144,6 +144,6 @@ urlpatterns = [
     
 # DASHBOARD
     path('dashboard/', dashboardView.as_view(), name='dashboard'),
+
+
 ]
-
-
