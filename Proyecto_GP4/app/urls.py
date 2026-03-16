@@ -18,6 +18,7 @@ from app.views.Pedido.views import *
 from app.views.Cliente.views import *
 from app.views.Dashborad.views import *
 from app.reportes import *
+from app.views.backup import *
 
 app_name = 'app'
 urlpatterns = [
@@ -40,6 +41,8 @@ urlpatterns = [
     path('crear_notificacion/', NotificacionCreateView.as_view() , name='crear_notificacion'),
     path('editar_notificacion/<int:pk>/', NotificacionUpdateView.as_view(), name='editar_notificacion'),
     path('eliminar_notificacion/<int:pk>/', NotificacionDeleteView.as_view(), name='eliminar_notificacion'),
+    path('notificaciones/marcar-leida/<int:pk>/', marcar_leida, name='marcar_leida'),
+    path('notificaciones/marcar-todas/', marcar_leidas, name='marcar_leidas'),
     
 #MENU
     path('listar_menu/', MenuListView.as_view() , name='listar_menu'),
@@ -144,6 +147,12 @@ urlpatterns = [
     
 # DASHBOARD
     path('dashboard/', dashboardView.as_view(), name='dashboard'),
+    
+
+#BACKUPS
+    path("backup/",backup, name = "backup"),
+    path("backup/restarurar/",restaurar_datos, name = "restaurar_datos"),
 ]
+
 
 

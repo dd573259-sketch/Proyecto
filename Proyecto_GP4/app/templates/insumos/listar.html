@@ -89,18 +89,18 @@
       <td data-col="descripcion">{{ m.descripcion }}</td>
       <td>{{ m.categoria }}</td>
         <td>
-  {% if m.stock == 0 %}
-    <span class="badge bg-danger">
-      Sin stock
-    </span>
+{% if m.stock == 0 %}
+  <span class="badge bg-secondary">
+    Sin stock
+  </span>
 
   {% elif m.stock > 0 and m.stock < 5 %}
-    <span class="badge bg-warning text-dark">
+    <span class="badge bg-danger">
       {{ m.stock }} (Crítico)
     </span>
 
   {% elif m.stock >= 5 and m.stock <= 10 %}
-    <span class="badge bg-info text-dark">
+    <span class="badge bg-warning text-dark">
       {{ m.stock }} (Bajo)
     </span>
 

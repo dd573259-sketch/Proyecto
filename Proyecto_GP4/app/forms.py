@@ -444,42 +444,32 @@ class InsumosForm(ModelForm):
         }
 
     # 🔹 Validaciones de NOMBRE
-    def clean_nombre(self):
-        nombre = self.cleaned_data.get('nombre')
-        
-        if insumo.objects.filter(nombre__iexact=nombre).exists():
-            raise forms.ValidationError('Este insumo ya está registrado.')
+def clean_nombre(self):
+    nombre = self.cleaned_data.get('nombre')
+    
+    # ── CORRECCIÓN: excluye el insumo actual al editar ──
+    qs = insumo.objects.filter(nombre__iexact=nombre)
+    if self.instance.pk:  # si estamos editando
+        qs = qs.exclude(pk=self.instance.pk)
+    if qs.exists():
+        raise forms.ValidationError('Este insumo ya está registrado.')
 
-        if len(nombre) < 3:
-            raise forms.ValidationError(
-                'El nombre debe tener al menos 3 caracteres'
-            )
+    if len(nombre) < 3:
+        raise forms.ValidationError('El nombre debe tener al menos 3 caracteres')
 
-        # 🔹 Solo letras, números y espacios
-        if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$', nombre):
-            raise forms.ValidationError(
-                'El nombre solo puede contener letras, números y espacios'
-            )
+    if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$', nombre):
+        raise forms.ValidationError('El nombre solo puede contener letras, números y espacios')
 
-        # 🔹 No puede ser solo números
-        if nombre.isdigit():
-            raise forms.ValidationError(
-                'El nombre no puede ser solo números'
-            )
+    if nombre.isdigit():
+        raise forms.ValidationError('El nombre no puede ser solo números')
 
-        # 🔹 No permitir espacios dobles seguidos
-        if "  " in nombre:
-            raise forms.ValidationError(
-                'No se permiten espacios dobles'
-            )
+    if "  " in nombre:
+        raise forms.ValidationError('No se permiten espacios dobles')
 
-        # 🔹 No permitir que empiece o termine en espacio
-        if nombre.startswith(' ') or nombre.endswith(' '):
-            raise forms.ValidationError(
-                'El nombre no puede iniciar ni terminar con espacio'
-            )
+    if nombre.startswith(' ') or nombre.endswith(' '):
+        raise forms.ValidationError('El nombre no puede iniciar ni terminar con espacio')
 
-        return nombre
+    return nombre
     
 
     def clean_descripcion(self):
