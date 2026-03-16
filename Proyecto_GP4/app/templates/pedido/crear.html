@@ -16,6 +16,13 @@
     <form method="post" id="form-pedido">
         {% csrf_token %}
 
+        {% if form.instance.estado == 'Entregado' %}
+        <div class="alert alert-success text-center mb-3" role="alert">
+            <i class="fas fa-check-circle me-2"></i>
+            <strong>Este pedido ya fue entregado.</strong>&nbsp; El estado no puede modificarse.
+        </div> <!-- nbsp grarantiza espacio -->
+        {% endif %}
+
         <div class="card mb-4 shadow-sm">
             <div class="card-header bg-primary text-white">
                 <i class="fas fa-info-circle"></i> Información del Pedido
