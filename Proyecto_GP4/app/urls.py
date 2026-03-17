@@ -138,6 +138,7 @@ urlpatterns = [
     path('pedido/detalle/<int:pk>/', DetallePedidoView.as_view(), name='detalle_pedido'),
     path('exportar_pedido_pdf/', ExportarpedidoPDF.as_view(), name='exportar_pedido_pdf'),
     path('exportar_pedido_excel/', ReportePedidosExcel.as_view(), name='exportar_pedido_excel'),
+    path('verificar_mesa_disponible/', verificar_mesa_disponible, name='verificar_mesa_disponible'),
 
 # CLIENTE
     path('listar_cliente/', ClienteListView.as_view() , name='listar_clientes'),

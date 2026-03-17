@@ -13,7 +13,7 @@
 
 
 </div>
-    <form method="post" id="form-pedido">
+    <form method="post" id="form-pedido" novalidate>
         {% csrf_token %}
 
         {% if form.instance.estado == 'Entregado' %}
@@ -155,7 +155,56 @@
     const preciosProductos = {{ productos_json|safe|default:"{}" }};
     const stockProductos = {{ stock_json|safe|default:"{}" }};
 
-    // --- 0. VALIDACIÓN MESA ANTES DE EMPLEADO ---
+
+    // --- VERIFICAR SI LA MESA ESTÁ DISPONIBLE AL SELECCIONARLA ---
+    $(document).on('select2:select', '#id_mesa', function () {
+        const mesaId = $(this).val();
+
+        // Obtenemos el ID del pedido actual (solo en edición, en creación es null)
+        const pedidoId = {{ form.instance.pk|default:"null" }};
+
+        // Consultamos al servidor si la mesa tiene pedidos sin pagar
+        $.ajax({    //ajax sirve para que no se recargue la pagina si no que busque la mesa y mande la alerta
+            url: "{% url 'app:verificar_mesa_disponible' %}",
+            method: 'GET',
+            data: {
+                mesa_id: mesaId,
+                pedido_id: pedidoId
+            },
+            success: function (data) {
+                if (data.ocupada) {
+                    // La mesa tiene un pedido pendiente de pago, mostramos alerta
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Mesa no disponible',
+                        html: 'Esta mesa tiene un pedido <strong>pendiente de pago</strong>.<br>Debe pagarse antes de asignarla a un nuevo pedido.',
+                        confirmButtonText: 'Entendido',
+                        confirmButtonColor: '#d33'
+                    });
+
+                    // Limpiamos la mesa seleccionada para obligar a elegir otra
+                    $('#id_mesa').val('').trigger('change');
+
+                    // Resaltamos el campo en rojo
+                    $('#id_mesa').next('.select2').find('.select2-selection').css({
+                        'border': '2px solid red',
+                        'border-radius': '4px'
+                    });
+
+                    // Quitamos el borde rojo cuando seleccione otra mesa
+                    $('#id_mesa').one('select2:select', function () {
+                        $(this).next('.select2').find('.select2-selection').css({
+                            'border': '',
+                            'border-radius': ''
+                        });
+                    });
+                }
+            },
+            error: function () {
+                console.log('Error al verificar disponibilidad de la mesa');
+            }
+        });
+    });
     $(document).on('select2:select', '#id_usuario', function () {
         const mesaVal = $('#id_mesa').val();
 
@@ -163,7 +212,7 @@
             Swal.fire({
                 icon: 'warning',
                 title: 'Mesa requerida',
-                html: 'Debe <strong>seleccionar una mesa</strong> antes de asignar un empleado.',
+                html: 'Debe <strong>seleccionar una mesa</strong>',
                 confirmButtonText: 'Entendido',
                 confirmButtonColor: '#f0ad4e'
             });

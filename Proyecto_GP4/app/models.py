@@ -254,6 +254,7 @@ class Pedido(models.Model):
     usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE, verbose_name="Empleado")
     fecha_hora = models.DateTimeField(auto_now_add=True, verbose_name="Fecha y Hora")
     estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación", verbose_name="Estado")
+    pagado = models.BooleanField(default=False, verbose_name="Pagado")
 
     class Meta:
         verbose_name = "Pedido"
