@@ -23,10 +23,10 @@
     <!-- Este div crece y empuja los botones al borde derecho -->
     <div style="flex: 1;"></div>
 
-    <a href="{% url 'app:exportar_pedido_pdf' %}" class="btn btn-danger btn-sm">
+    <a href="{% url 'app:exportar_pedido_pdf' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-danger btn-sm btn-exportar">
         <i class="fas fa-file-pdf"></i> Exportar PDF
     </a>
-    <a href="{% url 'app:exportar_pedido_excel' %}" class="btn btn-success btn-sm">
+    <a href="{% url 'app:exportar_pedido_excel' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-success btn-sm btn-exportar"> 
         <i class="fas fa-file-excel"></i> Exportar Excel
     </a>
 
@@ -125,5 +125,37 @@
         Crear nuevo pedido
     </a>
 </div>
+<script>
+    // Capturar clicks en los botones de exportar
+    document.querySelectorAll('.btn-exportar').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            const hayPedidos = {{ object_list|length }} > 0;
 
+            if (!hayPedidos) {
+                e.preventDefault(); // No descargar nada
+
+                const filtroEstado = "{{ request.GET.buscar }}";
+                const filtroFecha  = "{{ request.GET.fecha }}";
+
+                let mensaje = "No hay pedidos para exportar.";
+
+                if (filtroEstado && filtroFecha) {
+                    mensaje = `No se encontraron pedidos con estado "${filtroEstado}" en la fecha ${filtroFecha}.`;
+                } else if (filtroEstado) {
+                    mensaje = `No se encontraron pedidos con estado "${filtroEstado}".`;
+                } else if (filtroFecha) {
+                    mensaje = `No se encontraron pedidos para la fecha ${filtroFecha}.`;
+                }
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: '⚠️ Sin resultados',
+                    text: mensaje,
+                    confirmButtonColor: '#e53935',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        });
+    });
+</script>
 {% endblock %}
