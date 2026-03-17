@@ -17,7 +17,7 @@ def obtener_credenciales_mysql():
     return {
         'host': db_config.get('HOST', 'localhost'),
         'user': db_config.get('USER', 'root'),
-        'password': db_config.get('PASSWORD', '334578'),
+        'password': db_config.get('PASSWORD', ' '),
         'database': db_config.get('NAME', 'la_tuna'),
         'port': db_config.get('PORT', 3306),
         'mysql_path': r'C:\Program Files\MySQL\MySQL Server 8.0\bin',
@@ -204,6 +204,11 @@ def generar_archivo_descarga(contenido_sql, nombre_archivo):
 
 def backup_ventas(request):
     """Exporta solo los datos de la tabla venta"""
+    
+# ========== USUARIOS  ==========
+
+def backup_usuarios(request):
+    """Exporta solo los datos de la tabla usuario"""
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
     
@@ -219,15 +224,15 @@ def backup_ventas(request):
             '-P', str(creds["port"]),
             '--password=' + creds["password"],
             creds["database"],
-            'venta'  # solo esta tabla
+            'usuario'  # solo esta tabla
         ]
         resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
         
         if resultado.returncode != 0:
             raise Exception(f"Error mysqldump: {resultado.stderr}")
         
-        sql_content = f"-- Backup Ventas\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
-        return generar_archivo_descarga(sql_content, 'backup_ventas')
+        sql_content = f"-- Backup usuarios\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_usuarios')
     
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
@@ -235,6 +240,10 @@ def backup_ventas(request):
 
 def backup_pagos(request):
     """Exporta solo los datos de la tabla pago"""
+# ========== PROVEEDORES  ==========
+
+def backup_proveedores(request):
+    """Exporta solo los datos de la tabla proveedor"""
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
     
@@ -250,15 +259,15 @@ def backup_pagos(request):
             '-P', str(creds["port"]),
             '--password=' + creds["password"],
             creds["database"],
-            'pago'  # solo esta tabla
+            'proveedor'  # solo esta tabla
         ]
         resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
         
         if resultado.returncode != 0:
             raise Exception(f"Error mysqldump: {resultado.stderr}")
         
-        sql_content = f"-- Backup Pagos\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
-        return generar_archivo_descarga(sql_content, 'backup_pagos')
+        sql_content = f"-- Backup Proveedores\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_proveedores')
     
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
@@ -266,6 +275,11 @@ def backup_pagos(request):
 
 def backup_facturas(request):
     """Exporta solo los datos de la tabla factura"""
+    
+# ========== PRODUCTOS  ==========
+
+def backup_productos(request):
+    """Exporta solo los datos de la tabla producto"""
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
     
@@ -281,15 +295,15 @@ def backup_facturas(request):
             '-P', str(creds["port"]),
             '--password=' + creds["password"],
             creds["database"],
-            'factura'  # solo esta tabla
+            'producto'  # solo esta tabla
         ]
         resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
         
         if resultado.returncode != 0:
             raise Exception(f"Error mysqldump: {resultado.stderr}")
         
-        sql_content = f"-- Backup Facturas\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
-        return generar_archivo_descarga(sql_content, 'backup_facturas')
+        sql_content = f"-- Backup Productos\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_productos')
     
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
@@ -298,6 +312,7 @@ def backup_facturas(request):
 # RESPALDO PACHECO
 def backup_insumos(request):
     """Exporta solo los datos de la tabla insumo"""
+
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
     
@@ -322,6 +337,37 @@ def backup_insumos(request):
         
         sql_content = f"-- Backup Insumos\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
         return generar_archivo_descarga(sql_content, 'backup_insumos')
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+# ========== COMPRAS ==========
+
+def backup_compras(request):
+    """Exporta solo los datos de la tabla compra"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    if not probar_conexion_mysql():
+        return JsonResponse({'error': 'No se puede conectar a MySQL'}, status=400)
+    
+    try:
+        creds = obtener_credenciales_mysql()
+        cmd = [
+            os.path.join(creds["mysql_path"], 'mysqldump.exe'),
+            '-h', creds["host"],
+            '-u', creds["user"],
+            '-P', str(creds["port"]),
+            '--password=' + creds["password"],
+            creds["database"],
+            'compra'  # solo esta tabla
+        ]
+        resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        
+        if resultado.returncode != 0:
+            raise Exception(f"Error mysqldump: {resultado.stderr}")
+        
+        sql_content = f"-- Backup Compras\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_compras')
     
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)

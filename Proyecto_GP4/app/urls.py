@@ -94,6 +94,7 @@ urlpatterns = [
     path('crear_usuario/', UsuarioCreateView.as_view(), name='crear_usuario'),
     path('eliminar_usuario/<int:pk>/', UsuarioDeleteView.as_view(), name='eliminar_usuario'),
     path('editar_usuario/<int:pk>/', UsuarioUpdateView.as_view(), name='editar_usuario'),
+    path('backup/usuarios/', backup_usuarios, name='backup_usuarios'),
 
 #PROVEEDORES
 
@@ -103,6 +104,7 @@ urlpatterns = [
     path('editar_proveedor/<int:pk>/', ProveedorUpdateView.as_view(), name='editar_proveedor'),
     path('exportar_proveedores_pdf/', ExportarProveedoresPDF.as_view(), name='exportar_proveedores_pdf'),
     path('exportar_proveedores_excel/', ExportarProveedoresExcel.as_view(), name='exportar_proveedores_excel'),
+    path('backup/proveedores/', backup_proveedores, name='backup_proveedores'),
 
 # PRODUCTO
     path('listar_productos/', ProductoListView.as_view(), name='listar_productos'),
@@ -111,6 +113,7 @@ urlpatterns = [
     path('editar_producto/<int:pk>/', ProductoUpdateView.as_view(), name='editar_producto'),
     path('exportar_productos_pdf/', ExportarProductosPDF.as_view(), name='exportar_productos_pdf'),
     path('exportar_productos_excel/', ExportarProductosExcel.as_view(), name='exportar_productos_excel'),
+    path('backup/productos/', backup_productos, name='backup_productos'),
 
 # COMPRA 
     path('listar_compras/', CompraListView.as_view(), name='listar_compras'),
@@ -119,6 +122,7 @@ urlpatterns = [
     path('editar_compra/<int:pk>/', CompraUpdateView.as_view(), name='editar_compra'),
     path('exportar_compras_pdf/', ExportarcomprasPDF.as_view(), name='exportar_compras_pdf'),
     path('exportar_compras_excel/', ExportarcomprasExcel.as_view(), name='exportar_compras_excel'),
+    path('backup/compras/', backup_compras, name='backup_compras'),
     
 # COMANDA
     path('listar_comanda/', ComandaListView.as_view() , name='listar_comandas'),
