@@ -12,9 +12,9 @@
            style="width: 300px;">
 
     <input type="date" name="fecha"
-           value="{{ request.GET.fecha }}"
-           class="form-control"
-           style="width: 200px;">
+        value="{{ fecha }}"   ← usa la variable del contexto que ya pasas desde la view
+        class="form-control"
+        style="width: 200px;">
 
     <button type="submit" class="btn btn-primary">
         <i class = "fas fa-search"></i> Buscar

@@ -4,31 +4,34 @@ from django.views.generic import *
 from app.models import Pedido, Plato, Producto, Comanda
 import json
 from app.forms import PedidoForm, DetallePedidoFormSet, DetallePlatoFormSet
-
+from datetime import datetime, timedelta
+from django.utils.timezone import make_aware
 
 class PedidoListView(ListView):
     model = Pedido
     template_name = 'Pedido/listar.html'
     context_object_name = 'object_list'
 
-    def get_queryset(self):
-        queryset = Pedido.objects.all().prefetch_related(
-            'detalle_platos__plato',      # platos del pedido
-            'detalle_productos__producto', # productos del pedido
-            'mesa',
-            'usuario'
-        )
+def get_queryset(self):
+    queryset = Pedido.objects.all().prefetch_related(
+        'detalle_platos__plato',
+        'detalle_productos__producto',
+        'mesa',
+        'usuario'
+    )
 
-        estado = self.request.GET.get('buscar')
-        fecha = self.request.GET.get('fecha')
+    estado = self.request.GET.get('buscar')
+    fecha = self.request.GET.get('fecha')
 
-        if estado:
-            queryset = queryset.filter(estado__icontains=estado)
+    if estado:
+        queryset = queryset.filter(estado__icontains=estado)
 
-        if fecha:
-            queryset = queryset.filter(fecha_hora__date=fecha)
+    if fecha:
+        fecha_inicio = make_aware(datetime.strptime(fecha, '%Y-%m-%d'))
+        fecha_fin = fecha_inicio + timedelta(days=1)
+        queryset = queryset.filter(fecha_hora__gte=fecha_inicio, fecha_hora__lt=fecha_fin)
 
-        return queryset
+    return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

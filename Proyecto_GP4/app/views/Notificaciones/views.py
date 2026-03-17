@@ -28,6 +28,8 @@ def listar_notificaciones(request):
         'notificaciones': notificaciones,
         'filtro': filtro,
         'contador_no_leidas': Notificacion.objects.filter(leido=False).count(),
+        'titulo': 'Listado de Notificaciones',  # ← agrega esto
+        'icono': 'fas fa-bell',                  # ← y esto
     })
 
 

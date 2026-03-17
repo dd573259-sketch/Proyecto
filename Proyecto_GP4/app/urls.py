@@ -37,7 +37,7 @@ urlpatterns = [
     path('eliminar_plato/<int:pk>/', PlatoDeleteView.as_view(), name='eliminar_plato'),
     
 #urls de notificaciones
-    path('listar_notificaciones/', notificacionListView.as_view() , name='listar_notificaciones'),
+    path('listar_notificaciones/', listar_notificaciones, name='listar_notificaciones'),
     path('crear_notificacion/', NotificacionCreateView.as_view() , name='crear_notificacion'),
     path('editar_notificacion/<int:pk>/', NotificacionUpdateView.as_view(), name='editar_notificacion'),
     path('eliminar_notificacion/<int:pk>/', NotificacionDeleteView.as_view(), name='eliminar_notificacion'),
@@ -149,9 +149,12 @@ urlpatterns = [
     path('dashboard/', dashboardView.as_view(), name='dashboard'),
     
 
-#BACKUPS
+# BACKUP
     path("backup/",backup, name = "backup"),
-    path("backup/restarurar/",restaurar_datos, name = "restaurar_datos"),
+    path('backup/restaurar/', restaurar_datos, name='restaurar_datos'),
+    path('backup/ventas/', backup_ventas, name='backup_ventas'),
+    path('backup/pagos/', backup_pagos, name='backup_pagos'),
+    path('backup/facturas/', backup_facturas, name='backup_facturas'),
 ]
 
 
