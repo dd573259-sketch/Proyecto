@@ -18,7 +18,7 @@ from app.views.Pedido.views import *
 from app.views.Cliente.views import *
 from app.views.Dashborad.views import *
 from app.reportes import *
-from app.views.backup.views import backup, restaurar_datos, backup_ventas, backup_pagos, backup_facturas
+from app.views.backup import backup, restaurar_datos, backup_ventas, backup_pagos, backup_facturas
 
 app_name = 'app'
 urlpatterns = [
@@ -41,6 +41,8 @@ urlpatterns = [
     path('crear_notificacion/', NotificacionCreateView.as_view() , name='crear_notificacion'),
     path('editar_notificacion/<int:pk>/', NotificacionUpdateView.as_view(), name='editar_notificacion'),
     path('eliminar_notificacion/<int:pk>/', NotificacionDeleteView.as_view(), name='eliminar_notificacion'),
+    path('notificaciones/marcar-leida/<int:pk>/', marcar_leida, name='marcar_leida'),
+    path('notificaciones/marcar-todas/', marcar_leidas, name='marcar_leidas'),
     
 #MENU
     path('listar_menu/', MenuListView.as_view() , name='listar_menu'),
@@ -136,6 +138,7 @@ urlpatterns = [
     path('pedido/detalle/<int:pk>/', DetallePedidoView.as_view(), name='detalle_pedido'),
     path('exportar_pedido_pdf/', ExportarpedidoPDF.as_view(), name='exportar_pedido_pdf'),
     path('exportar_pedido_excel/', ReportePedidosExcel.as_view(), name='exportar_pedido_excel'),
+    path('verificar_mesa_disponible/', verificar_mesa_disponible, name='verificar_mesa_disponible'),
 
 # CLIENTE
     path('listar_cliente/', ClienteListView.as_view() , name='listar_clientes'),

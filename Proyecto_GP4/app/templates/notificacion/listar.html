@@ -1,48 +1,155 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
+
 <div class="tabla-wrapper">
+
+  <!-- FILTROS -->
+  <form method="get" class="mb-3">
+    <div class="row align-items-center" style="gap:10px; padding: 0 10px;">
+      
+      <div class="col-auto">
+        <a href="{% url 'app:listar_notificaciones' %}" 
+           class="btn btn-sm {% if not filtro %}btn-dark{% else %}btn-outline-dark{% endif %}"
+           style="border-radius:20px;">
+          🔔 Todas
+        </a>
+      </div>
+
+      <div class="col-auto">
+        <a href="?filtro=no_leidas" 
+           class="btn btn-sm {% if filtro == 'no_leidas' %}btn-danger{% else %}btn-outline-danger{% endif %}"
+           style="border-radius:20px;">
+          🔴 No leídas
+          {% if contador_no_leidas > 0 %}
+            <span style="background:white; color:red; border-radius:50%; padding:1px 6px; font-size:11px; margin-left:4px; font-weight:700;">
+              {{ contador_no_leidas }}
+            </span>
+          {% endif %}
+        </a>
+      </div>
+
+      <div class="col-auto">
+        <a href="?filtro=leidas" 
+           class="btn btn-sm {% if filtro == 'leidas' %}btn-secondary{% else %}btn-outline-secondary{% endif %}"
+           style="border-radius:20px;">
+          ✅ Leídas
+        </a>
+      </div>
+
+      <!-- Marcar todas como leídas -->
+      <div class="col-auto ms-auto">
+        <form method="post" action="{% url 'app:marcar_leidas' %}" style="display:inline;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-success" style="border-radius:20px;">
+            ✅ Marcar todas como leídas
+          </button>
+        </form>
+      </div>
+
+    </div>
+  </form>
+
+  <!-- TABLA -->
   <table class="tabla" id="tabla">
     <thead>
       <tr>
-        <th scope="col">#</th>
+        <th>#</th>
+        <th scope="col">Tipo</th>
+        <th scope="col">Mensaje</th>
         <th scope="col">Producto</th>
         <th scope="col">Insumo</th>
-        <th scope="col">Tipo de notificacion</th>
-        <th scope="col">Mensaje</th>
         <th scope="col">Fecha</th>
-        <th scope="col">Editar</th>
+        <th scope="col">Estado</th>
+        <th scope="col">Marcar como leída</th>
         <th scope="col">Eliminar</th>
+        <th scope="col">Editar</th>
+        
       </tr>
     </thead>
     <tbody>
-
       {% for n in object_list %}
-      <tr>
+      <tr style="background: {% if not n.leido %}#fffbe6{% else %}white{% endif %};">
+        
         <td>{{ n.id_notificacion }}</td>
-        <td>{{ n.producto }}</td>
-        <td>{{ n.insumo }}</td>
-        <td>{{ n.tipo_notificacion }}</td>
-        <td>{{ n.mensaje }}</td>
-        <td>{{ n.fecha }}</td>
 
+        <!-- Tipo con icono -->
         <td>
-          <a href="{% url 'app:editar_notificacion' n.id_notificacion %}" class="btn btn-primary btn-xs"><i
-              class="fas fa-edit"></i></a>
+          <span style="font-size:13px; font-weight: {% if not n.leido %}600{% else %}normal{% endif %};">
+            {% if "SIN STOCK" in n.mensaje %}🔴
+            {% elif "CRÍTICO" in n.mensaje %}🔴
+            {% elif "Stock bajo" in n.tipo_notificacion %}🟡
+            {% elif "creado" in n.tipo_notificacion %}👤
+            {% elif "editado" in n.tipo_notificacion %}✏️
+            {% elif "eliminado" in n.tipo_notificacion %}🗑️
+            {% else %}🔔{% endif %}
+            {{ n.tipo_notificacion }}
+          </span>
         </td>
+
+        <!-- Mensaje -->
+        <td style="font-size:13px; color:#444; font-weight: {% if not n.leido %}600{% else %}normal{% endif %};">
+          {{ n.mensaje }}
+        </td>
+
+        <!-- Producto -->
+        <td style="font-size:13px;">
+          {% if n.producto %}{{ n.producto.nombre }}{% else %}<span style="color:#ccc;">—</span>{% endif %}
+        </td>
+
+        <!-- Insumo -->
+        <td style="font-size:13px;">
+          {% if n.insumo %}{{ n.insumo.nombre }}{% else %}<span style="color:#ccc;">—</span>{% endif %}
+        </td>
+
+        <!-- Fecha -->
+        <td style="font-size:12px; color:#888;">
+          {{ n.fecha|date:"d/m/Y H:i" }}
+          <br>
+          <span style="font-size:11px; color:#aaa;">{{ n.fecha|timesince }} atrás</span>
+        </td>
+
+        <!-- Estado badge -->
         <td>
-          <a href="{% url 'app:eliminar_notificacion' n.id_notificacion %}" class="btn btn-danger btn-xs"><i
-              class="fas fa-trash"></i></a>
+          {% if n.leido %}
+            <span class="badge bg-secondary">Leída</span>
+          {% else %}
+            <span class="badge bg-danger">No leída</span>
+          {% endif %}
+        </td>
+
+        <!-- Acción: marcar individual -->
+        <td>
+          {% if not n.leido %}
+          <form method="post" action="{% url 'app:marcar_leida' n.id_notificacion %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-xs btn-outline-success" title="Marcar como leída">
+              <i class="fas fa-check"></i>
+            </button>
+          </form>
+          {% else %}
+            <span style="color:#ccc; font-size:12px;">✓</span>
+          {% endif %}
+        </td>
+              <td>
+        <a href="{% url 'app:editar_notificacion' n.id_notificacion %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+      </td>
+      <td>
+        <a href="{% url 'app:eliminar_notificacion' n.id_notificacion %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+      </td>
+    </tr>
+
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="8" style="text-align:center; padding:40px; color:#aaa;">
+          <div style="font-size:36px;">🔔</div>
+          <p>No hay notificaciones</p>
         </td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
 </div>
-<div class="card-footer">
-  <a href="{{crear_url}}" class="btn btn-success btn-xs">
-    <i class="fas fa-plus"></i> Crear nueva notificación
-  </a>
-</div>
-{% endblock %}
 
+{% endblock %}

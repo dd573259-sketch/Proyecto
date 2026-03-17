@@ -244,8 +244,20 @@ class ExportarventasExcel(DjangoView):
 class ExportarpedidoPDF(DjangoView):
 
     def get(self, request):
+        
+        estado = request.GET.get('buscar', '')
+        fecha = request.GET.get('fecha', '')
 
-        pedidos = Pedido.objects.all()
+        pedidos = Pedido.objects.all().prefetch_related(
+            'detalle_platos__plato',
+            'detalle_productos__producto',
+        )
+        
+        if estado:
+            pedidos = pedidos.filter(estado__incontains=estado)
+            
+        if fecha:
+            pedidos = pedidos.filter(fecha_hora__date=fecha)
 
         columnas = ['ID', 'MESA', 'PLATOS', 'PRODUCTOS', 'USUARIO', 'FECHA', 'ESTADO', 'TOTAL']
 
@@ -285,10 +297,23 @@ class ExportarpedidoPDF(DjangoView):
     
 
 class ReportePedidosExcel(DjangoView):
+    
 
     def get(self, request):
+        
+        estado = request.GET.get('buscar', '')
+        fecha = request.GET.get('fecha', '')
 
-        pedidos = Pedido.objects.all()
+        pedidos = Pedido.objects.all().prefetch_related(
+            'detalle_platos__plato',
+            'detalle_productos__producto',
+        )
+        
+        if estado:
+            pedidos = pedidos.filter(estado__icontains=estado)
+            
+        if fecha:
+            pedidos = pedidos.filter(fecha_hora__date=fecha)
 
         columnas = ['ID', 'MESA', 'PLATOS', 'PRODUCTOS', 'USUARIO', 'FECHA', 'ESTADO', 'TOTAL']
 

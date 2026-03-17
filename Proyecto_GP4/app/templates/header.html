@@ -4,13 +4,41 @@
     <a href="#"><img id="logo" src="{% static 'imagenes/logo.png' %}" alt="Logo"></a>
 
     <div class="header-right">
+        <div class="dropdown" style="position:relative;">
+    
+    <button class="btn btn-secondary dropdown-toggle"
+        type="button"
+        id="dropdownMenuButton"
+        data-bs-toggle="dropdown"
+        aria-expanded="false">
+        Opciones
+    </button>
 
-        <form action="{% url 'app:listar_notificaciones' %}">
-            <button type="submit" class="btn btn-link position-relative">
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 
+        <li>
+            <a class="dropdown-item" href="{% url 'app:backup' %}">
+                Ver página de respaldo
+            </a>
+        </li>
+
+        <li>
+            <form method="POST" action="{% url 'app:backup' %}">
+                {% csrf_token %}
+                <input type="hidden" name="accion" value="backup_completo">
+                <button type="submit" class="dropdown-item">
+                    Realizar respaldo
+                </button>
+            </form>
+        </li>
+
+    </ul>
+
+</div>
+        <div class="dropdown">
+            <button type="button" class="btn btn-link position-relative" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                 <img class="icono" src="{% static 'imagenes/campana.png' %}" alt="Notificaciones">
-
-                {% if contador_notificaciones >= 0 %}
+                {% if contador_notificaciones > 0 %}
                 <span style="
                     position:absolute;
                     top:-5px;
@@ -23,9 +51,90 @@
                     {{ contador_notificaciones }}
                 </span>
                 {% endif %}
-
             </button>
-        </form>
+
+            <!-- PANEL DROPDOWN -->
+            <div class="dropdown-menu dropdown-menu-end p-0" style="
+                width: 380px;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+                overflow: hidden;
+                border: none;">
+
+                <!-- HEADER -->
+                <div style="background:#222; color:white; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-weight:600; font-size:14px;">
+                        🔔 Notificaciones
+                        {% if contador_notificaciones > 0 %}
+                        <span style="background:red; border-radius:50%; padding:1px 7px; font-size:12px; margin-left:5px;">
+                            {{ contador_notificaciones }}
+                        </span>
+                        {% endif %}
+                    </span>
+                </div>
+
+                <!-- LISTA -->
+                <div style="max-height:360px; overflow-y:auto;">
+                    {% if notificaciones_recientes %}
+                        {% for n in notificaciones_recientes %}
+                        <div style="
+                            display:flex;
+                            align-items:flex-start;
+                            gap:10px;
+                            padding:12px 16px;
+                            border-bottom:1px solid #eee;
+                            background:{% if not n.leido %}#fffbe6{% else %}white{% endif %};">
+
+                            <!-- Icono -->
+                            <div style="font-size:20px; min-width:28px; text-align:center; margin-top:2px;">
+                                {% if "SIN STOCK" in n.mensaje %}🔴
+                                {% elif "CRÍTICO" in n.mensaje %}🔴
+                                {% elif "Stock bajo" in n.tipo_notificacion %}🟡
+                                {% elif "creado" in n.tipo_notificacion %}👤
+                                {% elif "editado" in n.tipo_notificacion %}✏️
+                                {% elif "eliminado" in n.tipo_notificacion %}🗑️
+                                {% else %}🔔{% endif %}
+                            </div>
+
+                            <!-- Texto -->
+                            <div style="flex:1;">
+                                <div style="font-weight:{% if not n.leido %}600{% else %}normal{% endif %}; font-size:13px; color:#333;">
+                                    {{ n.tipo_notificacion }}
+                                </div>
+                                <div style="font-size:12px; color:#666; margin-top:2px;">
+                                    {{ n.mensaje|truncatechars:65 }}
+                                </div>
+                                <div style="font-size:11px; color:#aaa; margin-top:3px;">
+                                    {{ n.fecha|timesince }} atrás
+                                </div>
+                            </div>
+
+                            <!-- Punto rojo si no leída -->
+                            {% if not n.leido %}
+                            <div style="width:8px; height:8px; background:red; border-radius:50%; margin-top:5px; flex-shrink:0;"></div>
+                            {% endif %}
+
+                        </div>
+                        {% endfor %}
+
+                    {% else %}
+                        <div style="text-align:center; padding:36px 20px; color:#aaa;">
+                            <div style="font-size:36px;">🔔</div>
+                            <p style="margin-top:8px; font-size:13px;">Sin notificaciones nuevas</p>
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- FOOTER -->
+                <div style="padding:10px 16px; background:#f9f9f9; text-align:center; border-top:1px solid #eee;">
+                    <a href="{% url 'app:listar_notificaciones' %}" class="btn btn-dark btn-sm" style="border-radius:20px; padding:5px 22px; font-size:13px;">
+                        Ver todas las notificaciones
+                    </a>
+                </div>
+
+            </div>
+        </div>
+        <!-- FIN DROPDOWN -->
 
         <form method="post" action="{% url 'login:logout' %}">
             {% csrf_token %}
@@ -35,6 +144,4 @@
         </form>
 
     </div>
-
-    
 </header>

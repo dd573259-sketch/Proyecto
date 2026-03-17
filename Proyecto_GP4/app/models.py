@@ -254,6 +254,7 @@ class Pedido(models.Model):
     usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE, verbose_name="Empleado")
     fecha_hora = models.DateTimeField(auto_now_add=True, verbose_name="Fecha y Hora")
     estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación", verbose_name="Estado")
+    pagado = models.BooleanField(default=False, verbose_name="Pagado")
 
     class Meta:
         verbose_name = "Pedido"
@@ -350,7 +351,7 @@ class Comanda(models.Model):
 
     def __str__(self):
         return f"Comanda #{self.id_comanda}"
-     
+
 class Menu(models.Model):
     id_menu = models.AutoField(primary_key=True)
 
@@ -387,7 +388,7 @@ class insumo(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.CharField(max_length=100)
     unidad = models.CharField( max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
-    valor = models.DecimalField(max_digits=10, decimal_places=2, error_messages={'max_digits': 'El valor es demasiado alto.'})
+    valor = models.DecimalField(max_digits=20 ,decimal_places=2, error_messages={'max_digits': 'El valor es demasiado alto.'})
     stock = models.PositiveIntegerField(default=0)
 
     def __str__(self):

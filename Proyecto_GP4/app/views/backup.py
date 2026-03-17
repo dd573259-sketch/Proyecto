@@ -106,43 +106,47 @@ def realizar_respaldo_completo():
     creds = obtener_credenciales_mysql()
 
     try:
-        # Construir comando mysqldump
         cmd = [
             os.path.join(creds["mysql_path"], 'mysqldump.exe'),
             '-h', creds["host"],
             '-u', creds["user"],
             '-P', str(creds["port"]),
-            '--password=' + creds["password"],
+            f'--password={creds["password"]}',
+            '--routines',
+            '--triggers',
+            '--events',
             creds["database"]
         ]
 
-
-        # Ejecutar mysqldump y capturar output
         resultado = subprocess.run(
             cmd,
             capture_output=True,
             text=True,
-            timeout=60  
+            encoding="utf-8",
+            errors="ignore",
+            timeout=60
         )
-
 
         if resultado.returncode != 0:
             raise Exception(f"Error mysqldump: {resultado.stderr}")
 
         sql_content = resultado.stdout
 
-        if not sql_content.strip():
-            raise Exception("El respaldo esta vacio")
+        if not sql_content or not sql_content.strip():
+            raise Exception("El respaldo está vacío")
 
-        # Agregar comentario con fecha
-        sql_content = f"-- Respaldo Completo de {creds['database']}\n" \
-                      f"-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n" \
-                      f"-- Tipo: Completo (Estructura + Datos)\n\n" + sql_content
+        sql_content = (
+            f"-- Respaldo Completo de {creds['database']}\n"
+            f"-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"-- Tipo: Completo (Estructura + Datos)\n\n"
+            + sql_content
+        )
 
         return generar_archivo_descarga(sql_content, 'backup_completo')
 
     except subprocess.TimeoutExpired:
         raise Exception("Timeout al ejecutar mysqldump")
+
     except Exception as e:
         print(f"Error en respaldo completo: {str(e)}")
         raise Exception(f"Error en respaldo completo: {str(e)}")
