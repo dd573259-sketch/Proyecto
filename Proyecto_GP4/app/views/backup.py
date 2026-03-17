@@ -18,7 +18,7 @@ def obtener_credenciales_mysql():
         'host': db_config.get('HOST', 'localhost'),
         'user': db_config.get('USER', 'root'),
         'password': db_config.get('PASSWORD', ''),
-        'database': db_config.get('NAME', 'sena_db'),
+        'database': db_config.get('NAME', 'la_tuna'),
         'port': db_config.get('PORT', 3306),
         'mysql_path': r'C:\Program Files\MySQL\MySQL Server 8.0\bin',
     }
@@ -200,3 +200,132 @@ def generar_archivo_descarga(contenido_sql, nombre_archivo):
     response['Content-Disposition'] = f'attachment; filename="{nombre_archivo}_{timestamp}.sql"'
 
     return response
+
+# ========== USUARIOS  ==========
+
+def backup_usuarios(request):
+    """Exporta solo los datos de la tabla usuario"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    if not probar_conexion_mysql():
+        return JsonResponse({'error': 'No se puede conectar a MySQL'}, status=400)
+    
+    try:
+        creds = obtener_credenciales_mysql()
+        cmd = [
+            os.path.join(creds["mysql_path"], 'mysqldump.exe'),
+            '-h', creds["host"],
+            '-u', creds["user"],
+            '-P', str(creds["port"]),
+            '--password=' + creds["password"],
+            creds["database"],
+            'usuario'  # solo esta tabla
+        ]
+        resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        
+        if resultado.returncode != 0:
+            raise Exception(f"Error mysqldump: {resultado.stderr}")
+        
+        sql_content = f"-- Backup usuarios\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_usuarios')
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+# ========== PROVEEDORES  ==========
+
+def backup_proveedores(request):
+    """Exporta solo los datos de la tabla proveedor"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    if not probar_conexion_mysql():
+        return JsonResponse({'error': 'No se puede conectar a MySQL'}, status=400)
+    
+    try:
+        creds = obtener_credenciales_mysql()
+        cmd = [
+            os.path.join(creds["mysql_path"], 'mysqldump.exe'),
+            '-h', creds["host"],
+            '-u', creds["user"],
+            '-P', str(creds["port"]),
+            '--password=' + creds["password"],
+            creds["database"],
+            'proveedor'  # solo esta tabla
+        ]
+        resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        
+        if resultado.returncode != 0:
+            raise Exception(f"Error mysqldump: {resultado.stderr}")
+        
+        sql_content = f"-- Backup Proveedores\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_proveedores')
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+# ========== PRODUCTOS  ==========
+
+def backup_productos(request):
+    """Exporta solo los datos de la tabla producto"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    if not probar_conexion_mysql():
+        return JsonResponse({'error': 'No se puede conectar a MySQL'}, status=400)
+    
+    try:
+        creds = obtener_credenciales_mysql()
+        cmd = [
+            os.path.join(creds["mysql_path"], 'mysqldump.exe'),
+            '-h', creds["host"],
+            '-u', creds["user"],
+            '-P', str(creds["port"]),
+            '--password=' + creds["password"],
+            creds["database"],
+            'producto'  # solo esta tabla
+        ]
+        resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        
+        if resultado.returncode != 0:
+            raise Exception(f"Error mysqldump: {resultado.stderr}")
+        
+        sql_content = f"-- Backup Productos\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_productos')
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+# ========== COMPRAS ==========
+
+def backup_compras(request):
+    """Exporta solo los datos de la tabla compra"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    if not probar_conexion_mysql():
+        return JsonResponse({'error': 'No se puede conectar a MySQL'}, status=400)
+    
+    try:
+        creds = obtener_credenciales_mysql()
+        cmd = [
+            os.path.join(creds["mysql_path"], 'mysqldump.exe'),
+            '-h', creds["host"],
+            '-u', creds["user"],
+            '-P', str(creds["port"]),
+            '--password=' + creds["password"],
+            creds["database"],
+            'compra'  # solo esta tabla
+        ]
+        resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        
+        if resultado.returncode != 0:
+            raise Exception(f"Error mysqldump: {resultado.stderr}")
+        
+        sql_content = f"-- Backup Compras\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_compras')
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
