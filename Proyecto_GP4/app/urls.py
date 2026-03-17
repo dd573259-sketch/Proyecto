@@ -155,6 +155,8 @@ urlpatterns = [
     path('backup/ventas/', backup_ventas, name='backup_ventas'),
     path('backup/pagos/', backup_pagos, name='backup_pagos'),
     path('backup/facturas/', backup_facturas, name='backup_facturas'),
+    path('backup/insumos/', backup_insumos, name='backup_insumos'),
+
 ]
 
 
