@@ -84,7 +84,7 @@ urlpatterns = [
     
 # PAGOS
     path('listar_pagos/', PagoListView.as_view(), name='listar_pagos'),
-    path('pago/crear/<int:venta_id>/', PagoCreateView.as_view(), name='crear_pago'),
+    path('pago/crear/<int:id_venta>/', PagoCreateView.as_view(), name='crear_pago'),
     path('eliminar_pago/<int:pk>/', EliminarPagoView.as_view(), name='eliminar_pago'),
     path('reporte_pagos/pdf/', ExportarpagosPDF.as_view(), name='reporte_pagos_pdf'),
     path('reporte_pagos/excel/', ExportarpagosExcel.as_view(), name='reporte_pagos_excel'),

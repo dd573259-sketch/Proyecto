@@ -81,6 +81,11 @@ class VentaCreateView(CreateView):
     def form_valid(self, form):
         pedido = form.cleaned_data['pedido']
 
+        # ✅ Validar que el pedido esté entregado
+        if pedido.estado != 'Entregado':
+            messages.error(self.request, f"⚠ El pedido #{pedido.id_pedido} aún está en preparación. No se puede crear una venta hasta que sea entregado.")
+            return redirect('app:crear_venta')
+
         # Validar que no exista venta para ese pedido
         if Venta.objects.filter(pedido=pedido).exists():
             messages.error(self.request, f"⚠ El pedido #{pedido.id_pedido} ya tiene una venta registrada.")
@@ -91,13 +96,11 @@ class VentaCreateView(CreateView):
             messages.error(self.request, f"⚠ No se puede crear una venta sin items en el pedido #{pedido.id_pedido}.")
             return redirect('app:crear_venta')
 
-        # Asignar usuario (puedes cambiarlo según tu lógica)
         usuario = Usuario.objects.first()
         if not usuario:
             messages.error(self.request, "⚠ No hay usuarios disponibles para asignar a la venta.")
             return redirect('app:crear_venta')
 
-        # Asignar total del pedido
         form.instance.usuario = usuario
         form.instance.total = pedido.total
 
@@ -124,6 +127,11 @@ def pagar_venta(request, venta_id):
 
 def crear_venta_desde_pedido(request, pedido_id):
     pedido = get_object_or_404(Pedido, id_pedido=pedido_id)
+
+    # ✅ Validar que el pedido esté entregado
+    if pedido.estado != 'Entregado':
+        messages.error(request, f"⚠ El pedido #{pedido.id_pedido} aún está en preparación. No se puede crear una venta.")
+        return redirect('app:listar_ventas')
 
     if Venta.objects.filter(pedido=pedido).exists():
         messages.error(request, f"⚠ El pedido #{pedido.id_pedido} ya tiene una venta registrada.")

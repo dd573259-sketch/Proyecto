@@ -134,7 +134,7 @@ class PedidoUpdateView(UpdateView):
     
     def dispatch(self, request, *args, **kwargs):
         pedido = self.get_object()
-        if pedido.pagado:
+        if pedido.pago:
             messages.error(request, "Este pedido ya fue pagado y no puede modificarse.")
             return redirect('app:listar_pedidos')
         return super().dispatch(request, *args, **kwargs)

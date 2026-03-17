@@ -3,46 +3,27 @@
 
 {% block Contenido %}
 
-
 <!-- FILTROS -->
 <div style="margin-bottom:15px;">
-
   <form method="GET" style="display:flex; gap:10px;">
-
-    <input 
-      type="text" 
-      name="usuario"
-      placeholder="Buscar por ventas"
-      value="{{ usuario }}"
-    >
-
-    <input 
-      type="date" 
-      name="fecha"
-      value="{{ fecha }}"
-    >
-
+    <input type="text" name="usuario" placeholder="Buscar por ventas" value="{{ usuario }}">
+    <input type="date" name="fecha" value="{{ fecha }}">
     <button type="submit" class="btn btn-primary btn-xs">
       <i class="fas fa-search"></i> Buscar
     </button>
-
-    <div style="margin-bottom:15px; display:flex;align-items: center; gap:10px; margin-left: auto;">
-
-  <a href="{% url 'app:reporte_pagos_pdf' %}" class="btn btn-danger btn-xs">
-    <i class="fas fa-file-pdf"></i> Exportar PDF
-  </a>
-
-  <a href="{% url 'app:reporte_pagos_excel' %}" class="btn btn-success btn-xs">
-    <i class="fas fa-file-excel"></i> Exportar Excel
-  </a>
-
-</div>
+    <div style="margin-bottom:15px; display:flex; align-items: center; gap:10px; margin-left: auto;">
+      <a href="{% url 'app:reporte_pagos_pdf' %}" class="btn btn-danger btn-xs">
+        <i class="fas fa-file-pdf"></i> Exportar PDF
+      </a>
+      <a href="{% url 'app:reporte_pagos_excel' %}" class="btn btn-success btn-xs">
+        <i class="fas fa-file-excel"></i> Exportar Excel
+      </a>
+    </div>
   </form>
-
+</div>
 
 <div class="tabla-wrapper">
   <table class="tabla" id="tabla">
-
     <thead>
       <tr>
         <th>#</th>
@@ -52,79 +33,72 @@
         <th>Monto Pagado</th>
         <th>Fecha</th>
         <th>Método de Pago</th>
+        <th>Estado</th>
         <th>Generar Factura</th>
       </tr>
     </thead>
-
     <tbody>
-
       {% for p in object_list %}
-      <tr>
-
+      <tr {% if not p.activo %}class="fila-inactiva"{% endif %}>
         <td>{{ p.id_pago }}</td>
-
         <td>
-          {% if p.venta %}
-            Venta #{{ p.venta.id_venta }}
-          {% else %}
-            Sin venta
-          {% endif %}
+          {% if p.venta %}Venta #{{ p.venta.id_venta }}{% else %}Sin venta{% endif %}
         </td>
-
         <td>
-          {% if p.factura %}
-            {{ p.factura }}
-          {% else %}
-            Sin factura
-          {% endif %}
+          {% if p.factura %}{{ p.factura }}{% else %}Sin factura{% endif %}
         </td>
-
         <td>
-          {% if p.venta %}
-            ${{ p.venta.total }}
-          {% else %}
-            $0
-          {% endif %}
+          {% if p.venta %}${{ p.venta.total }}{% else %}$0{% endif %}
         </td>
-
         <td>${{ p.monto }}</td>
-
         <td>{{ p.fecha|date:'Y-m-d H:i' }}</td>
-
         <td>{{ p.metodo_pago }}</td>
 
-        <!-- GENERAR FACTURA --> 
+        <!-- ESTADO -->
         <td>
-          {% if p.factura %}
+          {% if p.activo %}
+            <span class="badge badge-success">Activo</span>
+          {% else %}
+            <span class="badge badge-secondary">Inactivo</span>
+          {% endif %}
+        </td>
 
+        <!-- GENERAR FACTURA -->
+        <td>
+          {% if not p.activo %}
+            <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;" title="Pago inactivo">
+              🔒 Bloqueado
+            </span>
+          {% elif p.factura %}
             <span class="btn btn-secondary btn-xs">
               <i class="fas fa-check"></i> Facturada
             </span>
-
           {% else %}
-
             <a href="{% url 'app:crear_factura' p.id_pago %}" class="btn btn-success btn-xs">
               <i class="fas fa-file-invoice"></i> Facturar
             </a>
-
           {% endif %}
         </td>
-
       </tr>
-
       {% empty %}
-
       <tr>
-        <td colspan="9" style="text-align:center;">
-          No hay pagos registrados
-        </td>
+        <td colspan="9" style="text-align:center;">No hay pagos registrados</td>
       </tr>
-
       {% endfor %}
-
     </tbody>
-
   </table>
 </div>
+
+<style>
+  .fila-inactiva {
+    background-color: #f0f0f0 !important;
+    opacity: 0.75;
+    text-decoration: line-through;
+    color: #888;
+  }
+  .fila-inactiva .btn, .fila-inactiva .badge {
+    text-decoration: none;
+  }
+</style>
 
 {% endblock %}

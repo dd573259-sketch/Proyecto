@@ -11,13 +11,13 @@
     <div class="card-body">
 
         <p><strong>Venta:</strong> {{ venta.id_venta }}</p>
-        <p><strong>Total a pagar:</strong> ${{ venta.total }}</p>
+        <p><strong>Total a pagar:</strong> $<span id="total-venta">{{ venta.total }}</span></p>
 
         <form method="POST">
             {% csrf_token %}
 
             <div class="form-group">
-                <label for="metodo_pago"><strong>Metodo de pago:</strong></label>
+                <label for="metodo_pago"><strong>Método de pago:</strong></label>
                 <select id="metodo_pago" name="metodo_pago" class="form-control" required>
                     <option value="">Seleccione un método</option>
                     <option value="Efectivo">Efectivo</option>
@@ -26,13 +26,44 @@
                 </select>
             </div>
 
+            <!-- SECCIÓN EFECTIVO -->
+            <div id="seccion-efectivo" style="display:none; margin-top:15px;">
+                <div class="form-group">
+                    <label for="monto_recibido"><strong>¿Con cuánto paga el cliente?</strong></label>
+                    <input 
+                        type="number" 
+                        id="monto_recibido" 
+                        name="monto_recibido"
+                        class="form-control" 
+                        placeholder="Ingrese el monto recibido"
+                        min="{{ venta.total }}"
+                        step="100"
+                    >
+                </div>
+
+                <!-- RESULTADO DE VUELTAS -->
+                <div id="resultado-vueltas" style="display:none; margin-top:10px;">
+                    <div class="alert" id="alerta-vueltas">
+                        <strong> Vueltas a entregar : </strong>
+                        <span id="valor-vueltas" style="font-size:1.2em; font-weight:bold;"></span>
+                    </div>
+                </div>
+
+                <!-- ALERTA MONTO INSUFICIENTE -->
+                <div id="alerta-insuficiente" style="display:none; margin-top:10px;">
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>El monto ingresado es menor al total a pagar.</strong>
+                    </div>
+                </div>
+            </div>
+
             <br>
 
-            <button type="submit" class="btn btn-success">
+            <button type="submit" class="btn btn-success" id="btn-registrar">
                 Registrar Pago
             </button>
 
-            <!-- Botón Cancelar -->
             <a href="{% url 'app:listar_ventas' %}" class="btn btn-secondary">
                 Cancelar
             </a>
@@ -42,5 +73,65 @@
     </div>
 
 </div>
+<!-- Script para que calculemos valor despues de que escogen el mont de pagar efectivo-->
+<script>
+    const total = parseFloat({{ venta.total }});
+    const selectMetodo = document.getElementById('metodo_pago');
+    const seccionEfectivo = document.getElementById('seccion-efectivo');
+    const montoRecibido = document.getElementById('monto_recibido');
+    const resultadoVueltas = document.getElementById('resultado-vueltas');
+    const valorVueltas = document.getElementById('valor-vueltas');
+    const alertaVueltas = document.getElementById('alerta-vueltas');
+    const alertaInsuficiente = document.getElementById('alerta-insuficiente');
+    const btnRegistrar = document.getElementById('btn-registrar');
+
+    // Mostrar/ocultar sección efectivo según método elegido
+    selectMetodo.addEventListener('change', function() {
+        if (this.value === 'Efectivo') {
+            seccionEfectivo.style.display = 'block';
+            montoRecibido.required = true;
+        } else {
+            seccionEfectivo.style.display = 'none';
+            montoRecibido.required = false;
+            resultadoVueltas.style.display = 'none';
+            alertaInsuficiente.style.display = 'none';
+        }
+    });
+
+    // Calcular vueltas en tiempo real
+    montoRecibido.addEventListener('input', function() {
+        const recibido = parseFloat(this.value);
+
+        if (isNaN(recibido) || this.value === '') {
+            resultadoVueltas.style.display = 'none';
+            alertaInsuficiente.style.display = 'none';
+            btnRegistrar.disabled = false;
+            return;
+        }
+
+        const vueltas = recibido - total;
+
+        if (vueltas < 0) {
+            // Monto insuficiente
+            resultadoVueltas.style.display = 'none';
+            alertaInsuficiente.style.display = 'block';
+            btnRegistrar.disabled = true;
+        } else if (vueltas === 0) {
+            // Pago exacto
+            alertaInsuficiente.style.display = 'none';
+            resultadoVueltas.style.display = 'block';
+            alertaVueltas.className = 'alert alert-success';
+            valorVueltas.textContent = '$0 — Pago exacto ';
+            btnRegistrar.disabled = false;
+        } else {
+            // Hay vueltas
+            alertaInsuficiente.style.display = 'none';
+            resultadoVueltas.style.display = 'block';
+            alertaVueltas.className = 'alert alert-info';
+            valorVueltas.textContent = '$' + vueltas.toLocaleString('es-CO');
+            btnRegistrar.disabled = false;
+        }
+    });
+</script>
 
 {% endblock %}
