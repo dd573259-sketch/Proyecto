@@ -1,35 +1,25 @@
- {% extends "main.html" %}
+{% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
 <div class="tabla-wrapper">
 
- <!-- BARRA DE BÚSQUEDA + BOTONES DE EXPORTACIÓN -->
 <form method="GET" style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
-
     <input type="text" name="buscar" placeholder="Buscar por estado"
            value="{{ request.GET.buscar }}"
-           class="form-control"
-           style="width: 300px;">
-
+           class="form-control" style="width: 300px;">
     <input type="date" name="fecha"
-        value="{{ fecha }}"   ← usa la variable del contexto que ya pasas desde la view
-        class="form-control"
-        style="width: 200px;">
-
+           value="{{ request.GET.fecha }}"
+           class="form-control" style="width: 200px;">
     <button type="submit" class="btn btn-primary">
-        <i class = "fas fa-search"></i> Buscar
+        <i class="fas fa-search"></i> Buscar
     </button>
-
-    <!-- Este div crece y empuja los botones al borde derecho -->
     <div style="flex: 1;"></div>
-
     <a href="{% url 'app:exportar_pedido_pdf' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-danger btn-sm btn-exportar">
         <i class="fas fa-file-pdf"></i> Exportar PDF
     </a>
-    <a href="{% url 'app:exportar_pedido_excel' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-success btn-sm btn-exportar"> 
+    <a href="{% url 'app:exportar_pedido_excel' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-success btn-sm btn-exportar">
         <i class="fas fa-file-excel"></i> Exportar Excel
     </a>
-
 </form>
 
 <table class="tabla" id="tabla">
@@ -45,17 +35,13 @@
             <th>Total</th>
             <th>Detalle</th>
             <th>Editar</th>
-            <th>Eliminar</th>
         </tr>
     </thead>
-
     <tbody>
         {% for c in object_list %}
-        <tr>
+        <tr {% if c.pago %}class="fila-pagada"{% endif %}>
             <td>{{ c.id_pedido }}</td>
             <td>Mesa {{ c.mesa.numero_mesa }}</td>
-
-            <!-- PLATOS: muestra nombre y cantidad de cada plato del pedido -->
             <td>
                 {% for detalle in c.detalle_platos.all %}
                     {{ detalle.plato.nombre }} (x{{ detalle.cantidad }})<br>
@@ -63,8 +49,6 @@
                     <span class="text-muted">Sin platos</span>
                 {% endfor %}
             </td>
-
-            <!-- PRODUCTOS: muestra nombre y cantidad de cada producto del pedido -->
             <td>
                 {% for detalle in c.detalle_productos.all %}
                     {{ detalle.producto.descripcion }} (x{{ detalle.cantidad }})<br>
@@ -72,90 +56,85 @@
                     <span class="text-muted">Sin productos</span>
                 {% endfor %}
             </td>
-
             <td>{{ c.usuario.nombre }} {{ c.usuario.apellido }}</td>
             <td>{{ c.fecha_hora|date:"d/m/Y H:i" }}</td>
             <td>{{ c.estado }}</td>
-
-            <!-- TOTAL: se calcula automáticamente desde el modelo -->
             <td>${{ c.total }}</td>
-
-            <!-- Botón de detalle solo aparece si se filtró por estado o fecha -->
             <td>
                 {% if request.GET.buscar or request.GET.fecha %}
-                    <a href="{% url 'app:detalle_pedido' c.id_pedido %}"
-                       class="btn btn-success btn-sm">
+                    <a href="{% url 'app:detalle_pedido' c.id_pedido %}" class="btn btn-success btn-sm">
                         Ver Detalle
                     </a>
                 {% else %}
                     <span class="text-muted">—</span>
                 {% endif %}
             </td>
-
             <td>
-                <a href="{% url 'app:editar_pedido' c.id_pedido %}"
-                   class="btn btn-primary btn-sm">
-                    Editar
-                </a>
-            </td>
-
-            <td>
-                <a href="{% url 'app:eliminar_pedido' c.id_pedido %}"
-                   class="btn btn-danger btn-sm">
-                    Eliminar
-                </a>
+                {% if c.pago %}
+                    <span class="btn btn-secondary btn-sm"
+                        style="cursor:not-allowed; opacity:0.6;"
+                        title="Pedido pagado - no se puede modificar">
+                        Pagado
+                    </span>
+                {% else %}
+                    <a href="{% url 'app:editar_pedido' c.id_pedido %}" class="btn btn-primary btn-sm">
+                        Editar
+                    </a>
+                {% endif %}
             </td>
         </tr>
-
         {% empty %}
         <tr>
-            <td colspan="11" class="text-center text-muted">
-                No hay pedidos registrados.
-            </td>
+            <td colspan="11" class="text-center text-muted">No hay pedidos registrados.</td>
         </tr>
-        
         {% endfor %}
     </tbody>
 </table>
 </div>
 
-
 <div class="card-footer">
-    <a href="{{ crear_url }}" class="btn btn-success">
-        Crear nuevo pedido
-    </a>
+    <a href="{{ crear_url }}" class="btn btn-success">Crear nuevo pedido</a>
 </div>
+
+<!-- ✅ style FUERA del empty y del for -->
+<style>
+    .fila-pagada {
+        background-color: #f0f0f0 !important;
+        opacity: 0.75;
+        text-decoration: line-through;
+        color: #888;
+    }
+    .fila-pagada .btn {
+        text-decoration: none;
+    }
+</style>
+
 <script>
-    // Capturar clicks en los botones de exportar
-    document.querySelectorAll('.btn-exportar').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-            const hayPedidos = {{ object_list|length }} > 0;
+    document.addEventListener('DOMContentLoaded', function() {
+        const hayPedidos = {{ object_list|length }} > 0;
 
-            if (!hayPedidos) {
-                e.preventDefault(); // No descargar nada
+        if (!hayPedidos) {
+            const filtroEstado = "{{ request.GET.buscar }}";
+            const filtroFecha  = "{{ request.GET.fecha }}";
 
-                const filtroEstado = "{{ request.GET.buscar }}";
-                const filtroFecha  = "{{ request.GET.fecha }}";
+            let mensaje = "No hay pedidos para exportar.";
 
-                let mensaje = "No hay pedidos para exportar.";
-
-                if (filtroEstado && filtroFecha) {
-                    mensaje = `No se encontraron pedidos con estado "${filtroEstado}" en la fecha ${filtroFecha}.`;
-                } else if (filtroEstado) {
-                    mensaje = `No se encontraron pedidos con estado "${filtroEstado}".`;
-                } else if (filtroFecha) {
-                    mensaje = `No se encontraron pedidos para la fecha ${filtroFecha}.`;
-                }
-
-                Swal.fire({
-                    icon: 'warning',
-                    title: '⚠️ Sin resultados',
-                    text: mensaje,
-                    confirmButtonColor: '#e53935',
-                    confirmButtonText: 'Entendido'
-                });
+            if (filtroEstado && filtroFecha) {
+                mensaje = `No se encontraron pedidos con estado "${filtroEstado}" en la fecha ${filtroFecha}.`;
+            } else if (filtroEstado) {
+                mensaje = `No se encontraron pedidos con estado "${filtroEstado}".`;
+            } else if (filtroFecha) {
+                mensaje = `No se encontraron pedidos para la fecha ${filtroFecha}.`;
             }
-        });
+
+            Swal.fire({
+                icon: 'warning',
+                title: ' Sin resultados',
+                text: mensaje,
+                confirmButtonColor: '#e53935',
+                confirmButtonText: 'Entendido'
+            });
+        }
     });
 </script>
 {% endblock %}

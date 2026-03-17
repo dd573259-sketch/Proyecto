@@ -1,11 +1,13 @@
 from django.shortcuts import render
 from django.views.generic import View
 from django.views import View as DjangoView
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from app.models import *
 from app.utils import exportar_pdf, exportar_excel
 from datetime import datetime
 from django.utils import timezone
+from django.shortcuts import render
+
 
 # ====== EXPORTAR INSUMOS======
 
@@ -176,6 +178,11 @@ class ExportarventasPDF(DjangoView):
         # Obtener todas las ventas
         ventas = Venta.objects.all()
         
+        # primero validemos  que existan datos antes de generar el reporte
+        if not ventas.exists():
+            
+            return render(request, 'reportes/alerta.html', status=404)
+        
         # Definir las columnas que se muestran en el reporte
         columnas = ['ID', 'Usuario', 'Pedido', 'Total', 'Fecha']
         
@@ -205,6 +212,11 @@ class ExportarventasExcel(DjangoView):
     def get(self, request):
         # Obtener todas las ventas
         ventas = Venta.objects.all()
+        
+        # Validar que existan datos antes de generar el reporte
+        if not ventas.exists():
+            
+            return render(request, 'reportes/alerta.html', status=404)
         
         # Definir las columnas que se mostraran en el reporte
         columnas = ['ID', 'Usuario', 'Pedido', 'Total', 'Fecha']
@@ -418,6 +430,10 @@ class ExportarpagosPDF(DjangoView):
         # Obtener todos los pagos
         pagos = Pago.objects.all()
         
+        #vamos a validar ahpora para alerta de pagos
+        if not pagos.exists():
+            
+            return render(request, 'reportes/alerta.html', status=404)
         # Definir las columnas que se muestran en el reporte
         columnas = ['ID', 'Venta', 'Factura', 'Total venta ', 'Monto pagado ', 'Fecha', 'Metodo de pago']
         

@@ -254,6 +254,7 @@ class Pedido(models.Model):
     usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE, verbose_name="Empleado")
     fecha_hora = models.DateTimeField(auto_now_add=True, verbose_name="Fecha y Hora")
     estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación", verbose_name="Estado")
+    pago = models.BooleanField(default=False, verbose_name="Pagado")
 
     class Meta:
         verbose_name = "Pedido"
@@ -350,7 +351,7 @@ class Comanda(models.Model):
 
     def __str__(self):
         return f"Comanda #{self.id_comanda}"
-     
+
 class Menu(models.Model):
     id_menu = models.AutoField(primary_key=True)
 
@@ -454,12 +455,12 @@ class Notificacion(models.Model):
         db_table = "notificacion"
 
 class Venta(models.Model):
-
     id_venta = models.AutoField(primary_key=True)
     pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE)
     usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
-    total= models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_venta = models.DateTimeField(auto_now_add=True)
+    activo = models.BooleanField(default=True)  # ← añadir
 
     class Meta:
         db_table = "venta"
@@ -480,9 +481,10 @@ class Pago(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     metodo_pago = models.CharField(max_length=20, choices=METODOS)
     factura = models.CharField(max_length=50, blank=True, null=True)
+    activo = models.BooleanField(default=True)  # ← añadir
 
     class Meta:
-        db_table = 'pago'
+        db_table = "pago"
 
     class Meta:
         db_table = "pago"

@@ -372,3 +372,33 @@ def backup_compras(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)
 
+
+def backup_facturas(request):
+    """Exporta solo los datos de la tabla factura"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    if not probar_conexion_mysql():
+        return JsonResponse({'error': 'No se puede conectar a MySQL'}, status=400)
+    
+    try:
+        creds = obtener_credenciales_mysql()
+        cmd = [
+            os.path.join(creds["mysql_path"], 'mysqldump.exe'),
+            '-h', creds["host"],
+            '-u', creds["user"],
+            '-P', str(creds["port"]),
+            '--password=' + creds["password"],
+            creds["database"],
+            'factura'  # solo esta tabla
+        ]
+        resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        
+        if resultado.returncode != 0:
+            raise Exception(f"Error mysqldump: {resultado.stderr}")
+        
+        sql_content = f"-- Backup Facturas\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_facturas')
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)

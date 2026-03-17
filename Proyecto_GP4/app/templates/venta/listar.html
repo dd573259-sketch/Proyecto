@@ -3,51 +3,30 @@
 
 {% block Contenido %}
 
-
-
-
 <!-- FILTROS -->
 <div style="margin-bottom:15px;">
-
   <form method="GET" style="display:flex; gap:10px;">
-
-    <input 
-      type="text" 
-      name="usuario"
-      placeholder="Buscar usuario"
-      value="{{ usuario }}"
-    >
-
-    <input 
-      type="date" 
-      name="fecha"
-      value="{{ fecha }}"
-    >
-
+    <input type="text" name="usuario" placeholder="Buscar usuario" value="{{ usuario }}">
+    <input type="date" name="fecha" value="{{ fecha }}">
     <button type="submit" class="btn btn-primary btn-xs">
       <i class="fas fa-search"></i> Buscar
     </button>
-
-    <div style="margin-bottom:15px; display:flex;align-items: center; gap:10px; margin-left: auto;">
-
-  <a href="{% url 'app:reporte_ventas_pdf' %}" class="btn btn-danger btn-xs">
-    <i class="fas fa-file-pdf"></i> Exportar PDF
-  </a>
-
-  <a href="{% url 'app:reporte_ventas_excel' %}" class="btn btn-success btn-xs">
-    <i class="fas fa-file-excel"></i> Exportar Excel
-  </a>
-
-</div>
+    <div style="margin-bottom:15px; display:flex; align-items: center; gap:10px; margin-left: auto;">
+      <a href="{% url 'app:reporte_ventas_pdf' %}" class="btn btn-danger btn-xs">
+        <i class="fas fa-file-pdf"></i> Exportar PDF
+      </a>
+      <a href="{% url 'app:reporte_ventas_excel' %}" class="btn btn-success btn-xs">
+        <i class="fas fa-file-excel"></i> Exportar Excel
+      </a>
+      <a href="{% url 'app:backup' %}" class="btn btn-warning btn-xs">
+        <i class="fas fa-database"></i> Backup BD
+      </a>
+    </div>
   </form>
-
 </div>
-<!-- FIN DE LOS FILTORS -->
-
 
 <div class="tabla-wrapper">
   <table class="tabla" id="tabla">
-
     <thead>
       <tr>
         <th>#</th>
@@ -55,81 +34,70 @@
         <th>Pedido</th>
         <th>Total</th>
         <th>Fecha</th>
-        <th>Eliminar</th>
+        <th>Estado</th>
         <th>Pagar</th>
       </tr>
     </thead>
-
     <tbody>
-
       {% for v in ventas %}
-      <tr>
-
+      <tr {% if not v.activo %}class="fila-inactiva"{% endif %}>
         <td>{{ v.id_venta }}</td>
-
         <td>{{ v.usuario }}</td>
+        <td>Pedido #{{ v.pedido.id_pedido }}</td>
+        <td>${{ v.total }}</td>
+        <td>{{ v.fecha_venta|date:"Y-m-d H:i" }}</td>
 
+        <!-- ESTADO -->
         <td>
-          Pedido #{{ v.pedido.id_pedido }}
-        </td>
-
-        <td>
-          ${{ v.total }}
-        </td>
-
-        <td>
-          {{ v.fecha_venta|date:"Y-m-d H:i" }}
-        </td>
-
-        <!-- ELIMINAR -->
-        <td>
-          <a href="{% url 'app:eliminar_venta' v.pk %}" class="btn btn-danger btn-xs">
-            <i class="fas fa-trash"></i>
-          </a>
+          {% if v.activo %}
+            <span class="badge badge-success">Activa</span>
+          {% else %}
+            <span class="badge badge-secondary">Inactiva</span>
+          {% endif %}
         </td>
 
         <!-- PAGAR -->
         <td>
-
-          {% if v.pago_set.exists %}
-
+          {% if not v.activo %}
+            <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;" title="Venta inactiva">
+              🔒 Bloqueado
+            </span>
+          {% elif v.pago_set.exists %}
             <span class="btn btn-secondary btn-xs">
               <i class="fas fa-check"></i> Pagado
             </span>
-
           {% else %}
-
             <a href="{% url 'app:crear_pago' v.id_venta %}" class="btn btn-success btn-xs">
               <i class="fas fa-dollar-sign"></i> Pagar
             </a>
-
           {% endif %}
-
         </td>
-
       </tr>
-
       {% empty %}
-
       <tr>
-        <td colspan="7" style="text-align:center;">
-          No hay ventas registradas
-        </td>
+        <td colspan="7" style="text-align:center;">No hay ventas registradas</td>
       </tr>
-
       {% endfor %}
-
     </tbody>
-
   </table>
 </div>
 
-
-<!-- BOTON CREAR VENTA -->
 <div class="card-footer" style="margin-top:15px;">
   <a href="{% url 'app:crear_venta' %}" class="btn btn-primary btn-xs">
     <i class="fas fa-plus"></i> Crear Venta
   </a>
 </div>
+
+<style>
+  .fila-inactiva {
+    background-color: #f0f0f0 !important;
+    opacity: 0.75;
+    text-decoration: line-through;
+    color: #888;
+  }
+  .fila-inactiva .btn, .fila-inactiva .badge {
+    text-decoration: none;
+  }
+</style>
 
 {% endblock %}

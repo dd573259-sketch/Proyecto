@@ -162,7 +162,7 @@
         {% for d in comanda.pedido.detalle_productos.all %}
         <div class="item">
             <!-- Nombre del producto a la izquierda -->
-            <span>{{ d.producto.nombre }}</span>
+            <span>{{ d.producto.descripcion }}</span>
             <!-- Cantidad pedida a la derecha -->
             <span>x{{ d.cantidad }}</span>
         </div>

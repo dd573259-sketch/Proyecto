@@ -6,6 +6,9 @@ import json
 from app.forms import PedidoForm, DetallePedidoFormSet, DetallePlatoFormSet
 from datetime import datetime, timedelta
 from django.utils.timezone import make_aware
+from django.http import JsonResponse
+from app.models import Pago
+from django.contrib import messages
 
 class PedidoListView(ListView):
     model = Pedido
@@ -26,10 +29,10 @@ def get_queryset(self):
     if estado:
         queryset = queryset.filter(estado__icontains=estado)
 
-    if fecha:
-        fecha_inicio = make_aware(datetime.strptime(fecha, '%Y-%m-%d'))
-        fecha_fin = fecha_inicio + timedelta(days=1)
-        queryset = queryset.filter(fecha_hora__gte=fecha_inicio, fecha_hora__lt=fecha_fin)
+        if fecha:
+            fecha_inicio = make_aware(datetime.strptime(fecha, '%Y-%m-%d'))
+            fecha_fin = fecha_inicio + timedelta(days=1)
+            queryset = queryset.filter(fecha_hora__gte=fecha_inicio, fecha_hora__lt=fecha_fin)
 
     return queryset
 
@@ -128,6 +131,13 @@ class PedidoUpdateView(UpdateView):
     form_class = PedidoForm
     template_name = 'Pedido/crear.html'
     success_url = reverse_lazy('app:listar_pedidos')
+    
+    def dispatch(self, request, *args, **kwargs):
+        pedido = self.get_object()
+        if pedido.pago:
+            messages.error(request, "Este pedido ya fue pagado y no puede modificarse.")
+            return redirect('app:listar_pedidos')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -210,10 +220,6 @@ class DetallePedidoView(DetailView):
     context_object_name = "pedido"
 
     def get_queryset(self):
-        """
-        Traemos todos los platos y productos del pedido
-        en una sola consulta para no sobrecargar la BD.
-        """
         return Pedido.objects.prefetch_related(
             'detalle_platos__plato',
             'detalle_productos__producto',
@@ -225,3 +231,21 @@ class DetallePedidoView(DetailView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Detalle del Pedido'
         return context
+    
+def verificar_mesa_disponible(request):
+    "Verifica si una mesa tiene pedidos sin pagar antes de asignarla."
+    mesa_id = request.GET.get('mesa_id')
+    pedido_id = request.GET.get('pedido_id')
+
+    # Pedidos de esa mesa que NO tienen pago registrado
+    pedidos_sin_pagar = Pedido.objects.filter(
+        mesa_id=mesa_id
+    ).exclude(
+        id_pedido__in=Pago.objects.values_list('venta__pedido_id', flat=True)  
+    )
+
+    # Si es edición, excluimos el pedido actual del chequeo
+    if pedido_id:
+        pedidos_sin_pagar = pedidos_sin_pagar.exclude(pk=pedido_id)
+
+    return JsonResponse({'ocupada': pedidos_sin_pagar.exists()})

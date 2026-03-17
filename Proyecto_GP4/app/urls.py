@@ -84,7 +84,7 @@ urlpatterns = [
     
 # PAGOS
     path('listar_pagos/', PagoListView.as_view(), name='listar_pagos'),
-    path('pago/crear/<int:venta_id>/', PagoCreateView.as_view(), name='crear_pago'),
+    path('pago/crear/<int:id_venta>/', PagoCreateView.as_view(), name='crear_pago'),
     path('eliminar_pago/<int:pk>/', EliminarPagoView.as_view(), name='eliminar_pago'),
     path('reporte_pagos/pdf/', ExportarpagosPDF.as_view(), name='reporte_pagos_pdf'),
     path('reporte_pagos/excel/', ExportarpagosExcel.as_view(), name='reporte_pagos_excel'),
@@ -142,6 +142,7 @@ urlpatterns = [
     path('pedido/detalle/<int:pk>/', DetallePedidoView.as_view(), name='detalle_pedido'),
     path('exportar_pedido_pdf/', ExportarpedidoPDF.as_view(), name='exportar_pedido_pdf'),
     path('exportar_pedido_excel/', ReportePedidosExcel.as_view(), name='exportar_pedido_excel'),
+    path('verificar_mesa_disponible/', verificar_mesa_disponible, name='verificar_mesa_disponible'),
 
 # CLIENTE
     path('listar_cliente/', ClienteListView.as_view() , name='listar_clientes'),
@@ -153,8 +154,9 @@ urlpatterns = [
     path('dashboard/', dashboardView.as_view(), name='dashboard'),
     
 
+    
 # BACKUP
-    path("backup/",backup, name = "backup"),
+    path('backup/', backup, name='backup'),
     path('backup/restaurar/', restaurar_datos, name='restaurar_datos'),
     path('backup/ventas/', backup_ventas, name='backup_ventas'),
     path('backup/pagos/', backup_pagos, name='backup_pagos'),
@@ -162,6 +164,3 @@ urlpatterns = [
     path('backup/insumos/', backup_insumos, name='backup_insumos'),
 
 ]
-
-
-
