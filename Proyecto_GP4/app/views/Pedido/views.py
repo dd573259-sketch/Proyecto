@@ -15,26 +15,26 @@ class PedidoListView(ListView):
     template_name = 'Pedido/listar.html'
     context_object_name = 'object_list'
 
-def get_queryset(self):
-    queryset = Pedido.objects.all().prefetch_related(
-        'detalle_platos__plato',
-        'detalle_productos__producto',
-        'mesa',
-        'usuario'
-    )
+    def get_queryset(self):
+        queryset = Pedido.objects.all().prefetch_related(
+            'detalle_platos__plato',
+            'detalle_productos__producto',
+            'mesa',
+            'usuario'
+        )
 
-    estado = self.request.GET.get('buscar')
-    fecha = self.request.GET.get('fecha')
+        estado = self.request.GET.get('buscar')
+        fecha = self.request.GET.get('fecha')
 
-    if estado:
-        queryset = queryset.filter(estado__icontains=estado)
+        if estado:
+            queryset = queryset.filter(estado__icontains=estado)
 
         if fecha:
             fecha_inicio = make_aware(datetime.strptime(fecha, '%Y-%m-%d'))
             fecha_fin = fecha_inicio + timedelta(days=1)
             queryset = queryset.filter(fecha_hora__gte=fecha_inicio, fecha_hora__lt=fecha_fin)
 
-    return queryset
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -53,11 +53,6 @@ class PedidoCreateView(CreateView):
     success_url = reverse_lazy('app:listar_pedidos')
 
     def get_context_data(self, **kwargs):
-        """
-        Mandamos al template dos formsets:
-        - formset_platos   → para agregar múltiples platos
-        - formset_productos → para agregar múltiples productos
-        """
         context = super().get_context_data(**kwargs)
 
         if self.request.POST:
@@ -70,7 +65,6 @@ class PedidoCreateView(CreateView):
         context['titulo'] = 'Registrar Nuevo Pedido'
         context['icono'] = 'fas fa-shopping-cart'
         context['listar_url'] = reverse_lazy('app:listar_pedidos')
-        # Datos usados por el template
         platos_qs = Plato.objects.all()
         productos_qs = Producto.objects.all()
         context['platos'] = platos_qs
@@ -81,37 +75,27 @@ class PedidoCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        """
-        Guardamos el Pedido primero, luego los
-        platos y productos asociados al pedido.
-        Solo guardamos si ambos formsets son válidos.
-        """
         context = self.get_context_data()
         formset_platos = context['formset_platos']
         formset_productos = context['formset_productos']
 
         if formset_platos.is_valid() and formset_productos.is_valid():
-            # Guardamos el pedido principal
             self.object = form.save()
 
-            # Guardamos platos: rellenar precio_unitario antes de persistir
             formset_platos.instance = self.object
             for form_plato in formset_platos.forms:
                 cleaned = form_plato.cleaned_data
-                # Solo procesar si no está marcado para eliminar y tiene datos válidos
                 if cleaned.get('plato') and not cleaned.get('DELETE', False):
                     form_plato.instance.precio_unitario = cleaned['plato'].precio
             formset_platos.save()
 
-            # Guardamos productos: rellenar precio_unitario antes de persistir
             formset_productos.instance = self.object
             for form_producto in formset_productos.forms:
                 cleaned = form_producto.cleaned_data
-                # Solo procesar si no está marcado para eliminar y tiene datos válidos
                 if cleaned.get('producto') and not cleaned.get('DELETE', False):
                     form_producto.instance.precio_unitario = cleaned['producto'].precio
             formset_productos.save()
-            
+
             Comanda.objects.create(
                 pedido=self.object,
                 usuario=self.object.usuario,
@@ -120,10 +104,7 @@ class PedidoCreateView(CreateView):
 
             return redirect(self.success_url)
 
-        # Si algo falló, volvemos al formulario con los errores
         return self.render_to_response(self.get_context_data(form=form))
-        
-    
 
 
 class PedidoUpdateView(UpdateView):
@@ -131,7 +112,7 @@ class PedidoUpdateView(UpdateView):
     form_class = PedidoForm
     template_name = 'Pedido/crear.html'
     success_url = reverse_lazy('app:listar_pedidos')
-    
+
     def dispatch(self, request, *args, **kwargs):
         pedido = self.get_object()
         if pedido.pago:
@@ -152,18 +133,12 @@ class PedidoUpdateView(UpdateView):
                 instance=self.object
             )
         else:
-            # Al editar, cargamos los platos y productos que ya tiene el pedido
-            context['formset_platos'] = DetallePlatoFormSet(
-                instance=self.object
-            )
-            context['formset_productos'] = DetallePedidoFormSet(
-                instance=self.object
-            )
+            context['formset_platos'] = DetallePlatoFormSet(instance=self.object)
+            context['formset_productos'] = DetallePedidoFormSet(instance=self.object)
 
         context['titulo'] = 'Actualizar Pedido'
         context['icono'] = 'fas fa-shopping-cart'
         context['listar_url'] = reverse_lazy('app:listar_pedidos')
-        # Datos usados por el template
         platos_qs = Plato.objects.all()
         productos_qs = Producto.objects.all()
         context['platos'] = platos_qs
@@ -181,7 +156,6 @@ class PedidoUpdateView(UpdateView):
         if formset_platos.is_valid() and formset_productos.is_valid():
             self.object = form.save()
 
-            # Guardamos platos: rellenar precio_unitario antes de persistir
             formset_platos.instance = self.object
             for form_plato in formset_platos.forms:
                 cleaned = form_plato.cleaned_data
@@ -189,7 +163,6 @@ class PedidoUpdateView(UpdateView):
                     form_plato.instance.precio_unitario = cleaned['plato'].precio
             formset_platos.save()
 
-            # Guardamos productos: rellenar precio_unitario antes de persistir
             formset_productos.instance = self.object
             for form_producto in formset_productos.forms:
                 cleaned = form_producto.cleaned_data
@@ -206,6 +179,13 @@ class PedidoDeleteView(DeleteView):
     model = Pedido
     template_name = 'Pedido/eliminar.html'
     success_url = reverse_lazy('app:listar_pedidos')
+
+    def dispatch(self, request, *args, **kwargs):
+        pedido = self.get_object()
+        if pedido.pago:
+            messages.error(request, "Este pedido ya fue pagado y no puede eliminarse.")
+            return redirect('app:listar_pedidos')
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -231,20 +211,19 @@ class DetallePedidoView(DetailView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Detalle del Pedido'
         return context
-    
+
+
 def verificar_mesa_disponible(request):
-    "Verifica si una mesa tiene pedidos sin pagar antes de asignarla."
+    """Verifica si una mesa tiene pedidos sin pagar antes de asignarla."""
     mesa_id = request.GET.get('mesa_id')
     pedido_id = request.GET.get('pedido_id')
 
-    # Pedidos de esa mesa que NO tienen pago registrado
     pedidos_sin_pagar = Pedido.objects.filter(
         mesa_id=mesa_id
     ).exclude(
-        id_pedido__in=Pago.objects.values_list('venta__pedido_id', flat=True)  
+        id_pedido__in=Pago.objects.values_list('venta__pedido_id', flat=True)
     )
 
-    # Si es edición, excluimos el pedido actual del chequeo
     if pedido_id:
         pedidos_sin_pagar = pedidos_sin_pagar.exclude(pk=pedido_id)
 
