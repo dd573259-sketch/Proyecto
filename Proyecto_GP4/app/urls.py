@@ -71,7 +71,6 @@ urlpatterns = [
     path('reporte_facturas/pdf/', ExportarfacturasPDF.as_view(), name='reporte_facturas_pdf'),
     path('reporte_facturas/excel/', ExportarfacturasExcel.as_view(), name='reporte_facturas_excel'),
     path('facturas/desactivar/<int:pk>/', FacturaDesactivarView.as_view(), name='desactivar_factura'),
-    path('facturas/activar/<int:pk>/',    FacturaActivarView.as_view(),    name='activar_factura'), 
     
 # VENTAS
     path('listar_ventas/', VentaListView.as_view(), name='listar_ventas'),

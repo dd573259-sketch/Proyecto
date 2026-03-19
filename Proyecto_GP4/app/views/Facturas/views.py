@@ -15,12 +15,14 @@ class FacturaListView(listView):
     model = Factura
     template_name = 'facturas/listar.html'
     context_object_name = 'facturas' 
+    paginate_by = 15
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de Facturas'
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
         context['crear_url'] = reverse_lazy('app:crear_factura')
+        
         return context   
 
 class FacturaCreateView(CreateView):
@@ -37,41 +39,43 @@ class FacturaCreateView(CreateView):
     
 
 class FacturaDesactivarView(View):
+    
     def get(self, request, pk):
         factura = get_object_or_404(Factura, pk=pk)
-        return render(request, 'facturas/desactivar.html', {'object': factura})
+        if not factura.activo:
+            messages.warning(request, "Esta factura ya está desactivada.")
+            return redirect('app:listar_facturas')
+        return render(request, 'facturas/desactivar.html', {
+            'object': factura,
+            'titulo': 'Desactivar Factura',      # ← añadir
+            'icono': 'fa-solid fa-ban',           # ← añadir
+        })
 
     def post(self, request, pk):
         factura = get_object_or_404(Factura, pk=pk)
+
+        observacion = request.POST.get('observacion', '').strip()
+        if not observacion:
+            messages.error(request, "⚠ Debes ingresar una observación para desactivar la factura.")
+            return render(request, 'facturas/desactivar.html', {
+                'object': factura,
+                'titulo': 'Desactivar Factura',  # ← añadir también aquí
+                'icono': 'fa-solid fa-ban',
+            })
+
         factura.activo = False
+        factura.observacion = observacion
         factura.save()
 
-        # Desactivar pago asociado
         Pago.objects.filter(venta=factura.venta).update(activo=False)
 
-        # Desactivar venta asociada
         factura.venta.activo = False
         factura.venta.save()
 
-        messages.success(request, f"Factura #{factura.id}, pago y venta desactivados.")
+        messages.success(request, f"Factura #{factura.id} desactivada correctamente.")
         return redirect('app:listar_facturas')
 
 
-class FacturaActivarView(View):
-    def post(self, request, pk):
-        factura = get_object_or_404(Factura, pk=pk)
-        factura.activo = True
-        factura.save()
-
-        # Activar pago asociado
-        Pago.objects.filter(venta=factura.venta).update(activo=True)
-
-        # Activar venta asociada
-        factura.venta.activo = True
-        factura.venta.save()
-
-        messages.success(request, f"Factura #{factura.id}, pago y venta activados.")
-        return redirect('app:listar_facturas')
 
 class FacturaUpdateView(UpdateView):
     model = Factura

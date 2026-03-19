@@ -16,6 +16,7 @@ class VentaListView(ListView):
     model = Venta
     template_name = 'venta/listar.html'
     context_object_name = 'ventas'
+    paginate_by = 15
 
     def get_queryset(self):
         # Solo trae ventas que ya existen
@@ -77,9 +78,16 @@ class VentaCreateView(CreateView):
     form_class = VentaForm
     template_name = 'venta/crear.html'
     success_url = reverse_lazy('app:listar_ventas')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Crear Venta'
+        context['icono'] = 'fas fa-cash-register'
+        return context
 
     def form_valid(self, form):
         pedido = form.cleaned_data['pedido']
+        
 
         # ✅ Validar que el pedido esté entregado
         if pedido.estado != 'Entregado':

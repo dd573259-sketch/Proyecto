@@ -13,6 +13,7 @@ from django.contrib import messages
 class PagoListView(ListView):
     model = Pago
     template_name = 'pago/listar.html'
+    paginate_by = 15
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -33,6 +34,8 @@ class PagoCreateView(CreateView):
         id_venta = self.kwargs.get('id_venta')  # ✅ nombre correcto
         venta = get_object_or_404(Venta, id_venta=id_venta)
         context['venta'] = venta
+        context['titulo'] = 'Registrar Pago'
+        context['icono'] = 'fas fa-cash-register'
         return context
 
     def form_valid(self, form):

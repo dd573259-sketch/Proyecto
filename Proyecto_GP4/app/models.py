@@ -159,6 +159,7 @@ class Factura(models.Model):
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     metodo_pago = models.CharField(max_length=50)
     activo = models.BooleanField(default=True)
+    observacion= models.TextField(blank=True, null=True)
 
     class Meta:
         db_table = "factura"
