@@ -13,7 +13,7 @@ from django.contrib import messages
 class PagoListView(ListView):
     model = Pago
     template_name = 'pago/listar.html'
-    paginate_by = 15
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -31,7 +31,7 @@ class PagoCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        id_venta = self.kwargs.get('id_venta')  # ✅ nombre correcto
+        id_venta = self.kwargs.get('id_venta')  #  nombre correcto
         venta = get_object_or_404(Venta, id_venta=id_venta)
         context['venta'] = venta
         context['titulo'] = 'Registrar Pago'
@@ -39,7 +39,7 @@ class PagoCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        id_venta = self.kwargs.get('id_venta')  # ✅ nombre correcto
+        id_venta = self.kwargs.get('id_venta')  #  nombre correcto
         venta = get_object_or_404(Venta, id_venta=id_venta)
 
         pago = form.save(commit=False)
@@ -85,7 +85,7 @@ def registrar_pago(request, venta_id):
         metodo = request.POST.get('metodo_pago')
 
         if not metodo:
-            messages.error(request, "⚠ Debes seleccionar un método de pago.")
+            messages.error(request, " Debes seleccionar un método de pago.")
             return redirect('app:crear_pago', venta_id=venta.id_venta)
 
         Pago.objects.create(

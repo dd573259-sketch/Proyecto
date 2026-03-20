@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView as listView, CreateView, UpdateView, DeleteView, View
+from django.views.generic import ListView as listView, CreateView, UpdateView,DetailView, View
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -15,7 +15,7 @@ class FacturaListView(listView):
     model = Factura
     template_name = 'facturas/listar.html'
     context_object_name = 'facturas' 
-    paginate_by = 15
+    paginate_by = 5
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -110,3 +110,15 @@ def crear_factura(request, pago_id):
     messages.success(request, f"Factura #{factura.id} creada correctamente.")
 
     return redirect('app:listar_facturas')
+
+class FacturaDetailView(DetailView):
+    model = Factura
+    template_name = 'facturas/detalle.html'
+    context_object_name = 'factura'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Detalle de Factura'
+        context['icono'] = 'fa-solid fa-file-invoice-dollar'
+        return context
+    

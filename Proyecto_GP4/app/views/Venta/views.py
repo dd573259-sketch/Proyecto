@@ -16,7 +16,7 @@ class VentaListView(ListView):
     model = Venta
     template_name = 'venta/listar.html'
     context_object_name = 'ventas'
-    paginate_by = 15
+    paginate_by = 5
 
     def get_queryset(self):
         # Solo trae ventas que ya existen

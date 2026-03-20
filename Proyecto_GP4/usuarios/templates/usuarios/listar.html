@@ -1,0 +1,75 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block Contenido %}
+<div class="card mb-3 shadow-sm">
+    <div class="card-header bg-primary text-white">
+        <h5 style="margin: 0;"><i class="fas fa-users"></i> Gestión de Usuarios</h5>
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover" id="tabla_usuarios">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Usuario</th>
+                    <th>Nombre Completo</th>
+                    <th>Rol</th>
+                    <th>Cédula</th>
+                    <th>Estado</th>
+                    <th>Opciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in usuarios %}
+                <tr>
+                    <td>{{ u.id }}</td>
+                    <td>{{ u.username }}</td>
+                    <td>{{ u.first_name }} {{ u.last_name }}</td>
+                    <td>
+                        {% if u.perfil %}
+                            {{ u.perfil.get_rol_display }}
+                        {% else %}
+                            <span class="text-muted">Sin perfil</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ u.perfil.cedula|default:"N/A" }}</td>
+                    <td>
+                        {% if u.is_active %}
+                            <span class="badge badge-success">Activo</span>
+                        {% else %}
+                            <span class="badge badge-danger">Inactivo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'usuarios:editar' u.id %}" class="btn btn-warning btn-xs" title="Editar">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <form method="post" action="{% url 'usuarios:cambiar_estado' u.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            {% if u.is_active %}
+                                <button type="submit" class="btn btn-danger btn-xs" title="Desactivar">
+                                    <i class="fas fa-user-slash"></i> Desactivar
+                                </button>
+                            {% else %}
+                                <button type="submit" class="btn btn-success btn-xs" title="Activar">
+                                    <i class="fas fa-user-check"></i> Activar
+                                </button>
+                            {% endif %}
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align:center;">No hay usuarios registrados.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="card-footer">
+        <a href="{% url 'usuarios:crear' %}" class="btn btn-primary btn-xs">
+            <i class="fas fa-user-plus"></i> Crear nuevo usuario
+        </a>
+    </div>
+</div>
+{% endblock %}

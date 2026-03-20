@@ -133,7 +133,7 @@ class ExportarProveedoresPDF(DjangoView):
         return exportar_pdf(
             titulo='REPORTE DE PROVEEDORES',
             columnas=columnas,
-            datos=datos,    
+            datos=datos,   
             nombre_archivo=nombre_archivo
         )
 
@@ -613,5 +613,4 @@ class ExportarfacturasExcel(DjangoView):
             datos=datos,
             nombre_archivo=nombre_archivo
         )
-    
-
+#------------------este es nuevo para reporte de la factura-----------------------

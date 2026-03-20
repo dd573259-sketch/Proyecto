@@ -1,0 +1,105 @@
+{% extends 'main.html' %}
+{% load widget_tweaks %}
+
+{% block Contenido %}
+<form method="post" action=".">
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title" style="margin: 0;">
+                <i class="fas fa-user-plus"></i> {{ titulo }}
+            </h3>
+        </div>
+        <div class="card-body">
+            {% csrf_token %}
+
+            {% if user_form.errors or perfil_form.errors %}
+            <div class="alert alert-danger">
+                <h5><i class="fas fa-ban"></i> Error! Verifica los siguientes campos:</h5>
+                <ul class="mb-0">
+                    {% for field in user_form %}
+                        {% for error in field.errors %}<li><strong>{{ field.label }}:</strong> {{ error }}</li>{% endfor %}
+                    {% endfor %}
+                    {% for field in perfil_form %}
+                        {% for error in field.errors %}<li><strong>{{ field.label }}:</strong> {{ error }}</li>{% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="text-secondary border-bottom pb-2 mb-3">
+                        <i class="fas fa-key"></i> Datos de Acceso
+                    </h5>
+                    {% for field in user_form.visible_fields %}
+                    <div class="form-group mb-3">
+                        <label>{{ field.label }}:</label>
+
+                        {% if field.name == 'password' %}
+                        <!-- ✅ Campo contraseña con ojo -->
+                        <div class="input-group">
+                            {{ field|add_class:'form-control'|attr:'id:campo-password' }}
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary" id="btn-ojo" tabindex="-1">
+                                    <i class="fas fa-eye" id="icono-ojo"></i>
+                                </button>
+                            </div>
+                        </div>
+                        {% else %}
+                        {{ field|add_class:'form-control' }}
+                        {% endif %}
+
+                        {% for error in field.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="col-md-6">
+                    <h5 class="text-secondary border-bottom pb-2 mb-3">
+                        <i class="fas fa-id-card"></i> Información Personal
+                    </h5>
+                    {% for field in perfil_form.visible_fields %}
+                    <div class="form-group mb-3">
+                        <label>{{ field.label }}:</label>
+                        {{ field|add_class:'form-control' }}
+                        {% for error in field.errors %}
+                        <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-right">
+            <a href="{% url 'usuarios:listar' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Guardar Usuario
+            </button>
+        </div>
+    </div>
+</form>
+
+<script>
+    const btnOjo = document.getElementById('btn-ojo');
+    const campoPwd = document.getElementById('campo-password');
+    const iconoOjo = document.getElementById('icono-ojo');
+
+    if (btnOjo && campoPwd) {
+        btnOjo.addEventListener('click', function() {
+            if (campoPwd.type === 'password') {
+                campoPwd.type = 'text';
+                iconoOjo.classList.remove('fa-eye');
+                iconoOjo.classList.add('fa-eye-slash');
+            } else {
+                campoPwd.type = 'password';
+                iconoOjo.classList.remove('fa-eye-slash');
+                iconoOjo.classList.add('fa-eye');
+            }
+        });
+    }
+</script>
+
+{% endblock %}
