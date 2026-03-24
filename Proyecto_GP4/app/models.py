@@ -495,6 +495,8 @@ class Pago(models.Model):
     metodo_pago = models.CharField(max_length=20, choices=METODOS)
     factura = models.CharField(max_length=50, blank=True, null=True)
     activo = models.BooleanField(default=True)  # ← añadir
+    referencia = models.CharField(max_length=100, blank=True, null=True)  # Para transferencias
+    comprobante = models.ImageField(upload_to='comprobantes/', blank=True, null=True)  # Para adjuntar comprobante de pago
 
     class Meta:
         db_table = "pago"
