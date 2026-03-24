@@ -2,34 +2,47 @@
 
 {% block Contenido %}
 
-<div class="card">
-
-    <div class="card-header">
-        <h3>Registrar Pago</h3>
+<div class="card shadow-sm">
+    <div class="card-header bg-success text-white">
+        <h3 class="card-title" style="margin:0;">
+            <i class="fas fa-cash-register"></i> Registrar Pago
+        </h3>
     </div>
 
     <div class="card-body">
 
-        <p><strong>Venta:</strong> {{ venta.id_venta }}</p>
-        <p><strong>Total a pagar:</strong> $<span id="total-venta">{{ venta.total }}</span></p>
+        <!-- INFO DE LA VENTA -->
+        <div class="alert alert-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <i class="fas fa-shopping-cart"></i>
+                    <strong>Venta:</strong> {{ venta.codigo }}
+                </div>
+                <div class="col-md-6">
+                    <i class="fas fa-dollar-sign"></i>
+                    <strong>Total a pagar:</strong> $<span id="total-venta">{{ venta.total }}</span>
+                </div>
+            </div>
+        </div>
 
-        <form method="POST">
+        <form method="POST" id="form-pago">
             {% csrf_token %}
 
+            <!-- METODO DE PAGO -->
             <div class="form-group">
                 <label for="metodo_pago"><strong>Método de pago:</strong></label>
                 <select id="metodo_pago" name="metodo_pago" class="form-control" required>
-                    <option value="">Seleccione un método</option>
-                    <option value="Efectivo">Efectivo</option>
-                    <option value="Tarjeta">Tarjeta</option>
-                    <option value="Transferencia">Transferencia</option>
+                    <option value="">— Seleccione un método —</option>
+                    <option value="Efectivo">$ Efectivo</option>
+                    <option value="Tarjeta">  $$ Tarjeta</option>
+                    <option value="Transferencia"> $$$ Transferencia</option>
                 </select>
             </div>
 
-            <!-- SECCIÓN EFECTIVO -->
+            <!-- SELECION DE EFECTIVO PARA PAGAR -->
             <div id="seccion-efectivo" style="display:none; margin-top:15px;">
                 <div class="form-group">
-                    <label for="monto_recibido"><strong>¿Con cuánto paga el cliente?</strong></label>
+                    <label for="monto_recibido"><strong>¿Con cuanto paga el cliente?</strong></label>
                     <input 
                         type="number" 
                         id="monto_recibido" 
@@ -40,16 +53,12 @@
                         step="100"
                     >
                 </div>
-
-                <!-- RESULTADO DE VUELTAS -->
                 <div id="resultado-vueltas" style="display:none; margin-top:10px;">
                     <div class="alert" id="alerta-vueltas">
-                        <strong> Vueltas a entregar : </strong>
+                        <strong> $ Vueltas a entregar:</strong>
                         <span id="valor-vueltas" style="font-size:1.2em; font-weight:bold;"></span>
                     </div>
                 </div>
-
-                <!-- ALERTA MONTO INSUFICIENTE -->
                 <div id="alerta-insuficiente" style="display:none; margin-top:10px;">
                     <div class="alert alert-danger">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -58,26 +67,81 @@
                 </div>
             </div>
 
-            <br>
+            <!-- SELECCION DE  TARJETA -->
+            <div id="seccion-tarjeta" style="display:none; margin-top:15px;">
+                <div class="alert alert-warning">
+                    <i class="fas fa-credit-card"></i>
+                    <strong>Datos de la Tarjeta</strong>
+                </div>
+                <div class="form-group">
+                    <label><strong>Tipo de Tarjeta:</strong></label>
+                    <div class="d-flex gap-3" style="gap:15px;">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="tipo_tarjeta" id="debito" value="debito">
+                            <label class="form-check-label" for="debito">
+                                # debito
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline" style="margin-left:20px;">
+                            <input class="form-check-input" type="radio" name="tipo_tarjeta" id="credito" value="Credito">
+                            <label class="form-check-label" for="credito">
+                                # Credito
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <button type="submit" class="btn btn-success" id="btn-registrar">
-                Registrar Pago
-            </button>
+            <!-- SELECCION DE TRANSFERENCIA -->
+            <div id="seccion-transferencia" style="display:none; margin-top:15px;">
+                <div class="alert alert-warning">
+                    <i class="fas fa-university"></i>
+                    <strong>Datos de la Transferencia</strong>
+                </div>
+                <div class="form-group">
+                    <label><strong>Plataforma de transferencia:</strong></label>
+                    <div class="d-flex" style="gap:15px; flex-wrap:wrap;">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="plataforma_transferencia" id="nequi" value="Nequi">
+                            <label class="form-check-label" for="nequi">
+                                 Nequi
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline" style="margin-left:20px;">
+                            <input class="form-check-input" type="radio" name="plataforma_transferencia" id="bancolombia" value="Bancolombia">
+                            <label class="form-check-label" for="bancolombia">
+                                 Bancolombia
+                            </label>
+                        </div>
+                        <div class="form-check form-check-inline" style="margin-left:20px;">
+                            <input class="form-check-input" type="radio" name="plataforma_transferencia" id="daviplata" value="Daviplata">
+                            <label class="form-check-label" for="daviplata">
+                                 Daviplata
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <a href="{% url 'app:listar_ventas' %}" class="btn btn-secondary">
-                Cancelar
-            </a>
+            <div class="card-footer text-right" style="margin-top:20px; padding:0;">
+                <button type="submit" class="btn btn-success btn-xs" id="btn-registrar">
+                    <i class="fas fa-save"></i> Registrar Pago
+                </button>
+                <a href="{% url 'app:listar_ventas' %}" class="btn btn-danger btn-xs">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
 
         </form>
-
     </div>
-
 </div>
-<!-- Script para que calculemos valor despues de que escogen el mont de pagar efectivo-->
+
 <script>
     const total = parseFloat({{ venta.total }});
     const selectMetodo = document.getElementById('metodo_pago');
     const seccionEfectivo = document.getElementById('seccion-efectivo');
+    const seccionTarjeta = document.getElementById('seccion-tarjeta');
+    const seccionTransferencia = document.getElementById('seccion-transferencia');
     const montoRecibido = document.getElementById('monto_recibido');
     const resultadoVueltas = document.getElementById('resultado-vueltas');
     const valorVueltas = document.getElementById('valor-vueltas');
@@ -85,16 +149,24 @@
     const alertaInsuficiente = document.getElementById('alerta-insuficiente');
     const btnRegistrar = document.getElementById('btn-registrar');
 
-    // Mostrar/ocultar sección efectivo según método elegido
+    // Mostrar sección según método elegido
     selectMetodo.addEventListener('change', function() {
+        // Ocultar todas las secciones
+        seccionEfectivo.style.display = 'none';
+        seccionTarjeta.style.display = 'none';
+        seccionTransferencia.style.display = 'none';
+        montoRecibido.required = false;
+        resultadoVueltas.style.display = 'none';
+        alertaInsuficiente.style.display = 'none';
+        btnRegistrar.disabled = false;
+
         if (this.value === 'Efectivo') {
             seccionEfectivo.style.display = 'block';
             montoRecibido.required = true;
-        } else {
-            seccionEfectivo.style.display = 'none';
-            montoRecibido.required = false;
-            resultadoVueltas.style.display = 'none';
-            alertaInsuficiente.style.display = 'none';
+        } else if (this.value === 'Tarjeta') {
+            seccionTarjeta.style.display = 'block';
+        } else if (this.value === 'Transferencia') {
+            seccionTransferencia.style.display = 'block';
         }
     });
 
@@ -112,19 +184,16 @@
         const vueltas = recibido - total;
 
         if (vueltas < 0) {
-            // Monto insuficiente
             resultadoVueltas.style.display = 'none';
             alertaInsuficiente.style.display = 'block';
             btnRegistrar.disabled = true;
         } else if (vueltas === 0) {
-            // Pago exacto
             alertaInsuficiente.style.display = 'none';
             resultadoVueltas.style.display = 'block';
             alertaVueltas.className = 'alert alert-success';
-            valorVueltas.textContent = '$0 — Pago exacto ';
+            valorVueltas.textContent = '$0 — Pago exacto ✅';
             btnRegistrar.disabled = false;
         } else {
-            // Hay vueltas
             alertaInsuficiente.style.display = 'none';
             resultadoVueltas.style.display = 'block';
             alertaVueltas.className = 'alert alert-info';
@@ -132,6 +201,21 @@
             btnRegistrar.disabled = false;
         }
     });
+
+    // Alertas messages
+    {% if messages %}
+        {% for message in messages %}
+        Swal.fire({
+            icon: '{% if message.tags == "success" %}success{% elif message.tags == "error" %}error{% elif message.tags == "warning" %}warning{% else %}info{% endif %}',
+            title: '{% if message.tags == "success" %}✅ Éxito{% elif message.tags == "error" %}❌ Error{% elif message.tags == "warning" %}⚠️ Advertencia{% else %}ℹ️ Info{% endif %}',
+            text: '{{ message }}',
+            confirmButtonColor: '{% if message.tags == "success" %}#43a047{% else %}#e53935{% endif %}',
+            confirmButtonText: 'Aceptar',
+            timer: 4000,
+            timerProgressBar: true
+        });
+        {% endfor %}
+    {% endif %}
 </script>
 
 {% endblock %}
