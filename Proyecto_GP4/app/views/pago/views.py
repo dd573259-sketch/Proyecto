@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from app.models import *
 from app.forms import PagoForm
 from django.contrib import messages
+from itertools import groupby
+from django.db.models.functions import TruncMonth
 
 
 class PagoListView(ListView):
@@ -47,7 +49,7 @@ class PagoCreateView(CreateView):
         pago.monto = venta.total
         pago.save()
 
-        # ✅ Marcar el pedido como pagado
+        #  Marcar el pedido como pagado
         pedido = venta.pedido
         pedido.pago = True
         pedido.save()
@@ -94,7 +96,7 @@ def registrar_pago(request, venta_id):
             metodo_pago=metodo
         )
 
-        # ✅ Marcar el pedido como pagado
+        #  Marcar el pedido como pagado
         pedido = venta.pedido
         pedido.pago = True
         pedido.save()
@@ -103,3 +105,46 @@ def registrar_pago(request, venta_id):
         return redirect('app:listar_pagos')
 
     return render(request, 'pago/crear.html', {'venta': venta})
+
+
+
+class PagoHistorialView(ListView):
+    model = Pago
+    template_name = 'pago/historial.html'
+    context_object_name = 'pagos'
+    paginate_by = 5
+    ordering = ('-fecha_venta',)
+
+    def get_queryset(self):
+        queryset = Pago.objects.select_related('venta').order_by('-fecha')
+
+        mes = self.request.GET.get('mes')
+
+        if mes:
+            año, mes_num = mes.split('-')
+            queryset = queryset.filter(
+                fecha__year=año,
+                fecha__month=mes_num
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Historial de Pagos por Mes'
+        context['icono'] = 'fas fa-cash-register'
+
+        pagos = context['pagos']
+        historial = {}
+
+        for pago in pagos:
+            clave = pago.fecha.strftime('%B %Y').capitalize()
+            if clave not in historial:
+                historial[clave] = []
+            historial[clave].append(pago)
+
+        context['historial'] = historial
+        context['mes_seleccionado'] = self.request.GET.get('mes', '')
+
+        return context

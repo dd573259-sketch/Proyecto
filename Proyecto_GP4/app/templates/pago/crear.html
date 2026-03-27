@@ -97,9 +97,7 @@
                     </div>
                 </div>
 
-                <!-- desde aca empieza el moddal de imagen y referencia   -->
-
-                <!-- BOTON PARA ABRIR MODAL COMPROBANTE -->
+                <!-- BOTÓN PARA ABRIR MODAL COMPROBANTE -->
                 <button type="button" class="btn btn-info btn-xs" id="btn-comprobante" style="margin-top:10px; display:none;">
                     <i class="fas fa-upload"></i> Adjuntar Comprobante
                 </button>
@@ -135,7 +133,7 @@
     </div>
 </div>
 
-<!-- ✅ MODAL COMPROBANTE -->
+<!-- MODAL COMPROBANTE -->
 <div class="modal fade" id="modal-comprobante" tabindex="-1" role="dialog">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -148,16 +146,12 @@
                 </button>
             </div>
             <div class="modal-body">
-
-                <!-- NÚMERO DE REFERENCIA -->
                 <div class="form-group">
                     <label><strong>Número de referencia:</strong></label>
                     <input type="text" id="input-referencia" class="form-control"
                         placeholder="Ej: 123456789">
                     <small class="text-muted">Ingresa el número de referencia de la transferencia.</small>
                 </div>
-
-                <!-- IMAGEN COMPROBANTE -->
                 <div class="form-group">
                     <label><strong>Imagen del comprobante:</strong></label>
                     <div id="zona-comprobante" class="border p-4 text-center rounded"
@@ -167,13 +161,11 @@
                         <p class="small text-muted">o haz clic para seleccionar</p>
                         <input type="file" id="input-imagen-modal" accept="image/*" style="display:none;">
                     </div>
-                    <!-- Preview dentro del modal -->
                     <div id="modal-preview" style="display:none; margin-top:10px; text-align:center;">
                         <img id="modal-img" src="" style="max-width:100%; border-radius:8px;">
                         <p class="text-success mt-1"><i class="fas fa-check"></i> <span id="modal-nombre-archivo"></span></p>
                     </div>
                 </div>
-
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary btn-xs" data-dismiss="modal">
@@ -187,8 +179,6 @@
     </div>
 </div>
 
-
-<!-- inicio de script -->
 <script>
     const total = parseFloat({{ venta.total }});
     const selectMetodo = document.getElementById('metodo_pago');
@@ -203,11 +193,12 @@
     const radiosTransferencia = document.querySelectorAll('input[name="plataforma_transferencia"]');
     const btnComprobante = document.getElementById('btn-comprobante');
 
-radiosTransferencia.forEach(radio => {
-    radio.addEventListener('change', () => {
-        btnComprobante.style.display = 'inline-block';
+    // Mostrar botón comprobante al escoger plataforma
+    radiosTransferencia.forEach(radio => {
+        radio.addEventListener('change', () => {
+            btnComprobante.style.display = 'inline-block';
+        });
     });
-});
 
     // Mostrar sección según método
     selectMetodo.addEventListener('change', function() {
@@ -256,7 +247,7 @@ radiosTransferencia.forEach(radio => {
     });
 
     // Abrir modal comprobante
-    document.getElementById('btn-comprobante').addEventListener('click', function() {
+    btnComprobante.addEventListener('click', function() {
         $('#modal-comprobante').modal('show');
     });
 
@@ -308,24 +299,21 @@ radiosTransferencia.forEach(radio => {
             Swal.fire({
                 icon: 'warning',
                 title: '⚠️ Campo requerido',
-                text: 'Debes ingresar el numero de referencia.',
+                text: 'Debes ingresar el número de referencia.',
                 confirmButtonColor: '#e53935',
                 confirmButtonText: 'Entendido'
             });
             return;
         }
 
-        // Pasar datos al form principal
         document.getElementById('campo-referencia').value = referencia;
 
-        // Transferir el archivo al input del form principal
         if (archivo) {
             const dt = new DataTransfer();
             dt.items.add(archivo);
             document.getElementById('campo-comprobante').files = dt.files;
         }
 
-        // Mostrar preview en el form
         document.getElementById('nombre-comprobante').textContent = archivo ? archivo.name : 'Sin imagen';
         document.getElementById('texto-referencia').textContent = referencia;
         document.getElementById('preview-comprobante').style.display = 'block';
@@ -349,17 +337,40 @@ radiosTransferencia.forEach(radio => {
             showConfirmButton: false
         });
     });
-    // Cerrar modal con botón cancelar
-document.querySelectorAll('[data-dismiss="modal"]').forEach(btn => {
-    btn.addEventListener('click', () => {
-        $('#modal-comprobante').modal('hide');
-    });
-});
 
-// Cerrar con la X
-document.querySelector('.close').addEventListener('click', () => {
-    $('#modal-comprobante').modal('hide');
-});
+    // ✅ VALIDACIÓN AL ENVIAR EL FORM
+    document.getElementById('form-pago').addEventListener('submit', function(e) {
+        const metodo = selectMetodo.value;
+
+        if (metodo === 'Transferencia') {
+            const plataforma = document.querySelector('input[name="plataforma_transferencia"]:checked');
+
+            if (!plataforma) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: '⚠️ Plataforma requerida',
+                    text: 'Debes seleccionar una plataforma de transferencia (Nequi, Bancolombia o Daviplata).',
+                    confirmButtonColor: '#e53935',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+
+            const referencia = document.getElementById('campo-referencia').value.trim();
+            if (!referencia) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: '⚠️ Comprobante requerido',
+                    text: 'Debes adjuntar el comprobante con su número de referencia antes de registrar el pago.',
+                    confirmButtonColor: '#e53935',
+                    confirmButtonText: 'Entendido'
+                });
+                return;
+            }
+        }
+    });
 
     // Alertas messages
     {% if messages %}
@@ -377,4 +388,4 @@ document.querySelector('.close').addEventListener('click', () => {
     {% endif %}
 </script>
 
-{% endblock %}
+{% endblock %}  

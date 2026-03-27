@@ -1,4 +1,4 @@
-{% extends 'main.html' %}
+  {% extends 'main.html' %}
 {% load static %}
 
 {% block Contenido %}
@@ -67,7 +67,7 @@
         <td>
           {% if not p.activo %}
             <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;" title="Pago inactivo">
-              🔒 Bloqueado
+               Bloqueado
             </span>
           {% elif p.factura %}
             <span class="btn btn-secondary btn-xs">
@@ -115,6 +115,12 @@
   Página {{ page_obj.number }} de {{ paginator.num_pages }} — {{ paginator.count }} registros en total
 </div>
 {% endif %}
+
+<div>
+  <a href="{% url 'app:historial_pagos' %}" class="btn btn-info btn-xs">
+    <i class="fas fa-history"></i> Historial
+</a>
+</div>
 <style>
   .fila-inactiva {
     background-color: #f0f0f0 !important;

@@ -22,6 +22,7 @@
   </form>
 </div>
 
+
 <div class="tabla-wrapper">
   <table class="tabla" id="tabla">
     <thead>
@@ -57,7 +58,7 @@
         <td>
           {% if not v.activo %}
             <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;" title="Venta inactiva">
-              🔒 Bloqueado
+               Bloqueado
             </span>
           {% elif v.pago_set.exists %}
             <span class="btn btn-secondary btn-xs">
@@ -78,6 +79,7 @@
     </tbody>
   </table>
 </div>
+
 
 <!-- PAGINACIÓN -->
 {% if is_paginated %}
@@ -111,7 +113,12 @@
   <a href="{% url 'app:crear_venta' %}" class="btn btn-primary btn-xs">
     <i class="fas fa-plus"></i> Crear Venta
   </a>
+  <a href="{% url 'app:historial_ventas' %}" class="btn btn-info btn-xs">
+    <i class="fas fa-history"></i> Historial
+</a>
 </div>
+
+
 
 <style>
   .fila-inactiva {

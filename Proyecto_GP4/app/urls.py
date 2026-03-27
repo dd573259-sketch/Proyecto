@@ -20,6 +20,7 @@ from app.views.Dashborad.views import *
 from app.reportes import *
 from app.views.backup import *
 
+
 app_name = 'app'
 urlpatterns = [
 #urls de categorias
@@ -162,5 +163,12 @@ urlpatterns = [
     path('backup/pagos/', backup_pagos, name='backup_pagos'),
     path('backup/facturas/', backup_facturas, name='backup_facturas'),
     path('backup/insumos/', backup_insumos, name='backup_insumos'),
+    
+#seccion nueva que son para url de historial
+  
+path('ventas/historial/', VentaHistorialView.as_view(), name='historial_ventas'),
+path('pagos/historial/', PagoHistorialView.as_view(), name='historial_pagos'),
+path('facturas/historial/', FacturaHistorialView.as_view(), name='historial_facturas'),
 
 ]
+

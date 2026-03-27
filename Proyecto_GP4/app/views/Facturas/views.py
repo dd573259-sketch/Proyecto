@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView as listView, CreateView, UpdateView,DetailView, View
+from django.views.generic import ListView as listView, CreateView, UpdateView,DetailView, View, DeleteView, ListView
 from django.urls import reverse_lazy
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -10,6 +10,8 @@ from app.models import *
 from app.forms import *
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
+from itertools import groupby
+from django.db.models.functions import TruncMonth
 
 class FacturaListView(listView):
     model = Factura
@@ -17,6 +19,7 @@ class FacturaListView(listView):
     context_object_name = 'facturas' 
     paginate_by = 5
     
+      
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de Facturas'
@@ -121,4 +124,44 @@ class FacturaDetailView(DetailView):
         context['titulo'] = 'Detalle de Factura'
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
         return context
-    
+
+class FacturaHistorialView(ListView):
+    model = Factura
+    template_name = 'facturas/historial.html'
+    context_object_name = 'facturas'
+    paginate_by = 5
+
+
+    def get_queryset(self):
+        queryset = Factura.objects.select_related('venta').order_by('-fecha_hora')
+
+        mes = self.request.GET.get('mes')
+
+        if mes:
+            año, mes_num = mes.split('-')
+            queryset = queryset.filter(
+                fecha_hora__year=año,
+                fecha_hora__month=mes_num
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Historial de Facturas por Mes'
+        context['icono'] = 'fa-solid fa-file-invoice-dollar'
+
+        facturas = context['facturas']
+        historial = {}
+
+        for factura in facturas:
+            clave = factura.fecha_hora.strftime('%B %Y').capitalize()
+            if clave not in historial:
+                historial[clave] = []
+            historial[clave].append(factura)
+
+        context['historial'] = historial
+        context['mes_seleccionado'] = self.request.GET.get('mes', '')
+
+        return context

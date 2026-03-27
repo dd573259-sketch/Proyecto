@@ -10,6 +10,8 @@ from django.utils.decorators import method_decorator
 from app.models import Venta, Usuario, Pedido
 from django.contrib import messages
 from app.forms import VentaForm
+from itertools import groupby
+from django.db.models.functions import TruncMonth
 
 
 class VentaListView(ListView):
@@ -90,7 +92,7 @@ class VentaCreateView(CreateView):
         pedido = form.cleaned_data['pedido']
         
 
-        # ✅ Validar que el pedido esté entregado
+        #  Validar que el pedido esté entregado
         if pedido.estado != 'Entregado':
             messages.error(self.request, f"⚠ El pedido #{pedido.id_pedido} aún está en preparación. No se puede crear una venta hasta que sea entregado.")
             return redirect('app:crear_venta')
@@ -114,6 +116,8 @@ class VentaCreateView(CreateView):
         form.instance.total = pedido.total
 
         return super().form_valid(form)
+    
+    
 class VentaUpdateView(UpdateView):
     model = Venta
     fields = '__all__'
@@ -137,7 +141,7 @@ def pagar_venta(request, venta_id):
 def crear_venta_desde_pedido(request, pedido_id):
     pedido = get_object_or_404(Pedido, id_pedido=pedido_id)
 
-    # ✅ Validar que el pedido esté entregado
+    # Validar que el pedido esté entregado
     if pedido.estado != 'Entregado':
         messages.error(request, f"⚠ El pedido #{pedido.id_pedido} aún está en preparación. No se puede crear una venta.")
         return redirect('app:listar_ventas')
@@ -160,3 +164,47 @@ def crear_venta_desde_pedido(request, pedido_id):
 
     messages.success(request, f"Venta creada correctamente para el pedido #{pedido.id_pedido}.")
     return redirect('app:listar_ventas')
+
+class VentaHistorialView(ListView):
+    model = Venta
+    template_name = 'venta/historial.html'
+    context_object_name = 'ventas'
+    paginate_by = 5
+    ordering = ('-fecha_venta',)
+
+    def get_queryset(self):
+        queryset = Venta.objects.select_related('usuario', 'pedido').order_by('-fecha_venta')
+
+        mes = self.request.GET.get('mes')
+
+        if mes:
+            # mes viene tipo: 2026-03
+            año, mes_num = mes.split('-')
+            queryset = queryset.filter(
+                fecha_venta__year=año,
+                fecha_venta__month=mes_num
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Historial de Ventas por Mes'
+        context['icono'] = 'fas fa-cash-register'
+
+        ventas = context['ventas']
+        historial = {}
+
+        for venta in ventas:
+            clave = venta.fecha_venta.strftime('%B %Y').capitalize()
+            if clave not in historial:
+                historial[clave] = []
+            historial[clave].append(venta)
+
+        context['historial'] = historial
+
+        # Para mantener el valor seleccionado en el input
+        context['mes_seleccionado'] = self.request.GET.get('mes', '')
+
+        return context

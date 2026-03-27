@@ -21,7 +21,6 @@
     </div>
   </form>
 </div>
-
 <div class="tabla-wrapper">
   <table class="tabla" id="tabla">
     <thead>
@@ -32,7 +31,7 @@
         <th>Método de Pago</th>
         <th>Fecha</th>
         <th>Estado</th>
-        <th>Observación</th>  <!-- ← columna nueva -->
+        <th>Observación</th>  <!--  columna nueva -->
         <th>Acción</th>
         <th>detalle factura</th>
       </tr>
@@ -128,6 +127,11 @@
   Página {{ page_obj.number }} de {{ paginator.num_pages }} — {{ paginator.count }} registros en total
 </div>
 {% endif %}
+<div>
+  <a href="{% url 'app:historial_facturas' %}" class="btn btn-info btn-xs">
+    <i class="fas fa-history"></i> Historial
+</a>
+</div>
 <style>
   .fila-inactiva {
     background-color: #f0f0f0 !important;
