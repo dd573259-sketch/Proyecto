@@ -2,65 +2,103 @@
 {% load static %}
 {% block Contenido %}
 <div class="tabla-wrapper">
-  <form method="GET" class="mb-3 d-flex gap-2 align-items-center">
-    <input type="text" name="buscar" placeholder="Buscar por numero de cedula"
+
+<form method="GET" style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
+    <input type="text" name="buscar" placeholder="Buscar por número de cédula"
            value="{{ request.GET.buscar }}"
-           class="form-control"
-           style="width: 300px;">
+           class="form-control" style="width: 300px;">
     <button type="submit" class="btn btn-primary">
-        Buscar
+        <i class="fas fa-search"></i> Buscar
     </button>
+    <div style="flex: 1;"></div>
+    <a href="{% url 'app:exportar_clientes_pdf' %}?buscar={{ request.GET.buscar }}" class="btn btn-danger btn-sm btn-exportar">
+        <i class="fas fa-file-pdf"></i> Exportar PDF
+    </a>
+    <a href="{% url 'app:exportar_clientes_excel' %}?buscar={{ request.GET.buscar }}" class="btn btn-success btn-sm btn-exportar">
+        <i class="fas fa-file-excel"></i> Exportar Excel
+    </a>
 </form>
-  <table class="tabla" id="tabla">
-    <thead>
-      <tr>
-        <th scope="col">id_cliente</th>
-        <th scope="col">cedula</th>
-        <th scope="col">nombre</th>
-        <th scope="col">apellido</th>
-        <th scope="col">telefono</th>
-        <th scope="col">correo_electronico</th>
-        <th scope="col">direccion</th>
-        <th scope="col">tipo_cliente</th>
-        <th scope="col">Editar</th>
-        <th scope="col">Eliminar</th>
-      </tr>
+
+<table class="tabla" id="tabla">
+    <thead class="table-dark">
+        <tr>
+            <th>id_cliente</th>
+            <th>cedula</th>
+            <th>nombre</th>
+            <th>apellido</th>
+            <th>telefono</th>
+            <th>correo_electronico</th>
+            <th>direccion</th>
+            <th>tipo_cliente</th>
+            <th>Editar</th>
+            <th>Eliminar</th>
+        </tr>
     </thead>
     <tbody>
-
-      {% for c in object_list %}
-      <tr>
-        <td>{{ c.id_cliente }}</td>
-        <td>{{ c.numero_documento }}</td>
-        <td>{{ c.nombre }}</td>
-        <td>{{ c.apellido }}</td>
-        <td>{{ c.telefono }}</td>
-        <td>{{ c.correo_electronico }}</td>
-        <td>{{ c.direccion }}</td>
-        <td>{{ c.tipo_cliente }}</td>
-        <td>
-          <a href="{% url 'app:editar_cliente' c.id_cliente %}" class="btn btn-primary btn-xs"><i
-              class="fas fa-edit"></i></a>
-        </td>
-        <td>
-          <a href="{% url 'app:eliminar_cliente' c.id_cliente %}" class="btn btn-danger btn-xs"><i
-              class="fas fa-trash"></i></a>
-        </td>
-      </tr>
-      {% empty %}
+        {% for c in object_list %}
         <tr>
-            <td colspan="11" class="text-center text-muted">
-                No hay clientes registrados.
+            <td>{{ c.id_cliente }}</td>
+            <td>{{ c.numero_documento }}</td>
+            <td>{{ c.nombre }}</td>
+            <td>{{ c.apellido }}</td>
+            <td>{{ c.telefono }}</td>
+            <td>{{ c.correo_electronico }}</td>
+            <td>{{ c.direccion }}</td>
+            <td>{{ c.tipo_cliente }}</td>
+            <td>
+                <a href="{% url 'app:editar_cliente' c.id_cliente %}" class="btn btn-primary btn-xs">
+                    <i class="fas fa-edit"></i>
+                </a>
+            </td>
+            <td>
+                <a href="{% url 'app:eliminar_cliente' c.id_cliente %}" class="btn btn-danger btn-xs">
+                    <i class="fas fa-trash"></i>
+                </a>
             </td>
         </tr>
-      {% endfor %}
+        {% empty %}
+        <tr>
+            <td colspan="10" class="text-center text-muted">No hay clientes registrados.</td>
+        </tr>
+        {% endfor %}
     </tbody>
-  </table>
+</table>
 </div>
-<div class="card-footer">
-  <a href="{{crear_url}}" class="btn btn-success btn-xs">
-    <i class="fas fa-plus"></i> Crear nuevo cliente
-  </a>
-</div>
-{% endblock %}
 
+<div class="card-footer">
+    <a href="{{ crear_url }}" class="btn btn-success btn-xs">
+        <i class="fas fa-plus"></i> Crear nuevo cliente
+    </a>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const hayClientes = {{ object_list|length }} > 0;
+
+        function verificarExportar(e) {
+            if (!hayClientes) {
+                e.preventDefault();
+
+                const filtroCedula = "{{ request.GET.buscar }}";
+
+                let mensaje = "No hay clientes para exportar.";
+
+                if (filtroCedula) {
+                    mensaje = `No se encontraron clientes con cédula "${filtroCedula}".`;
+                }
+
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Sin resultados',
+                    text: mensaje,
+                    confirmButtonColor: '#e53935',
+                    confirmButtonText: 'Entendido'
+                });
+            }
+        }
+
+        document.querySelector('.btn-exportar[href*="pdf"]').addEventListener('click', verificarExportar);
+        document.querySelector('.btn-exportar[href*="excel"]').addEventListener('click', verificarExportar);
+    });
+</script>
+{% endblock %}

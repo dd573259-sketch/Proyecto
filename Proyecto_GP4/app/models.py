@@ -274,7 +274,7 @@ class Pedido(models.Model):
         verbose_name = "Pedido"
         verbose_name_plural = "Pedidos"
         db_table = 'pedido' 
-        ordering = ['fecha_hora']
+        ordering = ['id_pedido']
 
     def __str__(self):
         return f"Pedido #{self.id_pedido} - Mesa {self.mesa.numero_mesa} - {self.estado}"

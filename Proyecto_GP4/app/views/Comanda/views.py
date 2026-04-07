@@ -19,6 +19,7 @@ def imprimir_comanda(request, pk):
 class ComandaListView(ListView):
     model = Comanda
     template_name = 'Comanda/listar.html'
+    paginate_by = 5
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -39,7 +40,7 @@ class ComandaListView(ListView):
         ).prefetch_related(
             "pedido__detalle_platos__plato",
             "pedido__detalle_productos__producto"
-        )
+        ).order_by('-id_comanda')
         
         estado = self.request.GET.get('buscar')
         fecha = self.request.GET.get('fecha')

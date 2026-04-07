@@ -5,23 +5,83 @@ from app.models import Pedido, Plato, Producto, Comanda
 import json
 from app.forms import PedidoForm, DetallePedidoFormSet, DetallePlatoFormSet
 from datetime import datetime, timedelta
-from django.utils.timezone import make_aware
+from django.utils import timezone
 from django.http import JsonResponse
 from app.models import Pago
 from django.contrib import messages
+
+
+class PedidoHistorialView(ListView):
+    model = Pedido
+    template_name = 'pedido/historial.html'
+    context_object_name = 'pedidos'
+
+    def get_queryset(self):
+        queryset = Pedido.objects.select_related('usuario', 'mesa').order_by('-id_pedido')
+
+        mes = self.request.GET.get('mes')
+
+        if mes:
+            año, mes_num = mes.split('-')
+            queryset = queryset.filter(
+                fecha_hora__year=año,
+                fecha_hora__month=mes_num
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Historial de Pedidos por Mes'
+        context['icono'] = 'fas fa-history'
+
+        pedidos = context['pedidos']
+        historial = {}
+
+        # 🔥 AGRUPAR POR MES (IGUAL A VENTAS)
+        for pedido in pedidos:
+            clave = pedido.fecha_hora.strftime('%B %Y').capitalize()
+            if clave not in historial:
+                historial[clave] = []
+            historial[clave].append(pedido)
+
+        context['historial'] = historial
+        
+        mes = self.request.GET.get('mes')
+
+        if mes:
+            año, mes_num = mes.split('-')
+            fecha = datetime(int(año), int(mes_num), 1)
+            context['mes_actual'] = fecha.strftime('%B %Y').capitalize()
+        else:
+            hoy = timezone.now()
+            context['mes_actual'] = hoy.strftime('%B %Y').capitalize()
+
+        # mantener filtro
+        context['mes_seleccionado'] = self.request.GET.get('mes', '')
+
+        return context
+
 
 class PedidoListView(ListView):
     model = Pedido
     template_name = 'Pedido/listar.html'
     context_object_name = 'object_list'
+    paginate_by = 5
 
     def get_queryset(self):
-        queryset = Pedido.objects.all().prefetch_related(
+        hoy = timezone.now()
+
+        queryset = Pedido.objects.filter(
+            fecha_hora__year=hoy.year,
+            fecha_hora__month=hoy.month
+        ).prefetch_related(
             'detalle_platos__plato',
             'detalle_productos__producto',
             'mesa',
             'usuario'
-        )
+        ).order_by('-id_pedido')
 
         estado = self.request.GET.get('buscar')
         fecha = self.request.GET.get('fecha')
@@ -30,7 +90,7 @@ class PedidoListView(ListView):
             queryset = queryset.filter(estado__icontains=estado)
 
         if fecha:
-            fecha_inicio = make_aware(datetime.strptime(fecha, '%Y-%m-%d'))
+            fecha_inicio = datetime.strptime(fecha, '%Y-%m-%d')
             fecha_fin = fecha_inicio + timedelta(days=1)
             queryset = queryset.filter(fecha_hora__gte=fecha_inicio, fecha_hora__lt=fecha_fin)
 
@@ -43,6 +103,9 @@ class PedidoListView(ListView):
         context['crear_url'] = reverse_lazy('app:crear_pedido')
         context['buscar'] = self.request.GET.get('buscar', '')
         context['fecha'] = self.request.GET.get('fecha', '')
+        
+        hoy = timezone.now()
+        context['mes_actual'] = hoy.strftime('%B %Y').capitalize()
         return context
 
 
@@ -102,6 +165,7 @@ class PedidoCreateView(CreateView):
                 estado="Preparación"
             )
 
+            messages.success(self.request, 'El pedido fue registrado correctamente')
             return redirect(self.success_url)
 
         return self.render_to_response(self.get_context_data(form=form))
@@ -170,6 +234,7 @@ class PedidoUpdateView(UpdateView):
                     form_producto.instance.precio_unitario = cleaned['producto'].precio
             formset_productos.save()
 
+            messages.success(self.request, 'El pedido fue actualizado correctamente')
             return redirect(self.success_url)
 
         return self.render_to_response(self.get_context_data(form=form))

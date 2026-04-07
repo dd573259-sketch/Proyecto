@@ -89,7 +89,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'la_tuna',
         'USER': 'root',
-        'PASSWORD': '',
+        'PASSWORD': '1055312490',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -122,7 +122,7 @@ LANGUAGE_CODE = 'es-co'
 
 TIME_ZONE = 'America/Bogota'
 
-USE_I18N = True
+#USE_I18N = True
 
 USE_TZ = False
 

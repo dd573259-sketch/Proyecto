@@ -613,4 +613,33 @@ class ExportarfacturasExcel(DjangoView):
             datos=datos,
             nombre_archivo=nombre_archivo
         )
-#------------------este es nuevo para reporte de la factura-----------------------
+    
+class ExportarclientesPDF(DjangoView):
+    def get(self, request):
+        clientes = Cliente.objects.all()
+        columnas = ['ID', 'Nombre', 'Correo', 'Telefono', 'Direccion']
+        datos = [( cliente.id_cliente, cliente.nombre, cliente.correo_electronico, cliente.telefono, cliente.direccion) for cliente in clientes]
+        
+        nombre_archivo = f'Reporte_Clientes_{datetime.now().strftime("%d_%m_%Y")}'
+        
+        return exportar_pdf(
+            titulo='REPORTE DE CLIENTES',
+            columnas=columnas,
+            datos=datos,    
+            nombre_archivo=nombre_archivo
+        )
+        
+class ExportarclientesExcel(DjangoView):
+    def get(self, request):
+        clientes = Cliente.objects.all()
+        columnas = ['ID', 'Nombre', 'Correo', 'Telefono', 'Direccion']
+        datos = [( cliente.id_cliente, cliente.nombre, cliente.correo_electronico, cliente.telefono, cliente.direccion) for cliente in clientes]
+        
+        nombre_archivo = f'Reporte_Clientes_{datetime.now().strftime("%d_%m_%Y")}'
+        
+        return exportar_excel(
+            titulo='REPORTE DE CLIENTES',
+            columnas=columnas,
+            datos=datos,    
+            nombre_archivo=nombre_archivo
+        )

@@ -204,7 +204,72 @@ def generar_archivo_descarga(contenido_sql, nombre_archivo):
 
 def backup_ventas(request):
     """Exporta solo los datos de la tabla venta"""
+
+# ========== PEDIDOS ==========
+
+def backup_pedidos(request):
+    """Exporta solo los datos de la tabla pedido"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
     
+    if not probar_conexion_mysql():
+        return JsonResponse({'error': 'No se puede conectar a MySQL'}, status=400)
+    
+    try:
+        creds = obtener_credenciales_mysql()
+        cmd = [
+            os.path.join(creds["mysql_path"], 'mysqldump.exe'),
+            '-h', creds["host"],
+            '-u', creds["user"],
+            '-P', str(creds["port"]),
+            '--password=' + creds["password"],
+            creds["database"],
+            'pedido'  # solo esta tabla
+        ]
+        resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        
+        if resultado.returncode != 0:
+            raise Exception(f"Error mysqldump: {resultado.stderr}")
+        
+        sql_content = f"-- Backup Pedidos\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_pedidos')
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+
+# ========== CLIENTES ==========
+
+def backup_clientes(request):
+    """Exporta solo los datos de la tabla cliente"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    if not probar_conexion_mysql():
+        return JsonResponse({'error': 'No se puede conectar a MySQL'}, status=400)
+    
+    try:
+        creds = obtener_credenciales_mysql()
+        cmd = [
+            os.path.join(creds["mysql_path"], 'mysqldump.exe'),
+            '-h', creds["host"],
+            '-u', creds["user"],
+            '-P', str(creds["port"]),
+            '--password=' + creds["password"],
+            creds["database"],
+            'cliente'  # solo esta tabla
+        ]
+        resultado = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        
+        if resultado.returncode != 0:
+            raise Exception(f"Error mysqldump: {resultado.stderr}")
+        
+        sql_content = f"-- Backup Clientes\n-- Fecha: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n" + resultado.stdout
+        return generar_archivo_descarga(sql_content, 'backup_clientes')
+    
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+        
 # ========== USUARIOS  ==========
 
 def backup_usuarios(request):
