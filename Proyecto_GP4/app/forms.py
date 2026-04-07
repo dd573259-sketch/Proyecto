@@ -767,7 +767,7 @@ class ProductoForm(ModelForm):
                 'cols': 3}),
             'precio': forms.NumberInput(attrs={
                 'placeholder': 'Ingrese el precio del producto'}),
-            'stock': forms.NumberInput(attrs={
+            'cantidad': forms.NumberInput(attrs={
                 'placeholder': 'Ingrese el stock del producto'}),
             'fecha_ingreso': forms.DateInput(attrs={'type': 'date',}),
             'fecha_vencimiento': forms.DateInput(attrs={'type': 'date',

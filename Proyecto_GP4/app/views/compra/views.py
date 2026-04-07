@@ -14,6 +14,7 @@ class CompraListView(listView):
     model = Compra
     template_name = 'compra/listar.html'
     context_object_name = 'object_list'
+    paginate_by = 7
 
 
     def get_context_data(self, **kwargs):

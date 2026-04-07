@@ -14,6 +14,8 @@ class ProveedorListView(listView):
     model = Proveedor
     template_name = 'proveedor/listar.html'
     context_object_name = 'object_list'
+    paginate_by = 7
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
