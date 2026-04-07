@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'app.apps.AppConfig',
     'Login',
+    'usuarios',
 ]
 
 MIDDLEWARE = [
@@ -123,7 +124,7 @@ TIME_ZONE = 'America/Bogota'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
@@ -147,3 +148,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'juniosdavidllanos2@gmail.com' 
 EMAIL_HOST_PASSWORD = 'junior123456789'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

@@ -8,17 +8,52 @@ from django.views.decorators.csrf import csrf_exempt
 from app.models import *
 from app.forms import PagoForm
 from django.contrib import messages
+from itertools import groupby
+from django.db.models.functions import TruncMonth
 
 
 class PagoListView(ListView):
     model = Pago
     template_name = 'pago/listar.html'
+    context_object_name = 'pagos'
+    paginate_by = 5
+    ordering = ('-fecha',)
+
+    def get_queryset(self):
+        queryset = Pago.objects.select_related('venta', 'venta__usuario', 'venta__pedido')
+        usuario = self.request.GET.get('usuario')
+        fecha = self.request.GET.get('fecha')
+        estado = self.request.GET.get('estado')
+
+        # Filtrar solo el mes actual por defecto
+        hoy = timezone.now()
+        queryset = queryset.filter(
+            fecha__year=hoy.year,
+            fecha__month=hoy.month
+        )
+
+        # 🔍 Filtros (ajustados a tu modelo)
+        if usuario:
+            queryset = queryset.filter(venta__usuario__nombre__icontains=usuario)
+
+        if fecha:
+            queryset = queryset.filter(fecha__date=fecha)
+
+        if estado == 'pagado':
+            queryset = queryset.filter(activo=True)
+        elif estado == 'pendiente':
+            queryset = queryset.filter(activo=False)
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de Pagos'
         context['icono'] = 'fas fa-cash-register'
-        context['crear_url'] = reverse_lazy('app:crear_pago')
+        context['usuario'] = self.request.GET.get('usuario', '')
+        context['fecha'] = self.request.GET.get('fecha', '')
+        context['estado'] = self.request.GET.get('estado', '')
+        context['mes_actual'] = timezone.now().strftime('%B %Y').capitalize()
         return context
 
 
@@ -30,13 +65,15 @@ class PagoCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        id_venta = self.kwargs.get('id_venta')  # ✅ nombre correcto
+        id_venta = self.kwargs.get('id_venta')  #  nombre correcto
         venta = get_object_or_404(Venta, id_venta=id_venta)
         context['venta'] = venta
+        context['titulo'] = 'Registrar Pago'
+        context['icono'] = 'fas fa-cash-register'
         return context
 
     def form_valid(self, form):
-        id_venta = self.kwargs.get('id_venta')  # ✅ nombre correcto
+        id_venta = self.kwargs.get('id_venta')  #  nombre correcto
         venta = get_object_or_404(Venta, id_venta=id_venta)
 
         pago = form.save(commit=False)
@@ -44,7 +81,7 @@ class PagoCreateView(CreateView):
         pago.monto = venta.total
         pago.save()
 
-        # ✅ Marcar el pedido como pagado
+        #  Marcar el pedido como pagado
         pedido = venta.pedido
         pedido.pago = True
         pedido.save()
@@ -82,7 +119,7 @@ def registrar_pago(request, venta_id):
         metodo = request.POST.get('metodo_pago')
 
         if not metodo:
-            messages.error(request, "⚠ Debes seleccionar un método de pago.")
+            messages.error(request, " Debes seleccionar un método de pago.")
             return redirect('app:crear_pago', venta_id=venta.id_venta)
 
         Pago.objects.create(
@@ -91,7 +128,7 @@ def registrar_pago(request, venta_id):
             metodo_pago=metodo
         )
 
-        # ✅ Marcar el pedido como pagado
+        #  Marcar el pedido como pagado
         pedido = venta.pedido
         pedido.pago = True
         pedido.save()
@@ -100,3 +137,46 @@ def registrar_pago(request, venta_id):
         return redirect('app:listar_pagos')
 
     return render(request, 'pago/crear.html', {'venta': venta})
+
+
+
+class PagoHistorialView(ListView):
+    model = Pago
+    template_name = 'pago/historial.html'
+    context_object_name = 'pagos'
+    paginate_by = 5
+    ordering = ('-fecha_venta',)
+
+    def get_queryset(self):
+        queryset = Pago.objects.select_related('venta').order_by('-fecha')
+
+        mes = self.request.GET.get('mes')
+
+        if mes:
+            año, mes_num = mes.split('-')
+            queryset = queryset.filter(
+                fecha__year=año,
+                fecha__month=mes_num
+            )
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context['titulo'] = 'Historial de Pagos por Mes'
+        context['icono'] = 'fas fa-cash-register'
+
+        pagos = context['pagos']
+        historial = {}
+
+        for pago in pagos:
+            clave = pago.fecha.strftime('%B %Y').capitalize()
+            if clave not in historial:
+                historial[clave] = []
+            historial[clave].append(pago)
+
+        context['historial'] = historial
+        context['mes_seleccionado'] = self.request.GET.get('mes', '')
+
+        return context

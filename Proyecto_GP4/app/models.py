@@ -159,12 +159,19 @@ class Cliente(models.Model):
 
 class Factura(models.Model):
     id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=50, unique=True, blank=True, null=True)
     venta = models.ForeignKey('Venta', on_delete=models.CASCADE)
-
     fecha_hora = models.DateTimeField(auto_now_add=True)
     valor_total = models.DecimalField(max_digits=10, decimal_places=2)
     metodo_pago = models.CharField(max_length=50)
     activo = models.BooleanField(default=True)
+    observacion = models.TextField(blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # ← primero guardamos para obtener el id
+        if not self.codigo:            # ← solo si no tiene código aún
+            self.codigo = f'FACT-{self.id:05d}'
+            Factura.objects.filter(pk=self.pk).update(codigo=self.codigo)  # ← update directo, sin doble save
 
     class Meta:
         db_table = "factura"
@@ -172,7 +179,7 @@ class Factura(models.Model):
         verbose_name_plural = "Facturas"
 
     def __str__(self):
-        return f"Factura {self.id} - Venta {self.venta.id_venta}"
+        return f"{self.codigo} - Venta {self.venta.id_venta}"
     
 #modelos debiles
 
@@ -465,12 +472,17 @@ class Notificacion(models.Model):
 
 class Venta(models.Model):
     id_venta = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=50, unique=True, blank=True, null=True)
     pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE)
     usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_venta = models.DateTimeField(auto_now_add=True)
     activo = models.BooleanField(default=True)  # ← añadir
-
+    def save(self, *arg, **kwargs):
+        if not self.pk:
+            super().save(*arg, **kwargs)  # Guardarmos para obtener el id
+            self.codigo = f'VEN-set{self.pk:05d}'
+            super().save(*arg, **kwargs)
     class Meta:
         db_table = "venta"
 
@@ -485,20 +497,22 @@ class Pago(models.Model):
         ('Transferencia', 'Transferencia'),
     ]
     id_pago = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=50, unique=True, blank=True, null=True)
     venta = models.ForeignKey(Venta, on_delete=models.CASCADE)
     monto = models.DecimalField(max_digits=10, decimal_places=2)
     fecha = models.DateTimeField(auto_now_add=True)
     metodo_pago = models.CharField(max_length=20, choices=METODOS)
     factura = models.CharField(max_length=50, blank=True, null=True)
     activo = models.BooleanField(default=True)  # ← añadir
+    referencia = models.CharField(max_length=100, blank=True, null=True)  # Para transferencias
+    comprobante = models.ImageField(upload_to='comprobantes/', blank=True, null=True)  # Para adjuntar comprobante de pago
 
     class Meta:
         db_table = "pago"
-
-    class Meta:
-        db_table = "pago"
-        verbose_name = "Pago"
-        verbose_name_plural = "Pagos"
-
-    def __str__(self):
-        return f"Pago {self.id_pago} - ${self.monto}"
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            super().save(*args, **kwargs)
+            self.codigo = f'PAGO-{self.pk:05d}'
+            Pago.objects.filter(pk=self.pk).update(codigo=self.codigo)  # igual que Factura
+        else:
+            super().save(*args, **kwargs)  # ← cuando actualiza, guarda normal

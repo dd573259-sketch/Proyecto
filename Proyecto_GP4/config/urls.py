@@ -26,6 +26,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('principal/', include(('app.urls', 'app'), namespace='app')),
     path('', include(('Login.urls', 'Login'), namespace='login')),
+    path('usuarios/', include('usuarios.urls')),
+    
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
