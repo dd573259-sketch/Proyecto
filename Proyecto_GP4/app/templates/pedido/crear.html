@@ -781,5 +781,22 @@
     }
 
 });
+
+// ===== ALERTA ÉXITO AL GUARDAR PEDIDO =====
+{% if messages %}
+    {% for message in messages %}
+        {% if 'pedido' in message.tags or message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+            Swal.fire({
+                icon: 'success',
+                title: '¡Pedido guardado!',
+                text: '{{ message }}',
+                confirmButtonColor: '#2e8b57',
+                confirmButtonText: 'Aceptar',
+                showConfirmButton: true,
+                allowOutsideClick: false,
+            });
+        {% endif %}
+    {% endfor %}
+{% endif %}
 </script>
 {% endblock js %}

@@ -19,7 +19,7 @@ class VentaListView(ListView):
 
     def get_queryset(self):
         # Solo trae ventas que ya existen
-        queryset = Venta.objects.select_related('usuario', 'pedido')
+        queryset = Venta.objects.select_related('usuario', 'pedido').order_by('-id_venta')
         usuario = self.request.GET.get('usuario')
         fecha = self.request.GET.get('fecha')
         estado = self.request.GET.get('estado')

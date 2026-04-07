@@ -61,11 +61,11 @@ class ClienteForm(ModelForm):
     def clean_correo_electronico(self):
         correo = self.cleaned_data.get('correo_electronico')
 
-        if "@" not in correo:
-            raise forms.ValidationError("El correo debe contener un '@'.")
-
-        if not (correo.endswith("@gmail.com") or correo.endswith("@hotmail.com")):
-            raise forms.ValidationError("El correo debe ser gmail.com o hotmail.com.")
+        if not re.match(r'^[a-zA-Z][a-zA-Z0-9]*@(gmail|hotmail)\.com$', correo):
+            raise forms.ValidationError(
+                "El correo debe iniciar con una letra y solo puede contener "
+                "letras y números antes del '@', y debe ser @gmail.com o @hotmail.com."
+            )
 
         return correo
 

@@ -149,7 +149,9 @@ urlpatterns = [
     path('crear_cliente/', ClienteCreateView.as_view() , name='crear_cliente'),
     path('editar_cliente/<int:pk>/', ClienteUpdateView.as_view(), name='editar_cliente'),
     path('eliminar_cliente/<int:pk>/', ClienteDeleteView.as_view(), name='eliminar_cliente'),  
-    
+    path('exportar_clientes_pdf/', ExportarclientesPDF.as_view(), name='exportar_clientes_pdf'),
+    path('exportar_clientes_excel/', ExportarclientesExcel.as_view(), name='exportar_clientes_excel'),
+
 # DASHBOARD
     path('dashboard/', dashboardView.as_view(), name='dashboard'),
     
@@ -162,5 +164,10 @@ urlpatterns = [
     path('backup/pagos/', backup_pagos, name='backup_pagos'),
     path('backup/facturas/', backup_facturas, name='backup_facturas'),
     path('backup/insumos/', backup_insumos, name='backup_insumos'),
+    path('backup/pedidos/', backup_pedidos, name='backup_pedidos'),   # ← nuevo
+    path('backup/clientes/', backup_clientes, name='backup_clientes'), # ← nuevo
 
+  
+path('pedidos/historial/', PedidoHistorialView.as_view(), name='historial_pedidos'),
 ]
+

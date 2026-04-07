@@ -1,6 +1,11 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
+
+<div style="margin-bottom: 10px; color: #888; font-size: 0.85em;">
+  <i class="fas fa-calendar-alt"></i>
+  Mostrando pedidos de: <strong>{{ mes_actual }}</strong>
+</div>
 <div class="tabla-wrapper">
 
 <form method="GET" style="display:flex; align-items:center; gap:10px; margin-bottom:15px;">
@@ -57,17 +62,13 @@
                 {% endfor %}
             </td>
             <td>{{ c.usuario.nombre }} {{ c.usuario.apellido }}</td>
-            <td>{{ c.fecha_hora|date:"d/m/Y H:i" }}</td>
+            <td>{{ c.fecha_hora|date:"Y/m/d H:i" }}</td>
             <td>{{ c.estado }}</td>
             <td>${{ c.total }}</td>
             <td>
-                {% if request.GET.buscar or request.GET.fecha %}
-                    <a href="{% url 'app:detalle_pedido' c.id_pedido %}" class="btn btn-success btn-sm">
-                        Ver Detalle
-                    </a>
-                {% else %}
-                    <span class="text-muted">—</span>
-                {% endif %}
+                <a href="{% url 'app:detalle_pedido' c.id_pedido %}" class="btn btn-success btn-sm">
+                    Ver Detalle
+                </a>
             </td>
             <td>
                 {% if c.pago %}
@@ -94,9 +95,11 @@
 
 <div class="card-footer">
     <a href="{% url 'app:crear_pedido' %}" class="btn btn-success">Crear nuevo pedido</a>
+    <a href="{% url 'app:historial_pedidos' %}" class="btn btn-info btn-xs">
+    <i class="fas fa-history"></i> Historial
+</a>
 </div>
 
-<!-- ✅ style FUERA del empty y del for -->
 <style>
     .fila-pagada {
         background-color: #f0f0f0 !important;
@@ -110,31 +113,83 @@
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const hayPedidos = {{ object_list|length }} > 0;
+document.addEventListener('DOMContentLoaded', function () {
+    {% if messages %}
+    {% for message in messages %}
+        Swal.fire({
+            icon: 'success',
+            title: '¡Listo!',
+            text: '{{ message }}',
+            confirmButtonColor: '#2e8b57',
+            confirmButtonText: 'Aceptar',
+            showConfirmButton: true,
+            allowOutsideClick: false
+        });
+    {% endfor %}
+{% endif %}
 
-        if (!hayPedidos) {
-            const filtroEstado = "{{ request.GET.buscar }}";
-            const filtroFecha  = "{{ request.GET.fecha }}";
+    function mostrarAlerta(mensaje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Sin resultados',
+            text: mensaje,
+            confirmButtonColor: '#e53935',
+            confirmButtonText: 'Entendido'
+        });
+    }
 
-            let mensaje = "No hay pedidos para exportar.";
+    document.querySelectorAll('.btn-exportar').forEach(function (btn) {
+        btn.addEventListener('click', function (e) {
+            const hayPedidos = {{ object_list|length }} > 0;
 
-            if (filtroEstado && filtroFecha) {
-                mensaje = `No se encontraron pedidos con estado "${filtroEstado}" en la fecha ${filtroFecha}.`;
-            } else if (filtroEstado) {
-                mensaje = `No se encontraron pedidos con estado "${filtroEstado}".`;
-            } else if (filtroFecha) {
-                mensaje = `No se encontraron pedidos para la fecha ${filtroFecha}.`;
+            if (!hayPedidos) {
+                e.preventDefault();
+
+                const filtroEstado = "{{ request.GET.buscar }}";
+                const filtroFecha  = "{{ request.GET.fecha }}";
+                let mensaje = "No hay pedidos para exportar.";
+
+                if (filtroEstado && filtroFecha) {
+                    mensaje = `No se encontraron pedidos con estado "${filtroEstado}" en la fecha ${filtroFecha}.`;
+                } else if (filtroEstado) {
+                    mensaje = `No se encontraron pedidos con estado "${filtroEstado}".`;
+                } else if (filtroFecha) {
+                    mensaje = `No se encontraron pedidos para la fecha ${filtroFecha}.`;
+                }
+
+                mostrarAlerta(mensaje);
             }
-
-            Swal.fire({
-                icon: 'warning',
-                title: ' Sin resultados',
-                text: mensaje,
-                confirmButtonColor: '#e53935',
-                confirmButtonText: 'Entendido'
-            });
-        }
+        });
     });
+
+});
+
 </script>
+<!-- PAGINACIÓN -->
+{% if is_paginated %}
+<div style="display:flex; justify-content:center; margin-top:15px; gap:5px;">
+
+  {% if page_obj.has_previous %}
+    <a href="?page=1&buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-secondary btn-xs">« Primera</a>
+    <a href="?page={{ page_obj.previous_page_number }}&buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-secondary btn-xs">‹ Anterior</a>
+  {% endif %}
+
+  {% for num in paginator.page_range %}
+    {% if page_obj.number == num %}
+      <span class="btn btn-primary btn-xs">{{ num }}</span>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+      <a href="?page={{ num }}&buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-secondary btn-xs">{{ num }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if page_obj.has_next %}
+    <a href="?page={{ page_obj.next_page_number }}&buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-secondary btn-xs">Siguiente ›</a>
+    <a href="?page={{ paginator.num_pages }}&buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-secondary btn-xs">Última »</a>
+  {% endif %}
+
+</div>
+<div style="text-align:center; margin-top:8px; color:#888; font-size:0.85em;">
+  Página {{ page_obj.number }} de {{ paginator.num_pages }} — {{ paginator.count }} registros en total
+</div>
+{% endif %}
 {% endblock %}
