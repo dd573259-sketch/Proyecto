@@ -15,13 +15,45 @@ from django.db.models.functions import TruncMonth
 class PagoListView(ListView):
     model = Pago
     template_name = 'pago/listar.html'
+    context_object_name = 'pagos'
     paginate_by = 5
+    ordering = ('-fecha',)
+
+    def get_queryset(self):
+        queryset = Pago.objects.select_related('venta', 'venta__usuario', 'venta__pedido')
+        usuario = self.request.GET.get('usuario')
+        fecha = self.request.GET.get('fecha')
+        estado = self.request.GET.get('estado')
+
+        # Filtrar solo el mes actual por defecto
+        hoy = timezone.now()
+        queryset = queryset.filter(
+            fecha__year=hoy.year,
+            fecha__month=hoy.month
+        )
+
+        # 🔍 Filtros (ajustados a tu modelo)
+        if usuario:
+            queryset = queryset.filter(venta__usuario__nombre__icontains=usuario)
+
+        if fecha:
+            queryset = queryset.filter(fecha__date=fecha)
+
+        if estado == 'pagado':
+            queryset = queryset.filter(activo=True)
+        elif estado == 'pendiente':
+            queryset = queryset.filter(activo=False)
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de Pagos'
         context['icono'] = 'fas fa-cash-register'
-        context['crear_url'] = reverse_lazy('app:crear_pago')
+        context['usuario'] = self.request.GET.get('usuario', '')
+        context['fecha'] = self.request.GET.get('fecha', '')
+        context['estado'] = self.request.GET.get('estado', '')
+        context['mes_actual'] = timezone.now().strftime('%B %Y').capitalize()
         return context
 
 

@@ -500,15 +500,10 @@ class Pago(models.Model):
 
     class Meta:
         db_table = "pago"
-    def save(self, *arg, **kwargs):
+    def save(self, *args, **kwargs):
         if not self.pk:
-            super().save(*arg, **kwargs)  # Guardarmos para obtener el id
-            self.codigo = f'PAGO-set{self.pk:05d}'
-            super().save(*arg, **kwargs)  # Guardamos de nuevo con el id actualizado
-    class Meta:
-        db_table = "pago"
-        verbose_name = "Pago"
-        verbose_name_plural = "Pagos"
-
-    def __str__(self):
-        return f"Pago {self.id_pago} - ${self.monto}"
+            super().save(*args, **kwargs)
+            self.codigo = f'PAGO-{self.pk:05d}'
+            Pago.objects.filter(pk=self.pk).update(codigo=self.codigo)  # igual que Factura
+        else:
+            super().save(*args, **kwargs)  # ← cuando actualiza, guarda normal

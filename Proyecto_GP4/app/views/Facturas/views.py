@@ -13,20 +13,49 @@ from django.contrib import messages
 from itertools import groupby
 from django.db.models.functions import TruncMonth
 
-class FacturaListView(listView):
+class FacturaListView(listView): 
     model = Factura
     template_name = 'facturas/listar.html'
-    context_object_name = 'facturas' 
+    context_object_name = 'facturas'
     paginate_by = 5
-    
-      
+    ordering = ('-fecha_hora',)
+
+    def get_queryset(self):
+        queryset = Factura.objects.select_related('venta', 'venta__usuario', 'venta__pedido')
+        usuario = self.request.GET.get('usuario')
+        fecha = self.request.GET.get('fecha')
+        estado = self.request.GET.get('estado')
+
+        # Filtrar solo el mes actual por defecto
+        hoy = timezone.now()
+        queryset = queryset.filter(
+            fecha_hora__year=hoy.year,
+            fecha_hora__month=hoy.month
+        )
+
+        # 🔍 Filtros (ajustados a tu modelo)
+        if usuario:
+            queryset = queryset.filter(venta__usuario__nombre__icontains=usuario)
+
+        if fecha:
+            queryset = queryset.filter(fecha_hora__date=fecha)
+
+        if estado == 'pagado':
+            queryset = queryset.filter(activo=True)
+        elif estado == 'pendiente':
+            queryset = queryset.filter(activo=False)
+
+        return queryset
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Listado de Facturas'
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
-        context['crear_url'] = reverse_lazy('app:crear_factura')
-        
-        return context   
+        context['usuario'] = self.request.GET.get('usuario', '')
+        context['fecha'] = self.request.GET.get('fecha', '')
+        context['estado'] = self.request.GET.get('estado', '')
+        context['mes_actual'] = timezone.now().strftime('%B %Y').capitalize()
+        return context
 
 class FacturaCreateView(CreateView):
     model = Factura
@@ -93,26 +122,6 @@ class FacturaUpdateView(UpdateView):
         context['listar_url'] = reverse_lazy('app:listar_facturas')
         return context
 
-def crear_factura(request, pago_id):
-
-    pago = get_object_or_404(Pago, id_pago=pago_id)
-
-    if pago.factura:
-        messages.warning(request, "Este pago ya tiene factura generada.")
-        return redirect('app:listar_pagos')
-
-    factura = Factura.objects.create(
-        venta=pago.venta,
-        valor_total=pago.monto,
-        metodo_pago=pago.metodo_pago
-    )
-
-    pago.factura = factura.id
-    pago.save()
-
-    messages.success(request, f"Factura #{factura.id} creada correctamente.")
-
-    return redirect('app:listar_facturas')
 
 class FacturaDetailView(DetailView):
     model = Factura
@@ -165,3 +174,26 @@ class FacturaHistorialView(ListView):
         context['mes_seleccionado'] = self.request.GET.get('mes', '')
 
         return context
+    
+def crear_factura(request, pago_id):
+    pago = get_object_or_404(Pago, id_pago=pago_id)
+
+    if pago.factura:
+        messages.warning(request, "Este pago ya tiene factura generada.")
+        return redirect('app:listar_pagos')
+
+    if pago.venta and Factura.objects.filter(venta=pago.venta, activo=True).exists():
+        messages.warning(request, "Esta venta ya tiene una factura activa.")
+        return redirect('app:listar_pagos')
+
+    factura = Factura.objects.create(
+        venta=pago.venta,
+        valor_total=pago.monto,
+        metodo_pago=pago.metodo_pago
+    )
+
+    pago.factura = str(factura.id)
+    pago.save()
+
+    messages.success(request, f"Factura #{factura.id} creada correctamente.")
+    return redirect('app:listar_facturas')

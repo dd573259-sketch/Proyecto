@@ -14,19 +14,27 @@ from itertools import groupby
 from django.db.models.functions import TruncMonth
 
 
+from django.utils import timezone
+
 class VentaListView(ListView):
     model = Venta
     template_name = 'venta/listar.html'
     context_object_name = 'ventas'
     paginate_by = 5
-    orden_by = ('-fecha_venta',)
+    ordering = ('-fecha_venta',)  # ← era orden_by, el atributo correcto es ordering
 
     def get_queryset(self):
-        # Solo trae ventas que ya existen
         queryset = Venta.objects.select_related('usuario', 'pedido')
         usuario = self.request.GET.get('usuario')
         fecha = self.request.GET.get('fecha')
         estado = self.request.GET.get('estado')
+
+        # Filtrar solo el mes actual por defecto
+        hoy = timezone.now()
+        queryset = queryset.filter(
+            fecha_venta__year=hoy.year,
+            fecha_venta__month=hoy.month
+        )
 
         if usuario:
             queryset = queryset.filter(usuario__nombre__icontains=usuario)
@@ -41,40 +49,13 @@ class VentaListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
         context['titulo'] = 'Listado de Ventas'
         context['icono'] = 'fas fa-cash-register'
-
-        # mantener filtros en el input
         context['usuario'] = self.request.GET.get('usuario', '')
         context['fecha'] = self.request.GET.get('fecha', '')
         context['estado'] = self.request.GET.get('estado', '')
-
+        context['mes_actual'] = timezone.now().strftime('%B %Y').capitalize()
         return context
-
-
-
-    model = Venta
-    template_name = 'venta/listar.html'
-    context_object_name = 'ventas'
-
-    def get_queryset(self):
-        queryset = Venta.objects.select_related('usuario', 'pedido')
-
-        usuario = self.request.GET.get('usuario')
-        fecha = self.request.GET.get('fecha')
-        estado = self.request.GET.get('estado')
-
-        if usuario:
-            queryset = queryset.filter(usuario__nombre__icontains=usuario)
-        if fecha:
-            queryset = queryset.filter(fecha_venta__date=fecha)
-        if estado == 'pagado':
-            queryset = queryset.filter(estado='PAGADA')
-        elif estado == 'pendiente':
-            queryset = queryset.exclude(estado='PAGADA')
-
-        return queryset
 
 class VentaCreateView(CreateView):
     model = Venta
@@ -169,12 +150,9 @@ class VentaHistorialView(ListView):
     model = Venta
     template_name = 'venta/historial.html'
     context_object_name = 'ventas'
-    paginate_by = 5
-    ordering = ('-fecha_venta',)
-
+    
     def get_queryset(self):
         queryset = Venta.objects.select_related('usuario', 'pedido').order_by('-fecha_venta')
-
         mes = self.request.GET.get('mes')
 
         if mes:
@@ -208,3 +186,4 @@ class VentaHistorialView(ListView):
         context['mes_seleccionado'] = self.request.GET.get('mes', '')
 
         return context
+

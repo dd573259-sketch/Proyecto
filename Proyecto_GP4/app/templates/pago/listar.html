@@ -1,8 +1,11 @@
-  {% extends 'main.html' %}
+{% extends 'main.html' %}
 {% load static %}
 
 {% block Contenido %}
-
+<div style="margin-bottom: 10px; color: #888; font-size: 0.85em;">
+  <i class="fas fa-calendar-alt"></i>
+  Mostrando pagos de: <strong>{{ mes_actual }}</strong>
+</div>
 <!-- FILTROS -->
 <div style="margin-bottom:15px;">
   <form method="GET" style="display:flex; gap:10px;">
@@ -44,9 +47,20 @@
         <td>
           {% if p.venta %}Venta #{{ p.venta.id_venta }}{% else %}Sin venta{% endif %}
         </td>
+
+        <!-- COLUMNA FACTURA -->
         <td>
-          {% if p.factura %}{{ p.factura }}{% else %}Sin factura{% endif %}
-        </td>
+          {% if p.factura %}
+            <a href="{% url 'app:detalle_factura' p.factura %}"
+            class="badge badge-success text-dark"
+            style="text-decoration:none;">
+            <i class="fas fa-file-invoice"></i> #{{ p.factura }}
+          </a>
+  {% else %}
+    <span class="badge badge-warning text-dark">Sin factura</span>
+  {% endif %}
+</td>
+
         <td>
           {% if p.venta %}${{ p.venta.total }}{% else %}$0{% endif %}
         </td>
@@ -57,9 +71,9 @@
         <!-- ESTADO -->
         <td>
           {% if p.activo %}
-            <span class="badge badge-success">Activo</span>
+            <span class="badge badge-success text-dark">Activo</span>
           {% else %}
-            <span class="badge badge-secondary">Inactivo</span>
+            <span class="badge badge-secondary text-dark">Inactivo</span>
           {% endif %}
         </td>
 
@@ -67,7 +81,7 @@
         <td>
           {% if not p.activo %}
             <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;" title="Pago inactivo">
-               Bloqueado
+              Bloqueado
             </span>
           {% elif p.factura %}
             <span class="btn btn-secondary btn-xs">
@@ -88,6 +102,7 @@
     </tbody>
   </table>
 </div>
+
 <!-- PAGINACIÓN -->
 {% if is_paginated %}
 <div style="display:flex; justify-content:center; margin-top:15px; gap:5px;">
@@ -119,8 +134,9 @@
 <div>
   <a href="{% url 'app:historial_pagos' %}" class="btn btn-info btn-xs">
     <i class="fas fa-history"></i> Historial
-</a>
+  </a>
 </div>
+
 <style>
   .fila-inactiva {
     background-color: #f0f0f0 !important;
