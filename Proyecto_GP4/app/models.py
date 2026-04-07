@@ -87,7 +87,7 @@ class Producto(models.Model):
     descripcion = models.TextField()
     unidad_de_medida = models.CharField(max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
     precio = models.DecimalField(max_digits=10, decimal_places=2)
-    cantidad = models.PositiveIntegerField(default=0)
+    stock = models.PositiveIntegerField(default=0)
     fecha_ingreso = models.DateField(default=timezone.now)
     fecha_vencimiento = models.DateField()
     imagen = models.ImageField(upload_to='productos/', null=True, blank=True)

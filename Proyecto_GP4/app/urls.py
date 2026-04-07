@@ -171,5 +171,8 @@ urlpatterns = [
 
   
 path('pedidos/historial/', PedidoHistorialView.as_view(), name='historial_pedidos'),
+path('ventas/historial/', VentaHistorialView.as_view(), name='historial_ventas'),
+path('pagos/historial/', PagoHistorialView.as_view(), name='historial_pagos'),
+path('facturas/historial/', FacturaHistorialView.as_view(), name='historial_facturas'),
 ]
 
