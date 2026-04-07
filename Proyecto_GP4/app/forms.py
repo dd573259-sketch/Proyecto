@@ -432,7 +432,7 @@ DetalleFormSet = inlineformset_factory(
     Receta,
     DetalleReceta,
     form=DetalleRecetaForm,
-    extra=1,  # 🔥 IMPORTANTE
+    extra=1,  
     can_delete=True
 )
 
@@ -449,6 +449,10 @@ class InsumosForm(ModelForm):
                 'cols': 3}),
             'valor': forms.NumberInput(attrs={
                 'placeholder': 'Ingrese el valor del insumo'}),
+            'fecha_vencimiento': forms.DateInput(attrs={  # ← calendario
+                'type': 'date',
+                'class': 'form-control'
+            }, format='%Y-%m-%d'),
         }
 
     # 🔹 Validaciones de NOMBRE

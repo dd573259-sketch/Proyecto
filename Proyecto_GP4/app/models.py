@@ -71,7 +71,6 @@ class Proveedor(models.Model):
         return self.nombre_proveedor
 
 class Producto(models.Model):
-
     UNIDAD_OPCIONES = [
         ("", "Seleccione una unidad 🡇"),
         ("kg", "Kilogramo (kg)"),
@@ -90,6 +89,13 @@ class Producto(models.Model):
     stock = models.PositiveIntegerField(default=0)
     fecha_ingreso = models.DateField(default=timezone.now)
     fecha_vencimiento = models.DateField()
+    imagen = models.ImageField(upload_to='productos/', null=True, blank=True)
+
+    class Meta:
+        db_table = "producto"
+
+    def __str__(self):
+        return self.nombre
 
     class Meta:
         db_table = "producto"
@@ -232,16 +238,16 @@ class Plato(models.Model):
     nombre = models.CharField(max_length=100, unique=True, null=True)
     descripcion = models.TextField()
     precio = models.DecimalField(max_digits=10, decimal_places=2)
-
-
-    def __str__(self):
-        return self.nombre
-
+    imagen = models.ImageField(upload_to='platos/', null=True, blank=True)
     class Meta:
         verbose_name = "Plato"
         verbose_name_plural = "Platos"
         db_table = "plato"
-        
+
+    def __str__(self):
+        return self.nombre
+
+     
 class Pedido(models.Model):
 
     ESTADO = [
@@ -387,12 +393,15 @@ class insumo(models.Model):
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.CharField(max_length=100)
-    unidad = models.CharField( max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
-    valor = models.DecimalField(max_digits=20 ,decimal_places=2, error_messages={'max_digits': 'El valor es demasiado alto.'})
+    unidad = models.CharField(max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
+    valor = models.DecimalField(max_digits=20, decimal_places=2, error_messages={'max_digits': 'El valor es demasiado alto.'})
     stock = models.PositiveIntegerField(default=0)
+    fecha_ingreso = models.DateField(auto_now_add=True)          # ← automática al crear
+    fecha_vencimiento = models.DateField(null=True, blank=True)  # ← la ingresa el usuario
 
     def __str__(self):
         return self.nombre
+
     class Meta:
         verbose_name = 'insumo'
         verbose_name_plural = 'insumos'
@@ -439,7 +448,7 @@ class Notificacion(models.Model):
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True)
     insumo = models.ForeignKey(insumo, on_delete=models.CASCADE, null=True, blank=True)
 
-    tipo_notificacion = models.CharField(max_length=100)
+    tipo_notificacion = models.CharField(max_length=100, db_index=True)
     mensaje = models.TextField()
 
     leido = models.BooleanField(default=False)

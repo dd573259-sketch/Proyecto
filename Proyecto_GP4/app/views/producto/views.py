@@ -15,6 +15,7 @@ class ProductoListView(listView):
     model = Producto
     template_name = 'producto/listar.html'
     context_object_name = 'object_list'
+    
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -29,8 +30,17 @@ class ProductoCreateView(CreateView):
     form_class = ProductoForm
     template_name = 'producto/crear.html'
     success_url = reverse_lazy('app:listar_productos')
+    
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            kwargs['files'] = self.request.FILES  # ← agrega esto
+        return kwargs
+    
     def form_valid(self, form):
         return super().form_valid(form)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-boxes-stacked'
@@ -57,6 +67,12 @@ class ProductoUpdateView(UpdateView):
     form_class = ProductoForm
     template_name = 'producto/crear.html'
     success_url = reverse_lazy('app:listar_productos')
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            kwargs['files'] = self.request.FILES  # ← agrega esto
+        return kwargs
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

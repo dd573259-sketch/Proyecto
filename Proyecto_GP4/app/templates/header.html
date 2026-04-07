@@ -64,7 +64,7 @@
                 <!-- HEADER -->
                 <div style="background:#222; color:white; padding:12px 16px; display:flex; justify-content:space-between; align-items:center;">
                     <span style="font-weight:600; font-size:14px;">
-                        🔔 Notificaciones
+                         Notificaciones
                         {% if contador_notificaciones > 0 %}
                         <span style="background:red; border-radius:50%; padding:1px 7px; font-size:12px; margin-left:5px;">
                             {{ contador_notificaciones }}
@@ -74,7 +74,7 @@
                 </div>
 
                 <!-- LISTA -->
-                <div style="max-height:360px; overflow-y:auto;">
+                <div class="notif-lista" style="max-height:360px; overflow-y:auto;">
                     {% if notificaciones_recientes %}
                         {% for n in notificaciones_recientes %}
                         <div style="
@@ -93,7 +93,7 @@
                                 {% elif "creado" in n.tipo_notificacion %}👤
                                 {% elif "editado" in n.tipo_notificacion %}✏️
                                 {% elif "eliminado" in n.tipo_notificacion %}🗑️
-                                {% else %}🔔{% endif %}
+                                {% else %}{% endif %}
                             </div>
 
                             <!-- Texto -->
@@ -119,14 +119,42 @@
 
                     {% else %}
                         <div style="text-align:center; padding:36px 20px; color:#aaa;">
-                            <div style="font-size:36px;">🔔</div>
                             <p style="margin-top:8px; font-size:13px;">Sin notificaciones nuevas</p>
                         </div>
                     {% endif %}
                 </div>
+                            <!-- PRODUCTOS POR VENCER -->
+            {% if productos_por_vencer %}
+            <div style="background:#fff8e1; border-top:1px solid #eee; padding:8px 16px;">
+            <div style="font-size:12px; font-weight:700; color:#856404; margin-bottom:6px;">
+                ⏳ Próximos a vencer
+            </div>
+            {% for p in productos_por_vencer %}
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0; border-bottom:1px solid #f0e0a0;">
+                <span style="font-size:12px; color:#333;">{{ p.nombre }}</span>
+                <span style="
+                font-size:11px;
+                font-weight:700;
+                padding:2px 8px;
+                border-radius:20px;
+                {% if p.dias < 0 %}background:#dc3545; color:white;
+                {% elif p.dias == 0 %}background:#dc3545; color:white;
+                {% elif p.dias <= 3 %}background:#fd7e14; color:white;
+                {% else %}background:#ffc107; color:#333;{% endif %}">
+                {% if p.dias < 0 %}Vencido
+                {% elif p.dias == 0 %}Vence hoy
+                {% else %}{{ p.dias }} días{% endif %}
+                </span>
+            </div>
+            {% endfor %}
+            </div>
+            {% endif %}
 
                 <!-- FOOTER -->
                 <div style="padding:10px 16px; background:#f9f9f9; text-align:center; border-top:1px solid #eee;">
+                       <button type="button" onclick="marcarTodasLeidas(this)" class="btn btn-sm btn-outline-success" style="border-radius:20px; padding:5px 16px; font-size:13px;">
+                             Marcar leídas
+                        </button>
                     <a href="{% url 'app:listar_notificaciones' %}" class="btn btn-dark btn-sm" style="border-radius:20px; padding:5px 22px; font-size:13px;">
                         Ver todas las notificaciones
                     </a>
@@ -144,4 +172,48 @@
         </form>
 
     </div>
+
+{% block js %}
+<script>
+function marcarTodasLeidas(btn) {
+    fetch("{% url 'app:marcar_leidas' %}", {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "X-Requested-With": "XMLHttpRequest"
+        }
+    })
+    .then(res => {
+        if (res.ok) {
+            // Oculta todos los items del dropdown
+            document.querySelectorAll('.notif-item').forEach(item => {
+                item.style.background = 'white';
+            });
+
+            // Quita los puntos rojos
+            document.querySelectorAll('.notif-punto-rojo').forEach(p => p.remove());
+
+            // Quita el badge contador de la campanita
+            const badge = document.querySelector('.notif-badge');
+            if (badge) badge.remove();
+
+            // Muestra mensaje de "sin notificaciones" en el dropdown
+            const lista = document.querySelector('.notif-lista');
+            if (lista) {
+                lista.innerHTML = `
+                    <div style="text-align:center; padding:36px 20px; color:#aaa;">
+                        <div style="font-size:36px;">🔔</div>
+                        <p style="margin-top:8px; font-size:13px;">Sin notificaciones nuevas</p>
+                    </div>
+                `;
+            }
+
+            // Cambia el botón
+            btn.innerHTML = '✓ Listo';
+            btn.disabled = true;
+        }
+    });
+}
+</script>
+{% endblock js %}
 </header>

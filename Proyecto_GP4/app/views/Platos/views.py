@@ -17,11 +17,11 @@ def listar_platos(request):
         
         'platos': Plato.objects.all()
     }
-    return render(request, 'Plato/listar.html', nombre)
+    return render(request, 'plato/listar.html', nombre)
 
 class PlatoListView(listView):
     model = Plato
-    template_name = 'Plato/listar.html'
+    template_name = 'plato/listar.html'
     
     #METODO DISPATCH
     #@method_decorator(login_required)
@@ -52,28 +52,38 @@ class PlatoListView(listView):
         return queryset
 class PlatoCreateView(CreateView):
     model = Plato
-    template_name = 'Plato/crear.html'
     form_class = PlatoForm
+    template_name = 'plato/crear.html'
     success_url = reverse_lazy('app:listar_platos')
-    
-    #@method_decorator(csrf_exempt)
-    
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            kwargs['files'] = self.request.FILES  # ← agrega esto
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Plato'
+        context['icono'] = 'fas fa-utensils'
         context['listar_url'] = reverse_lazy('app:listar_platos')
-        context['icono'] = 'fa-solid fa-plus-circle'
         return context
-    
     
     
 class PlatoUpdateView(UpdateView):
     model = Plato
     form_class = PlatoForm
-    template_name = 'Plato/crear.html'
+    template_name = 'plato/crear.html'
     success_url = reverse_lazy('app:listar_platos')
+    
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            kwargs['files'] = self.request.FILES  # ← agrega esto
+        return kwargs
     def dispatch(self, request, *args, **kwargs):
         return super().dispatch(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Plato'
@@ -84,7 +94,7 @@ class PlatoUpdateView(UpdateView):
       
 class PlatoDeleteView(DeleteView):
     model = Plato
-    template_name = 'Plato/eliminar.html'
+    template_name = 'plato/eliminar.html'
     success_url = reverse_lazy('app:listar_platos')
     
     def get_context_data(self, **kwargs):

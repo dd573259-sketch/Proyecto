@@ -23,6 +23,7 @@ class InsumosListView(listView):
     model = insumo
     template_name = 'insumos/listar.html'
     context_object_name = 'object_list'
+    paginate_by = 7
 
     def get_queryset(self):
         queryset = super().get_queryset()

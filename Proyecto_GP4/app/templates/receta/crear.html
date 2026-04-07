@@ -141,4 +141,39 @@ Swal.fire({
 });
 {% endif %}
 </script>
+<script>
+{% if form.errors or formset.errors or form.non_field_errors %}
+let texto = "";
+
+// errores generales del form (non_field_errors)
+{% for error in form.non_field_errors %}
+    texto += `{{ error|escapejs }}\n`;
+{% endfor %}
+
+// errores por campo del form
+{% for field, errors in form.errors.items %}
+    {% for error in errors %}
+        texto += `{{ error|escapejs }}\n`;
+    {% endfor %}
+{% endfor %}
+
+// errores del formset
+{% for f in formset %}
+    {% for field, errors in f.errors.items %}
+        {% for error in errors %}
+            texto += `{{ error|escapejs }}\n`;
+        {% endfor %}
+    {% endfor %}
+{% endfor %}
+
+if (texto) {
+    Swal.fire({
+        title: "Error",
+        text: texto,
+        icon: "error",
+        confirmButtonText: "Aceptar"
+    });
+}
+{% endif %}
+</script>
 {% endblock %}

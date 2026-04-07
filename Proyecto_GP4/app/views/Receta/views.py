@@ -67,18 +67,28 @@ class RecetaCreateView(CreateView):
         return context
 
     def form_valid(self, form):
+        formset = DetalleFormSet(self.request.POST)
+
+        # Validar que el formset tenga al menos un insumo
+        if not formset.is_valid():
+            return self.render_to_response(self.get_context_data(form=form))
+
+        # Verificar que haya al menos un insumo con datos reales
+        insumos_validos = [
+            f for f in formset.forms
+            if f.cleaned_data.get('insumo') and not f.cleaned_data.get('DELETE', False)
+        ]
+
+        if not insumos_validos:
+            form.add_error(None, 'Debes agregar al menos un insumo a la receta.')
+            return self.render_to_response(self.get_context_data(form=form))
+
+        # Solo guardamos si todo está bien
         self.object = form.save()
-
-        formset = DetalleFormSet(self.request.POST, instance=self.object)
-
-        if formset.is_valid():
-            formset.save()
-            return redirect(self.success_url)
-
-        return self.render_to_response(
-            self.get_context_data(form=form)
-        )
-    
+        formset.instance = self.object
+        formset.save()
+        return redirect(self.success_url)
+        
     
 class RecetaUpdateView(UpdateView):
     model = Receta

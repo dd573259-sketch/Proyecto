@@ -1,88 +1,71 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-<div class="tabla-wrapper_menu">
-  <table class="tabla" id="tabla_platos">
-    <h2 id="platos_menu">Platos del Menú</h2>
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Nombre</th>
-        <th scope="col" data-col="descripcion">Descripción</th>
-        <th scope="col">precio</th>
-        
-      </tr>
-    </thead>
-    <tbody>
 
-      {% for m in platos_menu %}
-      <tr>
-        <td>{{ m.id_menu }}</td>
-
-        <td>
-          {{ m.plato.nombre }}
-        </td>
-
-        <td>
-          {{ m.plato.descripcion }}
-        </td>
-
-
-        <td>
-          $ {{ m.plato.precio }}
-        </td>
-
-        
-
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
- 
+<!-- SECCIÓN PLATOS -->
+<div class="menu-seccion">
+  <h2 class="menu-seccion-titulo">Platos del Menú</h2>
+  <div class="menu-cards">
+    {% for m in platos_menu %}
+    <div class="menu-card" style="--bg: url('{% if m.plato.imagen %}{{ m.plato.imagen.url }}{% else %}{% static 'imagenes/placeholder_menu.jpg' %}{% endif %}')">
+      <div class="menu-card-overlay"></div>
+      <div class="menu-card-icono">
+        <i class="fas fa-utensils"></i>
+      </div>
+      <div class="menu-card-info">
+        <h3 class="menu-card-nombre">{{ m.plato.nombre }}</h3>
+        <p class="menu-card-descripcion">{{ m.plato.descripcion|truncatechars:60 }}</p>
+        <span class="menu-card-precio">${{ m.plato.precio }}</span>
+      </div>
+    </div>
+    {% empty %}
+    <p style="color:#888;">No hay platos en el menú.</p>
+    {% endfor %}
+  </div>
 </div>
 
-<section class="separador">
-  <div class="linea"></div>
-  <div class="circulo"></div>
-</section>
+    <div class="col-md-4">
+      <a href="{% url 'app:listar_platos' %}" class="btn btn-success mb-3">
+        <i class="fas fa-plus"></i> Ir a platos
+      </a>
+    </div>
 
-
- <table class="tabla" id="tabla_productos">
-    <h2 id="productos_menu">Productos</h2>
-    <thead>
-      <tr>
-        <th scope="col">#</th>
-        <th scope="col">Nombre</th>
-        <th scope="col" data-col="descripcion">Descripción</th>
-        <th scope="col">precio</th>
-        
-      </tr>
-    </thead>
-    <tbody>
-
-      {% for m in productos_menu %}
-      <tr>
-        <td>{{ m.id_menu }}</td>
-
-
-        <td>
-          {{ m.producto.nombre }}
-        </td>
-
-        <td>
-          {{ m.producto.descripcion }}
-        </td>
-
-
-        <td>
-          $ {{ m.producto.precio }}
-        </td>
-
-        
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% endblock %}
-  
-
+<!-- SECCIÓN PRODUCTOS -->
+<div class="menu-seccion">
+  <h2 class="menu-seccion-titulo">Productos</h2>
+  <div class="menu-cards">
+    {% for m in productos_menu %}
+    <div class="menu-card" style="--bg: url('{% if m.producto.imagen %}{{ m.producto.imagen.url }}{% else %}{% static 'imagenes/placeholder_menu.jpg' %}{% endif %}')">
+      <div class="menu-card-overlay"></div>
+      <div class="menu-card-icono">
+        <i class="fas fa-box"></i>
+      </div>
+      <div class="menu-card-info">
+        <h3 class="menu-card-nombre">{{ m.producto.nombre }}</h3>
+        <p class="menu-card-descripcion">{{ m.producto.descripcion|truncatechars:60 }}</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
+          <span class="menu-card-precio">${{ m.producto.precio }}</span>
+          <span class="menu-card-stock
+            {% if m.producto.stock == 0 %}stock-agotado
+            {% elif m.producto.stock < 5 %}stock-critico
+            {% elif m.producto.stock <= 10 %}stock-bajo
+            {% else %}stock-ok{% endif %}">
+            {% if m.producto.stock == 0 %}Agotado
+            {% elif m.producto.stock < 5 %}{{ m.producto.stock }} (Crítico)
+            {% elif m.producto.stock <= 10 %}{{ m.producto.stock }} (Bajo)
+            {% else %}Disponible{% endif %}
+          </span>
+        </div>
+      </div>
+    </div>
+    {% empty %}
+    <p style="color:#888;">No hay productos en el menú.</p>
+    {% endfor %}
+  </div>
+</div>
+    <div class="col-md-4">
+      <a href="{% url 'app:listar_productos' %}" class="btn btn-success mb-3">
+        <i class="fas fa-plus"></i> Ir a productos
+      </a>
+    </div>
+{% endblock %}

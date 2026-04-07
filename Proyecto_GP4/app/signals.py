@@ -2,7 +2,7 @@
 
 from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
-from .models import Plato, Producto, Menu, Notificacion, Usuario, insumo
+from .models import *
 
 # ─────────────────────────────────────────────
 #  SIGNALS EXISTENTES (Menu)

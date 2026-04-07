@@ -22,6 +22,7 @@ from app.views.backup import *
 
 app_name = 'app'
 urlpatterns = [
+    
 #urls de categorias
     path('listar_categorias/', categoriaListView.as_view() , name='listar_categorias'),
     path('crear_categoria/', CategoriaCreateView.as_view() , name='crear_categoria'),
@@ -163,4 +164,4 @@ urlpatterns = [
     path('backup/facturas/', backup_facturas, name='backup_facturas'),
     path('backup/insumos/', backup_insumos, name='backup_insumos'),
 
-]
+] 
