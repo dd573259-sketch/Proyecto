@@ -33,7 +33,7 @@ class Usuario(models.Model):
     correo_electronico = models.EmailField(unique=True)
     contrasena = models.CharField(max_length=128)
     rol = models.CharField(max_length=20, choices=ROL_OPCIONES)
-    fecha_registro = models.DateTimeField(default=datetime.now)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Usuario"
@@ -83,11 +83,12 @@ class Producto(models.Model):
     ]
 
     id_producto = models.AutoField(primary_key=True)
+    categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField()
-    unidad = models.CharField(max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
+    unidad_de_medida = models.CharField(max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
     precio = models.DecimalField(max_digits=10, decimal_places=2)
-    stock = models.PositiveIntegerField(default=0)
+    cantidad = models.PositiveIntegerField(default=0)
     fecha_ingreso = models.DateField(default=timezone.now)
     fecha_vencimiento = models.DateField()
 
