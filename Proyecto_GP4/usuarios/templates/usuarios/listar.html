@@ -3,7 +3,7 @@
 
 {% block Contenido %}
 <div class="card mb-3 shadow-sm">
-    <div class="card-header text-white" style="background-color: #000; border-bottom: 2px solid #d2b48c;">  
+    <div class="card-header text-white" style="background-color: #000; border-bottom: 2px solid #d2b48c;">
         <h5 style="margin: 0;"><i class="fas fa-users"></i> Gestión de Usuarios</h5>
     </div>
     <div class="card-body">
@@ -27,17 +27,17 @@
                     <td>{{ u.first_name }} {{ u.last_name }}</td>
                     <td>
                         {% if u.perfil %}
-                            {{ u.perfil.get_rol_display }}
+                        {{ u.perfil.get_rol_display }}
                         {% else %}
-                            <span class="text-muted">Sin perfil</span>
+                        <span class="text-muted">Sin perfil</span>
                         {% endif %}
                     </td>
                     <td>{{ u.perfil.cedula|default:"N/A" }}</td>
                     <td>
                         {% if u.is_active %}
-                            <span class="badge badge-success text-dark">Activo</span>
+                        <span class="badge badge-success text-dark">Activo</span>
                         {% else %}
-                            <span class="badge badge-danger text-dark">Inactivo</span>
+                        <span class="badge badge-danger text-dark">Inactivo</span>
                         {% endif %}
                     </td>
                     <td>
@@ -47,13 +47,13 @@
                         <form method="post" action="{% url 'usuarios:cambiar_estado' u.id %}" style="display:inline;">
                             {% csrf_token %}
                             {% if u.is_active %}
-                                <button type="submit" class="btn btn-danger btn-xs" title="Desactivar">
-                                    <i class="fas fa-user-slash"></i> Desactivar
-                                </button>
+                            <button type="submit" class="btn btn-danger btn-xs" title="Desactivar">
+                                <i class="fas fa-user-slash"></i> Desactivar
+                            </button>
                             {% else %}
-                                <button type="submit" class="btn btn-success btn-xs" title="Activar">
-                                    <i class="fas fa-user-check"></i> Activar
-                                </button>
+                            <button type="submit" class="btn btn-success btn-xs" title="Activar">
+                                <i class="fas fa-user-check"></i> Activar
+                            </button>
                             {% endif %}
                         </form>
                     </td>
@@ -72,4 +72,32 @@
         </a>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        {% if messages %}
+        {% for message in messages %}
+        Swal.fire({
+            icon: 'success',
+            title: '¡Listo!',
+            text: '{{ message }}',
+            confirmButtonColor: '#2e8b57',
+            confirmButtonText: 'Aceptar',
+            showConfirmButton: true,
+            allowOutsideClick: false
+        });
+        {% endfor %}
+        {% endif %}
+
+        function mostrarAlerta(mensaje) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sin resultados',
+                text: mensaje,
+                confirmButtonColor: '#e53935',
+                confirmButtonText: 'Entendido'
+            });
+        }
+    });
+</script>
 {% endblock %}
