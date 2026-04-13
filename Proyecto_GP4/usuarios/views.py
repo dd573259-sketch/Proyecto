@@ -11,7 +11,7 @@ from .forms import UserEditForm
 #  LISTAR USUARIOS 
 class ListarUsuariosView(ListView):
     
-    def get_context_data(self, **kwargs) -> dict[str, Any]:
+    def get_context_data(self, **kwargs) -> dict[str, any]:
         context = super().get_context_data(**kwargs)
         context["titulo"] = "Listado de Usuarios"
         context['icono'] = 'fas fa-cash-register'

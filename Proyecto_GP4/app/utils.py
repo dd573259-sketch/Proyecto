@@ -2,13 +2,15 @@
 UTILIDADES PARA EXPORTACION DE REPORTES
 Modulo con funciones para exportar datos a PDF y Excel
 """
-
+import io
 from weasyprint import HTML, CSS
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from django.http import HttpResponse
 from django.template.loader import render_to_string
-import io
+import logging
+from django.core.mail import send_mail
+from django.conf import settings
 
 # ====== EXPORTACION A PDF ======
 def exportar_pdf(titulo, columnas, datos, nombre_archivo):
@@ -157,3 +159,5 @@ def exportar_excel(titulo, columnas, datos, nombre_archivo):
     workbook.save(response)
     
     return response
+
+
