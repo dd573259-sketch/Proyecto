@@ -72,4 +72,32 @@
         </a>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    {% if messages %}
+    {% for message in messages %}
+        Swal.fire({
+            icon: 'success',
+            title: '¡Listo!',
+            text: '{{ message }}',
+            confirmButtonColor: '#2e8b57',
+            confirmButtonText: 'Aceptar',
+            showConfirmButton: true,
+            allowOutsideClick: false
+        });
+    {% endfor %}
+{% endif %}
+
+    function mostrarAlerta(mensaje) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Sin resultados',
+            text: mensaje,
+            confirmButtonColor: '#e53935',
+            confirmButtonText: 'Entendido'
+        });
+    }
+});
+</script>
 {% endblock %}

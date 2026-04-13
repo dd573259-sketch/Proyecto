@@ -18,6 +18,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.urls import path, include
+from  app import views
+#from app.views.IA import urls as urls
+
 
 
 
@@ -27,6 +31,7 @@ urlpatterns = [
     path('principal/', include(('app.urls', 'app'), namespace='app')),
     path('', include(('Login.urls', 'Login'), namespace='login')),
     path('usuarios/', include('usuarios.urls')),
+    path('ia/', include('app.views.IA.urls')),
     
 ]
 if settings.DEBUG:
