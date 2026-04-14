@@ -323,11 +323,9 @@ footer {
     flex-wrap: wrap;
     gap: 5px;
   }
-
   main {
     padding: 10px;
   }
-
   .btn-accesibilidad {
     right: 10px;
     bottom: 10px;
@@ -339,7 +337,6 @@ footer {
     overflow-x: auto;
   }
 }
-
 /* ═══════════════════════════════════
    RESPONSIVE - Móviles muy pequeños
 ═══════════════════════════════════ */

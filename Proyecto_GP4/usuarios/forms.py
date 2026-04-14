@@ -6,6 +6,7 @@ class UserForm(forms.ModelForm):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'placeholder': 'Ingrese contraseña'}),
         label="Contraseña"
+        
     )
 
     class Meta:

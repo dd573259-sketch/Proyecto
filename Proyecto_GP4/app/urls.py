@@ -91,13 +91,6 @@ urlpatterns = [
     path('reporte_pagos/pdf/', ExportarpagosPDF.as_view(), name='reporte_pagos_pdf'),
     path('reporte_pagos/excel/', ExportarpagosExcel.as_view(), name='reporte_pagos_excel'),
     
-# USUARIOS
-    path('listar_usuarios/', UsuarioListView.as_view(), name='listar_usuarios'),
-    path('crear_usuario/', UsuarioCreateView.as_view(), name='crear_usuario'),
-    path('eliminar_usuario/<int:pk>/', UsuarioDeleteView.as_view(), name='eliminar_usuario'),
-    path('editar_usuario/<int:pk>/', UsuarioUpdateView.as_view(), name='editar_usuario'),
-    path('backup/usuarios/', backup_usuarios, name='backup_usuarios'),
-
 #PROVEEDORES
 
     path('listar_proveedores/', ProveedorListView.as_view(), name='listar_proveedores'),
