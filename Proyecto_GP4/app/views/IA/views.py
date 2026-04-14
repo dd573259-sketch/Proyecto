@@ -1,43 +1,113 @@
-import os
-from app.models import *
 from openai import OpenAI
 from django.http import JsonResponse
-import json
 from django.views.decorators.csrf import csrf_exempt
-client = OpenAI(api_key=os.environ.get('DEEPSEEK_API_KEY'), base_url="https://api.deepseek.com")
+import json
+import requests
 
+from app.models import (
+    Usuario, Cliente, Producto, Plato,
+    Venta, Factura, Pago, Pedido,
+    Categoria, Mesa
+)
 
-
+# iniciamos cliente local
+client = OpenAI(
+    base_url="http://localhost:11434/",
+    api_key="ollama"
+)
 
 @csrf_exempt
 def chat(request):
     if request.method == 'POST':
-    
         try:
             data = json.loads(request.body)
-            user_message = data.get('message', '')
+            message = data.get('message', '')
 
-            response = client.chat.completions.create(
-                model="deepseek-chat",
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "Eres un asistente experto en mi sistema web. Responde preguntas sobre el proyecto de forma clara."
-                    },
-                    {
-                        "role": "user",
-                        "content": user_message
-                    }
-                ],
-                stream=False
+            # ==========================
+            # DATOS REALES DEL SISTEMA
+            # ==========================
+            total_usuarios = Usuario.objects.count()
+            total_clientes = Cliente.objects.count()
+            total_productos = Producto.objects.count()
+            total_platos = Plato.objects.count()
+            total_ventas = Venta.objects.count()
+            total_facturas = Factura.objects.count()
+            total_pagos = Pago.objects.count()
+            total_pedidos = Pedido.objects.count()
+            total_categorias = Categoria.objects.count()
+            total_mesas = Mesa.objects.count()
+
+ #aca va contexto
+            contexto = f"""
+Eres el asistente virtual de La Taquería 
+
+La Taquería es un sistema web desarrollado en Django para administrar un restaurante, se amable con los usuarios.
+
+Módulos del sistema:
+- Usuarios
+- Clientes
+- Productos
+- Platos
+- Categorías
+- Mesas
+- Pedidos
+- Ventas
+- Facturas
+- Pagos
+
+Datos actuales:
+- Usuarios: {total_usuarios}
+- Clientes: {total_clientes}
+- Productos: {total_productos}
+- Platos: {total_platos}
+- Categorías: {total_categorias}
+- Mesas: {total_mesas}
+- Pedidos: {total_pedidos}
+- Ventas: {total_ventas}
+- Facturas: {total_facturas}
+- Pagos: {total_pagos}
+
+Instrucciones:
+- Responde en español
+- Sé amable y claro
+- Máximo 2 renglones
+- Si preguntan por el sistema, explica sus funciones
+- Si no sabes algo, dilo honestamente
+"""
+
+            respuesta = requests.post(
+                "http://localhost:11434/api/chat",
+                json={
+                    "model": "kimi-k2.5:cloud",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": contexto
+                        },
+                        {
+                            "role": "user",
+                            "content": message
+                        }
+                    ],
+                    "stream": False
+                }
             )
 
-            reply = response.choices[0].message.content
+            resultado = respuesta.json()
+            print("RESPUESTA:", resultado)
 
-            return JsonResponse({"response": reply})
+            texto = resultado.get("message", {}).get("content", "Sin respuesta")
+
+            return JsonResponse({
+                "response": texto
+            })
 
         except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+            print("ERROR:", e)
+            return JsonResponse({
+                "error": str(e)
+            }, status=500)
 
-    return JsonResponse({"error": "Método no permitido"}, status=405)
-    
+    return JsonResponse({
+        "error": "Método no permitido"
+    }, status=405)
