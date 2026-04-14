@@ -39,7 +39,6 @@ class PedidoHistorialView(ListView):
         pedidos = context['pedidos']
         historial = {}
 
-        # 🔥 AGRUPAR POR MES (IGUAL A VENTAS)
         for pedido in pedidos:
             clave = pedido.fecha_hora.strftime('%B %Y').capitalize()
             if clave not in historial:
@@ -58,7 +57,6 @@ class PedidoHistorialView(ListView):
             hoy = timezone.now()
             context['mes_actual'] = hoy.strftime('%B %Y').capitalize()
 
-        # mantener filtro
         context['mes_seleccionado'] = self.request.GET.get('mes', '')
 
         return context

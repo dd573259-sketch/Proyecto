@@ -19,9 +19,10 @@ def listar_categorias(request):
     }
     return render(request, 'Categoria/listar.html', nombre)
 
-class categoriaListView(listView):
+class CategoriaListView(listView):
     model = Categoria
     template_name = 'Categoria/listar.html'
+    context_object_name = 'object_list'
     
     #METODO DISPATCH
     #@method_decorator(login_required)
