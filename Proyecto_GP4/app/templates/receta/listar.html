@@ -1,161 +1,128 @@
 {% extends "main.html" %}
 {% load static %}
+
 {% block Contenido %}
 <div class="tabla-wrapper">
-  <table class="tabla" id="tabla">
-    {{ receta.detalles.all }}
-    <thead class="table-dark">
-      <tr>
-        <th>#</th>
-        <th>Plato</th>
-        <th>Insumos</th>
-        <th>Detalle</th>
-        <th>Editar</th>
-        <th>Eliminar</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      {% for receta in object_list %}
-      <tr>
-        <td>{{ forloop.counter }}</td>
-        <td>{{ receta.plato.nombre }}</td>
-        <td>
-          <ul class="mb-0">
-            {% for detalle in receta.detalles.all %}
-            <li>
-              {{ detalle.insumo.nombre }} ({{ detalle.cantidad }})
-            </li>
-            {% empty %}
-            <li class="text-muted">Sin insumos</li>
+    <table class="tabla" id="tabla">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Plato</th>
+                <th>Insumos</th>
+                <th>Ficha Técnica</th>
+                <th>Editar</th>
+                <th>Eliminar</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for receta in object_list %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ receta.plato.nombre }}</td>
+                <td>
+                    <ul class="mb-0 small">
+                        {% for detalle in receta.detalles.all %}
+                        <li>{{ detalle.insumo.nombre }} ({{ detalle.cantidad }} {{ detalle.insumo.unidad }})</li>
+                        {% endfor %}
+                    </ul>
+                </td>
+                <td>
+                    <button class="btn btn-dark btn-sm" onclick="abrirModal({{ forloop.counter0 }})">
+                        Ver Detalles
+                    </button>
+                </td>
+                <td>
+                    <a href="{% url 'app:editar_receta' receta.id %}" class="btn btn-warning btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                </td>
+                <td>
+                    <a href="{% url 'app:eliminar_receta' receta.id %}" class="btn btn-danger btn-sm">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                </td>
+            </tr>
             {% endfor %}
-          </ul>
-        </td>
-        <td>
-            <button 
-                      class="btn btn-dark btn-sm"
-                      data-plato="{{ receta.plato.nombre }}"
-                      data-insumos="{% for detalle in receta.detalles.all %}
-                  {{ detalle.insumo.nombre }}|{{ detalle.cantidad }}|{{ detalle.insumo.valor }}{% if not forloop.last %},{% endif %}
-                  {% endfor %}"
-                      onclick="abrirModal(this)">
-                      Ver detalle
-            </button>
-        </td>
-        <td>
-          <a href="{% url 'app:editar_receta' receta.id %}" class="btn btn-warning btn-sm">
-            <i class="fas fa-edit"></i>
-          </a>
-        </td>
-        <td>
-          <a href="{% url 'app:eliminar_receta' receta.id %}" class="btn btn-danger btn-sm">
-            <i class="fas fa-trash"></i>
-          </a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  <div class="modal fade" id="detalleModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content rounded-4 shadow">
+        </tbody>
+    </table>
 
-      <div class="modal-header bg-dark text-white">
-        <h5 class="modal-title">Detalle de Receta</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" 
-        
-      onclick="cerrarmodal(this)">
-      </button>
-        
-                     
-      </div>
-
-      <div class="modal-body">
-        <h4 id="nombrePlato"></h4>
-
-        <table class="table table-bordered mt-3">
-            <thead class="table-dark">
-                <tr>
-                    <th>Insumo</th>
-                    <th>Cantidad</th>
-                    <th>Precio</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody id="tablaInsumos">
-            </tbody>
-            
-        </table>
-
-        <h5 class="text-end mt-3">
-            Total: $<span id="totalReceta"></span>
-        </h5>
-      </div>
-
+    <div class="modal fade" id="detalleModal" tabindex="-1">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content rounded-3 shadow">
+                <div class="modal-header bg-dark text-white">
+                    <h5 class="modal-title">Insumos de la Receta</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <h4 id="nombrePlato" class="text-uppercase fw-bold mb-4"></h4>
+                    <table class="table table-hover border">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Insumo</th>
+                                <th>Cantidad</th>
+                                <th>Valor Unitario</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaInsumos"></tbody>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
+
+<div class="card-footer mt-4">
+    <a href="{{ crear_url }}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Crear Nueva Receta
+    </a>
 </div>
-<div class="card-footer">
-  <a href="{% url 'app:crear_receta' %}" class="btn btn-success">
-    <i class="fas fa-plus"></i> Crear nueva receta
-  </a>
-</div>
-{% endblock %}
+
+{{ recetas_data|json_script:"recetas-data" }}
+
 {% block js %}
 <script>
-function abrirModal(boton) {
+let recetasData = [];
+const dataElement = document.getElementById('recetas-data');
+if (dataElement) {
+    recetasData = JSON.parse(dataElement.textContent);
+}
 
-    let plato = boton.dataset.plato;
-    let insumosData = boton.dataset.insumos;
+function abrirModal(index) {
+    const receta = recetasData[index];
+    if (!receta) return;
 
-    document.getElementById("nombrePlato").innerText = plato;
-
-    let tbody = document.getElementById("tablaInsumos");
+    document.getElementById("nombrePlato").innerText = receta.plato_nombre;
+    const tbody = document.getElementById("tablaInsumos");
     tbody.innerHTML = "";
 
-    let total = 0;
-
-    let insumos = insumosData.split(",");
-
-    insumos.forEach(item => {
-
-        if(!item.includes("|")) return;  // evita filas basura
-
-        let partes = item.split("|");
-
-        if(partes.length < 3) return;
-
-        let nombre = partes[0];
-        let cantidad = parseFloat(partes[1]) || 0;
-        let precio = parseFloat(partes[2]) || 0;
-        let subtotal = cantidad * precio;
-
-        total += subtotal;
+    receta.detalles.forEach(detalle => {
+        // Alerta si no hay stock (opcional, pero profesional)
+        const stockStatus = !detalle.stock_suficiente 
+            ? `<br><small class="text-danger">⚠️ Stock bajo</small>` 
+            : "";
 
         tbody.innerHTML += `
             <tr>
-                <td>${nombre}</td>
-                <td>${cantidad}</td>
-                <td>$${precio}</td>
-                <td>$${subtotal}</td>
+                <td class="align-middle">
+                    <strong>${detalle.insumo_nombre}</strong>
+                    ${stockStatus}
+                </td>
+                <td class="align-middle">
+                    ${detalle.cantidad.toFixed(2)} ${detalle.unidad}
+                </td>
+                <td class="align-middle">
+                    $${detalle.precio_unitario.toLocaleString('es-CO')}
+                </td>
             </tr>
         `;
     });
 
-    document.getElementById("totalReceta").innerText = total.toLocaleString();
-
-    let modal = new bootstrap.Modal(document.getElementById('detalleModal'));
-    modal.show();
-}
-
-function cerrarmodal(boton) {
-
-    let tbody = document.getElementById("tablaInsumos");
-    tbody.innerHTML = "";
-
-    let modal = new bootstrap.Modal(document.getElementById('detalleModal'));
-    modal.hide();
+    const modalInstance = new bootstrap.Modal(document.getElementById('detalleModal'));
+    modalInstance.show();
 }
 </script>
 {% endblock js %}
+{% endblock %}

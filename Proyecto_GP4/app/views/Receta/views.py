@@ -1,53 +1,46 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView as listView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from app.models import *
-from app.forms import *
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from app.models import Receta, DetalleReceta, insumo
+from app.forms import RecetaForm, DetalleFormSet
 
-def index(request):
-    return render(request, 'main.html')
-# Create your views here.
-def listar_receta(request):
-    nombre = {
-        
-        'recetas': Receta.objects.all()
-    }
-    return render(request, 'receta/listar.html', nombre)
-
-
-class RecetaListView(listView):
+class RecetaListView(ListView):
     model = Receta
     template_name = 'receta/listar.html'
     
-    
-    #METODO DISPATCH
-    #@method_decorator(login_required)
-    def dispatch(self, request, *args, **kwargs):
-        #if request.method == 'GET':
-            #return redirect('app:listar_categorias')    
-        return super().dispatch(request, *args, **kwargs)
-        
-    
-    #METODO POST
-    def post(sefl, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
-    
     def get_queryset(self):
+        # Programación Senior: Evitamos el problema N+1 con prefetch_related
         return Receta.objects.prefetch_related('detalles__insumo')
     
-    #METODO GET CONTEXT DATA
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['titulo'] = 'Listado de recetas'
-        context['icono'] = 'fas fa-utensils'
-        context['crear_url'] = reverse_lazy('app:crear_receta')
+        
+        recetas_data = []
+        for receta in context['object_list']:
+            detalles_data = []
+            for detalle in receta.detalles.all():
+                # Traemos los datos crudos y directos de la base de datos
+                detalles_data.append({
+                    'insumo_nombre': detalle.insumo.nombre,
+                    'cantidad': float(detalle.cantidad),
+                    'unidad': detalle.insumo.unidad,  # Directo del modelo insumo
+                    'precio_unitario': float(detalle.insumo.valor),
+                    'stock_suficiente': detalle.insumo.stock >= detalle.cantidad,
+                })
+            
+            recetas_data.append({
+                'id': receta.id,
+                'plato_nombre': receta.plato.nombre,
+                'detalles': detalles_data,
+            })
+        
+        context.update({
+            'recetas_data': recetas_data,
+            'titulo': 'Gestión de Recetas',
+            'crear_url': reverse_lazy('app:crear_receta')
+        })
         return context
-    
+
 class RecetaCreateView(CreateView):
     model = Receta
     form_class = RecetaForm
@@ -56,40 +49,19 @@ class RecetaCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        if self.request.POST:
-            context['formset'] = DetalleFormSet(self.request.POST or None)
-        else:
-            context['formset'] = DetalleFormSet()
-
-        context['titulo'] = 'Crear Receta'
-        context['icono'] = 'fas fa-plus-circle'
+        context['formset'] = DetalleFormSet(self.request.POST or None)
         return context
 
     def form_valid(self, form):
-        formset = DetalleFormSet(self.request.POST)
+        context = self.get_context_data()
+        formset = context['formset']
+        if formset.is_valid():
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+            return redirect(self.success_url)
+        return self.render_to_response(context)
 
-        # Validar que el formset tenga al menos un insumo
-        if not formset.is_valid():
-            return self.render_to_response(self.get_context_data(form=form))
-
-        # Verificar que haya al menos un insumo con datos reales
-        insumos_validos = [
-            f for f in formset.forms
-            if f.cleaned_data.get('insumo') and not f.cleaned_data.get('DELETE', False)
-        ]
-
-        if not insumos_validos:
-            form.add_error(None, 'Debes agregar al menos un insumo a la receta.')
-            return self.render_to_response(self.get_context_data(form=form))
-
-        # Solo guardamos si todo está bien
-        self.object = form.save()
-        formset.instance = self.object
-        formset.save()
-        return redirect(self.success_url)
-        
-    
 class RecetaUpdateView(UpdateView):
     model = Receta
     form_class = RecetaForm
@@ -98,40 +70,26 @@ class RecetaUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        if self.request.POST:
-            context['formset'] = DetalleFormSet(
-                self.request.POST,
-                instance=self.object
-            )
-        else:
-            context['formset'] = DetalleFormSet(
-                instance=self.object
-            )
-
-        context['titulo'] = 'Editar Receta'
-        context['icono'] = 'fas fa-edit'
+        context['formset'] = DetalleFormSet(self.request.POST or None, instance=self.object)
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         formset = context['formset']
-
         if formset.is_valid():
-            self.object = form.save()
-            formset.instance = self.object
+            form.save()
             formset.save()
             return redirect(self.success_url)
-
         return self.render_to_response(context)
+
 class RecetaDeleteView(DeleteView):
     model = Receta
     template_name = 'receta/eliminar.html'
     success_url = reverse_lazy('app:listar_receta')
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Receta'
-        context['icono'] = 'fas fa-trash'
+        context['icono'] = 'fa-solid fa-trash'
         context['listar_url'] = reverse_lazy('app:listar_receta')
         return context

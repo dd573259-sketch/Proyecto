@@ -1,23 +1,8 @@
 from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView as listView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import *
-
-def index(request):
-    return render(request, 'main.html')
-# Create your views here.
-def listar_insumos(request):
-    nombre = {
-        
-        'insumos': insumos.objects.all()
-    }
-    return render(request, 'insumos/listar.html', nombre)
 
 class InsumosListView(listView):
     model = insumo
@@ -27,7 +12,6 @@ class InsumosListView(listView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
-
         categoria = self.request.GET.get('categoria')
         stock_bajo = self.request.GET.get('stock_bajo')
         orden = self.request.GET.get('orden')
@@ -36,7 +20,8 @@ class InsumosListView(listView):
             queryset = queryset.filter(categoria_id=categoria)
 
         if stock_bajo == "1":
-            queryset = queryset.filter(stock__lt=10)
+            # Filtramos los que tienen menos de 5 unidades (ajusta el umbral si es necesario)
+            queryset = queryset.filter(stock__lt=5)
 
         if orden == "desc":
             queryset = queryset.order_by('-stock')
@@ -47,33 +32,49 @@ class InsumosListView(listView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-
-        context['titulo'] = 'Listado de insumos'
-        context['icono'] = 'fa-solid fa-boxes-stacked'
-        context['crear_url'] = reverse_lazy('app:crear_insumos')
-        context['Categoria'] = Categoria.objects.all()
-        context['categoria_seleccionada'] = self.request.GET.get('categoria', '')
-        context['stock_bajo'] = self.request.GET.get('stock_bajo', '')
-        context['orden'] = self.request.GET.get('orden', '')
-
+        
+        # Sincronización con el Template: Creamos el objeto m.estado_stock
+        for obj in context['object_list']:
+            if obj.stock <= 0:
+                obj.estado_stock = {
+                    'texto': f'Agotado (0 {obj.unidad})',
+                    'clase': 'bg-danger'
+                }
+            elif obj.stock < 5:
+                obj.estado_stock = {
+                    'texto': f'Bajo ({obj.stock} {obj.unidad})',
+                    'clase': 'bg-warning text-dark'
+                }
+            else:
+                obj.estado_stock = {
+                    'texto': f'Disponible ({obj.stock} {obj.unidad})',
+                    'clase': 'bg-success'
+                }
+        
+        context.update({
+            'titulo': 'Listado de insumos',
+            'icono': 'fa-solid fa-boxes-stacked',
+            'crear_url': reverse_lazy('app:crear_insumos'),
+            'Categoria': Categoria.objects.all(),
+            'categoria_seleccionada': self.request.GET.get('categoria', ''),
+            'stock_bajo': self.request.GET.get('stock_bajo', ''),
+            'orden': self.request.GET.get('orden', ''),
+            'conteo_stock_bajo_real': insumo.objects.filter(stock__lt=5).count()
+        })
+        
         return context
-    
+
 class InsumosCreateView(CreateView):
     model = insumo
     template_name = 'insumos/crear.html'
     form_class = InsumosForm
     success_url = reverse_lazy('app:listar_insumos')
     
-    #@method_decorator(csrf_exempt)
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['icono'] = 'fa-solid fa-boxes-stacked'
         context['titulo'] = 'Crear Insumo'
         return context
-    
-    
-    
+
 class InsumosUpdateView(UpdateView):
     model = insumo
     form_class = InsumosForm
@@ -83,11 +84,8 @@ class InsumosUpdateView(UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Insumo'
-        context['icono'] = 'fa-solid fa-boxes-stacked'
-        context['listar_url'] = reverse_lazy('app:listar_insumos')
         return context
-    
-    
+
 class InsumosDeleteView(DeleteView):
     model = insumo
     template_name = 'insumos/eliminar.html'
@@ -96,7 +94,6 @@ class InsumosDeleteView(DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Insumo'
-        context['icono'] = 'fa-solid fa-boxes-stacked'
+        context['icono'] = 'fa-solid fa-trash'
         context['listar_url'] = reverse_lazy('app:listar_insumos')
         return context
-

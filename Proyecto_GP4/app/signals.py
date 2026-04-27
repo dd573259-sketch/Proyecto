@@ -5,7 +5,70 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from .models import *
 
+# En tu models.py o en un archivo utils.py
+class UnidadMedida(models.TextChoices):
+    KILO = 'kg', 'Kilogramos'
+    GRAMO = 'g', 'Gramos'
+    LITRO = 'l', 'Litros'
+    MILILITRO = 'ml', 'Mililitros'
+    METRO = 'm', 'Metros'
+    CENTIMETRO = 'cm', 'Centímetros'
+    UNIDAD = 'unidad', 'Unidades'
 
+# Diccionario de conversión a unidad base (gramos, mililitros, metros, unidades)
+CONVERSIONES = {
+    'kg': {'base': 'g', 'factor': 1000},      # 1 kg = 1000 g
+    'g': {'base': 'g', 'factor': 1},
+    'l': {'base': 'ml', 'factor': 1000},      # 1 L = 1000 ml
+    'ml': {'base': 'ml', 'factor': 1},
+    'm': {'base': 'm', 'factor': 1},
+    'cm': {'base': 'm', 'factor': 0.01},      # 1 cm = 0.01 m
+    'unidad': {'base': 'unidad', 'factor': 1},
+}
+
+# Umbrales DINÁMICOS según la unidad de medida
+UMBRALES = {
+    'kg': 2,      # 2 kg es bajo
+    'g': 200,     # 200g es bajo
+    'l': 2,       # 2 litros es bajo
+    'ml': 200,    # 200 ml es bajo
+    'm': 5,       # 5 metros es bajo
+    'cm': 50,     # 50 cm es bajo
+    'unidad': 10, # 10 unidades es bajo
+}
+
+def normalizar_stock(stock, unidad):
+    """Convierte cualquier stock a su unidad base para comparar"""
+    if unidad in CONVERSIONES:
+        return stock * CONVERSIONES[unidad]['factor']
+    return stock
+
+def obtener_umbral(unidad):
+    """Obtiene el umbral apropiado para la unidad de medida"""
+    return UMBRALES.get(unidad, 10)  # Por defecto 10 si no está definido
+
+def formatear_mensaje_stock(nombre, stock, unidad):
+    """Genera mensaje contextual según la unidad"""
+    if stock == 0:
+        return f"SIN STOCK: El insumo '{nombre}' está re paila."
+    
+    # Umbrales críticos (más estrictos)
+    umbrales_criticos = {
+        'kg': 0.5,
+        'g': 50,
+        'l': 0.5,
+        'ml': 50,
+        'm': 1,
+        'cm': 10,
+        'unidad': 3,
+    }
+    
+    umbral_critico = umbrales_criticos.get(unidad, 2)
+    
+    if stock < umbral_critico:
+        return f"CRÍTICO: '{nombre}' solo tiene {stock} {unidad}."
+    else:
+        return f"Stock bajo: '{nombre}' tiene {stock} {unidad}."
 # ─────────────────────────────────────────────
 #  SIGNALS EXISTENTES (Menu)
 # ─────────────────────────────────────────────
@@ -64,7 +127,17 @@ def notificacion_stock_producto(sender, instance, **kwargs):
 
 @receiver(post_save, sender=insumo)
 def notificacion_stock_insumo(sender, instance, **kwargs):
-    if instance.stock <= 10:
+    # Obtener la unidad de medida (asumiendo que tienes este campo)
+    unidad = instance.unidad  # Ajusta según el nombre real de tu campo
+    
+    # Normalizar el stock para la comparación
+    stock_normalizado = normalizar_stock(instance.stock, unidad)
+    
+    # Obtener el umbral apropiado para esta unidad
+    umbral = obtener_umbral(unidad)
+    
+    # Verificar si el stock normalizado está bajo el umbral
+    if stock_normalizado <= umbral:
         ya_existe = Notificacion.objects.filter(
             insumo=instance,
             tipo_notificacion="Stock bajo",
@@ -72,20 +145,16 @@ def notificacion_stock_insumo(sender, instance, **kwargs):
         ).exists()
 
         if not ya_existe:
-            if instance.stock == 0:
-                mensaje = f"SIN STOCK: El insumo '{instance.nombre}' está re paila."
-            elif instance.stock < 5:
-                mensaje = f"CRÍTICO: '{instance.nombre}' solo tiene {instance.stock} unidades."
-            else:
-                mensaje = f"Stock bajo: '{instance.nombre}' tiene {instance.stock} unidades."
-
+            # Usar el mensaje formateado con la unidad original
+            mensaje = formatear_mensaje_stock(instance.nombre, instance.stock, unidad)
+            
             Notificacion.objects.create(
                 insumo=instance,
                 tipo_notificacion="Stock bajo",
                 mensaje=mensaje
             )
     else:
-        # Si el stock se recuperó, limpia notificaciones no leídas de ese insumo
+        # Si el stock se recuperó, limpia notificaciones no leídas
         Notificacion.objects.filter(
             insumo=instance,
             tipo_notificacion="Stock bajo",
