@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import *
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 def index(request):
     return render(request, 'main.html')
@@ -20,9 +22,14 @@ def listar_receta(request):
     return render(request, 'receta/listar.html', nombre)
 
 
-class RecetaListView(listView):
+class RecetaListView(PermissionRequiredMixin, listView):
     model = Receta
     template_name = 'receta/listar.html'
+    permission_required = "app.view_receta"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
     
     
     #METODO DISPATCH
@@ -48,11 +55,16 @@ class RecetaListView(listView):
         context['crear_url'] = reverse_lazy('app:crear_receta')
         return context
     
-class RecetaCreateView(CreateView):
+class RecetaCreateView(PermissionRequiredMixin, CreateView):
     model = Receta
     form_class = RecetaForm
     template_name = 'receta/crear.html'
     success_url = reverse_lazy('app:listar_receta')
+    permission_required = "app.add_receta"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,11 +102,16 @@ class RecetaCreateView(CreateView):
         return redirect(self.success_url)
         
     
-class RecetaUpdateView(UpdateView):
+class RecetaUpdateView(PermissionRequiredMixin, UpdateView):
     model = Receta
     form_class = RecetaForm
     template_name = 'receta/crear.html'
     success_url = reverse_lazy('app:listar_receta')
+    permission_required = "app.change_receta"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -124,11 +141,16 @@ class RecetaUpdateView(UpdateView):
             return redirect(self.success_url)
 
         return self.render_to_response(context)
-class RecetaDeleteView(DeleteView):
+class RecetaDeleteView(PermissionRequiredMixin, DeleteView):
     model = Receta
     template_name = 'receta/eliminar.html'
     success_url = reverse_lazy('app:listar_receta')
-    
+    permission_required = "app.delete_receta"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Receta'

@@ -3,11 +3,18 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from app.models import Mesa
 from app.forms import MesaForm 
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
-class MesaListView(ListView):
+class MesaListView(PermissionRequiredMixin, ListView):
     model = Mesa
     template_name = 'Mesa/listar.html'
     context_object_name = 'mesas'
+    permission_required = "app.view_mesa"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -25,11 +32,16 @@ class MesaListView(ListView):
 
         return queryset
 
-class MesaCreateView(CreateView):
+class MesaCreateView(PermissionRequiredMixin, CreateView):
     model = Mesa
     form_class = MesaForm
     template_name = 'Mesa/crear.html'
     success_url = reverse_lazy('app:listar_mesas')
+    permission_required = "app.add_mesa"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -38,11 +50,16 @@ class MesaCreateView(CreateView):
         context['listar_url'] = reverse_lazy('app:listar_mesas')
         return context
 
-class MesaUpdateView(UpdateView):
+class MesaUpdateView(PermissionRequiredMixin, UpdateView):
     model = Mesa
     form_class = MesaForm
     template_name = 'Mesa/crear.html' 
     success_url = reverse_lazy('app:listar_mesas')
+    permission_required = "app.change_mesa"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -52,8 +69,13 @@ class MesaUpdateView(UpdateView):
         return context
 
 # Eliminar mesa
-class MesaDeleteView(DeleteView):
+class MesaDeleteView(PermissionRequiredMixin, DeleteView):
     model = Mesa
+    permission_required = "app.delete_mesa"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
     template_name = 'Mesa/eliminar.html'
     success_url = reverse_lazy('app:listar_mesas')
 

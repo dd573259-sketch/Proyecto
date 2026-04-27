@@ -2,14 +2,21 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views.generic import *
 from app.models import Cliente  
-from app.forms import ClienteForm 
+from app.forms import ClienteForm
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 # Listar todas las clientes
-class ClienteListView(ListView):
+class ClienteListView(PermissionRequiredMixin,ListView):
     model = Cliente
     template_name = 'Cliente/listar.html'
     context_object_name = 'clientes'
-
+    permission_required = "app.view_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Gestión de Clientes'
@@ -28,12 +35,17 @@ class ClienteListView(ListView):
         return queryset
 
 # Crear una nueva cliente
-class ClienteCreateView(CreateView):
+class ClienteCreateView(PermissionRequiredMixin,CreateView):
     model = Cliente
     form_class = ClienteForm
     template_name = 'Cliente/crear.html'
     success_url = reverse_lazy('app:listar_clientes')
-
+    permission_required = "app.add_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-user-plus'
@@ -42,11 +54,16 @@ class ClienteCreateView(CreateView):
         return context
 
 # Editar estado o usuario de la cliente
-class ClienteUpdateView(UpdateView):
+class ClienteUpdateView(PermissionRequiredMixin,UpdateView):
     model = Cliente
     form_class = ClienteForm
     template_name = 'Cliente/crear.html' # Reutilizamos el template de crear
     success_url = reverse_lazy('app:listar_clientes')
+    permission_required = "app.change_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -56,10 +73,15 @@ class ClienteUpdateView(UpdateView):
         return context
 
 # Eliminar cliente
-class ClienteDeleteView(DeleteView):
+class ClienteDeleteView(PermissionRequiredMixin,DeleteView):
     model = Cliente
     template_name = 'Cliente/eliminar.html'
     success_url = reverse_lazy('app:listar_clientes')
+    permission_required = "app.delete_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

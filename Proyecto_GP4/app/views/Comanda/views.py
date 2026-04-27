@@ -4,6 +4,8 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from app.models import Comanda  
 from app.forms import ComandaForm 
 from django.shortcuts import get_object_or_404, render
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 def imprimir_comanda(request, pk):
     comanda = get_object_or_404(Comanda, id_comanda=pk)
@@ -16,10 +18,15 @@ def imprimir_comanda(request, pk):
         comanda.pedido.save()
     return render(request, 'Comanda/imprimir.html', {'comanda': comanda})
 # Listar todas las comandas
-class ComandaListView(ListView):
+class ComandaListView(PermissionRequiredMixin,ListView):
     model = Comanda
     template_name = 'Comanda/listar.html'
     paginate_by = 5
+    permission_required = "app.view_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -58,11 +65,16 @@ class ComandaListView(ListView):
         
 
 
-class ComandaUpdateView(UpdateView):
+class ComandaUpdateView(PermissionRequiredMixin,UpdateView):
     model = Comanda
     form_class = ComandaForm
     template_name = 'Comanda/crear.html' 
     success_url = reverse_lazy('app:listar_comandas')
+    permission_required = "app.change_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -71,11 +83,16 @@ class ComandaUpdateView(UpdateView):
         return context
 
 # Eliminar comanda
-class ComandaDeleteView(DeleteView):
+class ComandaDeleteView(PermissionRequiredMixin,DeleteView):
     model = Comanda
     template_name = 'Comanda/eliminar.html'
     success_url = reverse_lazy('app:listar_comandas')
-
+    permission_required = "app.delete_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = '¿Eliminar Comanda?'

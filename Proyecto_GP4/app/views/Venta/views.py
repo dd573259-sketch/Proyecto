@@ -12,16 +12,23 @@ from django.contrib import messages
 from app.forms import VentaForm
 from itertools import groupby
 from django.db.models.functions import TruncMonth
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 
 from django.utils import timezone
 
-class VentaListView(ListView):
+class VentaListView(PermissionRequiredMixin, ListView):
     model = Venta
     template_name = 'venta/listar.html'
     context_object_name = 'ventas'
     paginate_by = 5
     ordering = ('-fecha_venta',)  # ← era orden_by, el atributo correcto es ordering
+    permission_required = "app.view_venta"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_queryset(self):
         queryset = Venta.objects.select_related('usuario', 'pedido')
@@ -57,12 +64,17 @@ class VentaListView(ListView):
         context['mes_actual'] = timezone.now().strftime('%B %Y').capitalize()
         return context
 
-class VentaCreateView(CreateView):
+class VentaCreateView(PermissionRequiredMixin, CreateView):
     model = Venta
     form_class = VentaForm
     template_name = 'venta/crear.html'
     success_url = reverse_lazy('app:listar_ventas')
-    
+    permission_required = "app.add_venta"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Venta'
@@ -99,17 +111,27 @@ class VentaCreateView(CreateView):
         return super().form_valid(form)
     
     
-class VentaUpdateView(UpdateView):
+class VentaUpdateView(PermissionRequiredMixin, UpdateView):
     model = Venta
     fields = '__all__'
     template_name = 'venta/crear.html'
     success_url = reverse_lazy('app:listar_ventas')
+    permission_required = "app.change_venta"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
 
-class VentaDeleteView(DeleteView):
+class VentaDeleteView(PermissionRequiredMixin, DeleteView):
     model = Venta
     template_name = 'venta/eliminar.html'
     success_url = reverse_lazy('app:listar_ventas')
+    permission_required = "app.delete_venta"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
 
 # oagar venta

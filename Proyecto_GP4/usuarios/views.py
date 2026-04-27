@@ -1,15 +1,34 @@
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, View
-from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User, Group, Permission
 from django.contrib import messages
+from django.core.exceptions import PermissionDenied
 from .models import PerfilUsuario
-from .forms import UserForm, PerfilForm
+from .forms import UserForm, PerfilForm, UserEditForm
 from django.shortcuts import get_object_or_404
-from .forms import UserEditForm
+
+
+class AdminOrSuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
+    login_url = reverse_lazy('login:login')
+    raise_exception = True
+
+    def test_func(self):
+        user = self.request.user
+        return (
+            user.is_authenticated and (
+                user.is_superuser or getattr(getattr(user, 'perfil', None), 'rol', '') == 'administrador'
+            )
+        )
+
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        raise PermissionDenied('No tiene permiso para acceder a esta sección.')
 
 #  LISTAR USUARIOS 
-class ListarUsuariosView(ListView):
+class ListarUsuariosView(AdminOrSuperuserRequiredMixin,ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -26,7 +45,7 @@ class ListarUsuariosView(ListView):
         return User.objects.filter(is_superuser=False).select_related('perfil')
 
 #  CREAR USUARIO 
-class CrearUsuarioView(View):
+class CrearUsuarioView(AdminOrSuperuserRequiredMixin,View):
     def get(self, request):
         #  formularios vacios
         context = {
@@ -65,7 +84,7 @@ class CrearUsuarioView(View):
         return render(request, 'usuarios/crear.html', context)
     
 #  EDITAR USUARIO 
-class EditarUsuarioView(View):
+class EditarUsuarioView(AdminOrSuperuserRequiredMixin,View):
     def get(self, request, pk):
         usuario = get_object_or_404(User, pk=pk)
         # Obtenemos el perfil, o lo creamos si por alguna razon no existe
@@ -109,7 +128,7 @@ class EditarUsuarioView(View):
         return render(request, 'usuarios/editar.html', context)
 
 # DESACTIVAR USUARIO
-class DesactivarUsuarioView(View):
+class DesactivarUsuarioView(AdminOrSuperuserRequiredMixin,View):
     def get(self, request, pk):
         usuario = get_object_or_404(User, pk=pk)
         context = {

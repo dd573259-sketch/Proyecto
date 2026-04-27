@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import *
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 def index(request):
     return render(request, 'main.html')
@@ -19,12 +21,15 @@ def listar_categorias(request):
     }
     return render(request, 'Categoria/listar.html', nombre)
 
-class categoriaListView(listView):
+class categoriaListView(PermissionRequiredMixin,listView):
     model = Categoria
     template_name = 'Categoria/listar.html'
-    
+    permission_required = "app.view_categoria"
+    raise_exception = True
     #METODO DISPATCH
     #@method_decorator(login_required)
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
     def dispatch(self, request, *args, **kwargs):
         #if request.method == 'GET':
             #return redirect('app:listar_categorias')    
@@ -54,14 +59,17 @@ class categoriaListView(listView):
         if estado:
             queryset = queryset.filter(estado=estado)
         return queryset
-class CategoriaCreateView(CreateView):
+class CategoriaCreateView(PermissionRequiredMixin,CreateView):
     model = Categoria
     template_name = 'Categoria/crear.html'
     form_class = CategoriaForm
     success_url = reverse_lazy('app:listar_categorias')
+    permission_required = "app.add_categoria"
+    raise_exception = True
     
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
     #@method_decorator(csrf_exempt)
-    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Categoria'
@@ -71,12 +79,16 @@ class CategoriaCreateView(CreateView):
     
     
     
-class CategoriaUpdateView(UpdateView):
+class CategoriaUpdateView(PermissionRequiredMixin,UpdateView):
     model = Categoria
     form_class = CategoriaForm
     template_name = 'Categoria/crear.html'
     success_url = reverse_lazy('app:listar_categorias')
+    permission_required = "app.change_categoria"
+    raise_exception = True
     
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Categoria'
@@ -85,11 +97,15 @@ class CategoriaUpdateView(UpdateView):
         return context
     
     
-class CategoriaDeleteView(DeleteView):
+class CategoriaDeleteView(PermissionRequiredMixin,DeleteView):
     model = Categoria
     template_name = 'Categoria/eliminar.html'
     success_url = reverse_lazy('app:listar_categorias')
+    permission_required = "app.delete_categoria"
+    raise_exception = True
     
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Categoria'

@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import *
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 def index(request):
     return render(request, 'main.html')
@@ -18,11 +20,16 @@ def listar_menu(request):
         'menu': menu.objects.all()
     }
     return render(request, 'menu/listar.html', nombre)
-
-class MenuListView(listView):
+    
+class MenuListView(PermissionRequiredMixin,listView):
     model = Menu
     template_name = 'menu/listar.html'
-    
+    permission_required = "app.view_menu"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     #METODO DISPATCH
     #@method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -48,12 +55,17 @@ class MenuListView(listView):
 
         return context
     
-class MenuCreateView(CreateView):
+class MenuCreateView(PermissionRequiredMixin,CreateView):
     model = Menu
     template_name = 'menu/crear.html'
     form_class = MenuForm
     success_url = reverse_lazy('app:listar_menu')
-    
+    permission_required = "app.add_menu"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     #@method_decorator(csrf_exempt)
     
     def get_context_data(self, **kwargs):
@@ -89,11 +101,16 @@ def editar_menu(request, pk):
     return redirect('app:listar_menu')
     
     
-class MenuDeleteView(DeleteView):
+class MenuDeleteView(PermissionRequiredMixin,DeleteView):
     model = Menu
     template_name = 'menu/eliminar.html'
     success_url = reverse_lazy('app:listar_menu')
-    
+    permission_required = "app.delete_menu"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Menu'

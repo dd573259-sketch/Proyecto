@@ -9,6 +9,8 @@ from django.utils import timezone
 from django.http import JsonResponse
 from app.models import Pago
 from django.contrib import messages
+from django.contrib.auth.mixins import PermissionRequiredMixin 
+from django.http import Http404
 
 
 class PedidoHistorialView(ListView):
@@ -64,11 +66,16 @@ class PedidoHistorialView(ListView):
         return context
 
 
-class PedidoListView(ListView):
+class PedidoListView(PermissionRequiredMixin, ListView):
     model = Pedido
     template_name = 'Pedido/listar.html'
     context_object_name = 'object_list'
     paginate_by = 5
+    permission_required = "app.view_pedido"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_queryset(self):
         hoy = timezone.now()
@@ -109,11 +116,16 @@ class PedidoListView(ListView):
         return context
 
 
-class PedidoCreateView(CreateView):
+class PedidoCreateView(PermissionRequiredMixin, CreateView):
     model = Pedido
     form_class = PedidoForm
     template_name = 'Pedido/crear.html'
     success_url = reverse_lazy('app:listar_pedidos')
+    permission_required = "app.add_pedido"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -171,11 +183,16 @@ class PedidoCreateView(CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class PedidoUpdateView(UpdateView):
+class PedidoUpdateView(PermissionRequiredMixin, UpdateView):
     model = Pedido
     form_class = PedidoForm
     template_name = 'Pedido/crear.html'
     success_url = reverse_lazy('app:listar_pedidos')
+    permission_required = "app.change_pedido"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def dispatch(self, request, *args, **kwargs):
         pedido = self.get_object()
@@ -240,10 +257,15 @@ class PedidoUpdateView(UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class PedidoDeleteView(DeleteView):
+class PedidoDeleteView(PermissionRequiredMixin, DeleteView):
     model = Pedido
     template_name = 'Pedido/eliminar.html'
     success_url = reverse_lazy('app:listar_pedidos')
+    permission_required = "app.delete_pedido"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def dispatch(self, request, *args, **kwargs):
         pedido = self.get_object()

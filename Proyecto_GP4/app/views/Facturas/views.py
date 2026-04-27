@@ -12,13 +12,20 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from itertools import groupby
 from django.db.models.functions import TruncMonth
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
-class FacturaListView(listView): 
+class FacturaListView(PermissionRequiredMixin,listView): 
     model = Factura
     template_name = 'facturas/listar.html'
     context_object_name = 'facturas'
     paginate_by = 5
     ordering = ('-fecha_hora',)
+    permission_required = "app.view_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_queryset(self):
         queryset = Factura.objects.select_related('venta', 'venta__usuario', 'venta__pedido')
@@ -57,11 +64,16 @@ class FacturaListView(listView):
         context['mes_actual'] = timezone.now().strftime('%B %Y').capitalize()
         return context
 
-class FacturaCreateView(CreateView):
+class FacturaCreateView(PermissionRequiredMixin,CreateView):
     model = Factura
     form_class = FacturaForm
     template_name = 'facturas/crear.html'
     success_url = reverse_lazy('app:listar_facturas')
+    permission_required = "app.add_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -109,11 +121,16 @@ class FacturaDesactivarView(View):
 
 
 
-class FacturaUpdateView(UpdateView):
+class FacturaUpdateView(PermissionRequiredMixin,UpdateView):
     model = Factura
     form_class = FacturaForm
     template_name = 'facturas/editar.html'
-    success_url = reverse_lazy('app:listar_facturas') 
+    success_url = reverse_lazy('app:listar_facturas')
+    permission_required = "app.change_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

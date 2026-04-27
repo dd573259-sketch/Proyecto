@@ -8,14 +8,21 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import *
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 
 
-class ProductoListView(listView):        
+class ProductoListView(PermissionRequiredMixin, listView):
     model = Producto
     template_name = 'producto/listar.html'
     context_object_name = 'object_list'
     paginate_by = 7
+    permission_required = "app.view_producto"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -25,13 +32,17 @@ class ProductoListView(listView):
         return context
     
 
-class ProductoCreateView(CreateView):
+class ProductoCreateView(PermissionRequiredMixin, CreateView):
     model = Producto
     form_class = ProductoForm
     template_name = 'producto/crear.html'
     success_url = reverse_lazy('app:listar_productos')
-    
-    
+    permission_required = "app.add_producto"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         if self.request.method in ('POST', 'PUT'):
@@ -49,10 +60,16 @@ class ProductoCreateView(CreateView):
     
 
 
-class ProductoDeleteView(DeleteView):
+class ProductoDeleteView(PermissionRequiredMixin, DeleteView):
     model = Producto
     template_name = 'producto/eliminar.html'
     success_url = reverse_lazy('app:listar_productos')
+    permission_required = "app.delete_producto"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
@@ -62,12 +79,17 @@ class ProductoDeleteView(DeleteView):
         return context
 
 
-class ProductoUpdateView(UpdateView):   
+class ProductoUpdateView(PermissionRequiredMixin, UpdateView):   
     model = Producto
     form_class = ProductoForm
     template_name = 'producto/crear.html'
     success_url = reverse_lazy('app:listar_productos')
-    
+    permission_required = "app.change_producto"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         if self.request.method in ('POST', 'PUT'):

@@ -10,14 +10,21 @@ from app.forms import PagoForm
 from django.contrib import messages
 from itertools import groupby
 from django.db.models.functions import TruncMonth
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 
-class PagoListView(ListView):
+class PagoListView(PermissionRequiredMixin, ListView):
     model = Pago
     template_name = 'pago/listar.html'
     context_object_name = 'pagos'
     paginate_by = 5
     ordering = ('-fecha',)
+    permission_required = "app.view_pago"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_queryset(self):
         queryset = Pago.objects.select_related('venta', 'venta__usuario', 'venta__pedido')
@@ -57,11 +64,16 @@ class PagoListView(ListView):
         return context
 
 
-class PagoCreateView(CreateView):
+class PagoCreateView(PermissionRequiredMixin, CreateView):
     model = Pago
     template_name = 'pago/crear.html'
     form_class = PagoForm
     success_url = reverse_lazy('app:listar_pagos')
+    permission_required = "app.add_pago"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,12 +102,17 @@ class PagoCreateView(CreateView):
         return redirect(self.success_url)
 
 
-class EliminarPagoView(DeleteView):
+class EliminarPagoView(PermissionRequiredMixin, DeleteView):
     model = Pago
     template_name = 'pago/eliminar.html'
     context_object_name = 'object'
     success_url = reverse_lazy('app:listar_pagos')
     pk_url_kwarg = 'pk'
+    permission_required = "app.delete_pago"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()

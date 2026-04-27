@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import *
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 def index(request):
     return render(request, 'main.html')
@@ -24,7 +26,12 @@ class InsumosListView(listView):
     template_name = 'insumos/listar.html'
     context_object_name = 'object_list'
     paginate_by = 7
-
+    permission_required = "app.view_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+    
     def get_queryset(self):
         queryset = super().get_queryset()
 
@@ -58,11 +65,16 @@ class InsumosListView(listView):
 
         return context
     
-class InsumosCreateView(CreateView):
+class InsumosCreateView(PermissionRequiredMixin,CreateView):
     model = insumo
     template_name = 'insumos/crear.html'
     form_class = InsumosForm
     success_url = reverse_lazy('app:listar_insumos')
+    permission_required = "app.add_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
     
     #@method_decorator(csrf_exempt)
     
@@ -74,12 +86,17 @@ class InsumosCreateView(CreateView):
     
     
     
-class InsumosUpdateView(UpdateView):
+class InsumosUpdateView(PermissionRequiredMixin,UpdateView):
     model = insumo
     form_class = InsumosForm
     template_name = 'insumos/crear.html'
     success_url = reverse_lazy('app:listar_insumos')
-    
+    permission_required = "app.change_categoria"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Insumo'
@@ -88,11 +105,16 @@ class InsumosUpdateView(UpdateView):
         return context
     
     
-class InsumosDeleteView(DeleteView):
+class InsumosDeleteView(PermissionRequiredMixin,DeleteView):
     model = insumo
     template_name = 'insumos/eliminar.html'
     success_url = reverse_lazy('app:listar_insumos')
-    
+    permission_required = "app.delete_categoria"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Insumo'

@@ -8,13 +8,20 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import *
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 
-class CompraListView(listView):        
+class CompraListView(PermissionRequiredMixin,listView):        
     model = Compra
     template_name = 'compra/listar.html'
     context_object_name = 'object_list'
     paginate_by = 7
+    permission_required = "app.view_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
 
     def get_context_data(self, **kwargs):
@@ -24,13 +31,20 @@ class CompraListView(listView):
         context['titulo'] = 'Listado de Compras'
         return context
 
-class CompraCreateView(CreateView):
+class CompraCreateView(PermissionRequiredMixin,CreateView):
     model = Compra
     form_class = CompraForm
     template_name = 'compra/crear.html'
     success_url = reverse_lazy('app:listar_compras')
+    permission_required = "app.add_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+    
     def form_valid(self, form):
         return super().form_valid(form)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-cart-plus'
@@ -38,26 +52,39 @@ class CompraCreateView(CreateView):
         return context
 
 
-class CompraDeleteView(DeleteView):
+class CompraDeleteView(PermissionRequiredMixin,DeleteView):
     model = Compra
     template_name = 'compra/eliminar.html'
     success_url = reverse_lazy('app:listar_compras')
+    permission_required = "app.delete_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+    
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-cart-xmark'
         context['titulo'] = 'Eliminar Compra'
         return context
-
-
-class CompraUpdateView(UpdateView):   
+    
+class CompraUpdateView(PermissionRequiredMixin,UpdateView):   
     model = Compra
     form_class = CompraForm
     template_name = 'compra/crear.html'
     success_url = reverse_lazy('app:listar_compras')
+    permission_required = "app.change_categoria"
+    raise_exception = True
+    
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+    
     def form_valid(self, form):
         return super().form_valid(form)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-cart-edit'

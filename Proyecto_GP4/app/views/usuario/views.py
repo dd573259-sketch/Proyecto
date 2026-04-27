@@ -8,12 +8,19 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import *
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404 
 
-class UsuarioListView(listView):        
+class UsuarioListView(PermissionRequiredMixin, listView):
     model = Usuario
     template_name = 'usuario/listar.html'
     context_object_name = 'object_list'
     paginate_by = 7
+    permission_required = "app.view_usuario"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -23,12 +30,16 @@ class UsuarioListView(listView):
         return context
 
 
-class UsuarioCreateView(CreateView):
+class UsuarioCreateView(PermissionRequiredMixin, CreateView):
     model = Usuario
     form_class = UsuarioForm
     template_name = 'usuario/crear.html'
     success_url = reverse_lazy('app:listar_usuarios')
+    permission_required = "app.add_usuario"
+    raise_exception = True
     
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
         
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -38,11 +49,16 @@ class UsuarioCreateView(CreateView):
 
     
 
-class UsuarioDeleteView(DeleteView):
+class UsuarioDeleteView(PermissionRequiredMixin, DeleteView):
     model = Usuario
     template_name = 'usuario/eliminar.html'
     success_url = reverse_lazy('app:listar_usuarios')
     context_object_name = 'usuario'
+    permission_required = "app.delete_usuario"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -52,12 +68,17 @@ class UsuarioDeleteView(DeleteView):
 
 
 
-class UsuarioUpdateView(UpdateView):
+class UsuarioUpdateView(PermissionRequiredMixin, UpdateView):
     model = Usuario
     form_class = UsuarioForm
     template_name = 'usuario/crear.html'
     success_url = reverse_lazy('app:listar_usuarios')
-    
+    permission_required = "app.change_usuario"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Usuario'

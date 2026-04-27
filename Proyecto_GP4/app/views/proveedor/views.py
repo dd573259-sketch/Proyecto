@@ -8,13 +8,20 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import *
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 
-class ProveedorListView(listView):        
+class ProveedorListView(PermissionRequiredMixin, listView):
     model = Proveedor
     template_name = 'proveedor/listar.html'
     context_object_name = 'object_list'
     paginate_by = 7
+    permission_required = "app.view_proveedor"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
 
     def get_context_data(self, **kwargs):
@@ -25,12 +32,17 @@ class ProveedorListView(listView):
         return context
 
 
-class ProveedorCreateView(CreateView):
+class ProveedorCreateView(PermissionRequiredMixin, CreateView):
     model = Proveedor
     form_class = ProveedorForm
     template_name = 'proveedor/crear.html'
     success_url = reverse_lazy('app:listar_proveedores')
-    
+    permission_required = "app.add_proveedor"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Proveedor'
@@ -38,24 +50,33 @@ class ProveedorCreateView(CreateView):
         return context
     
 
-class ProveedorDeleteView(DeleteView):
+class ProveedorDeleteView(PermissionRequiredMixin, DeleteView):
     model = Proveedor
     template_name = 'proveedor/eliminar.html'
     success_url = reverse_lazy('app:listar_proveedores')
-    
+    permission_required = "app.delete_proveedor"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context
         context['titulo'] = 'Eliminar Proveedor'
         return context
 
 
-class ProveedorUpdateView(UpdateView):
+class ProveedorUpdateView(PermissionRequiredMixin, UpdateView):
     model = Proveedor
     form_class = ProveedorForm
     template_name = 'proveedor/crear.html'
     success_url = reverse_lazy('app:listar_proveedores')
-    
+    permission_required = "app.change_proveedor"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fas fa-edit'

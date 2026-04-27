@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from app.models import *
 from app.forms import PlatoForm
+from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import Http404
 
 def index(request):
     return render(request, 'main.html')
@@ -19,10 +21,15 @@ def listar_platos(request):
     }
     return render(request, 'plato/listar.html', nombre)
 
-class PlatoListView(listView):
+class PlatoListView(PermissionRequiredMixin, listView):
     model = Plato
     template_name = 'plato/listar.html'
-    
+    permission_required = "app.view_plato"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     #METODO DISPATCH
     #@method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
@@ -50,11 +57,16 @@ class PlatoListView(listView):
         if nombre:
             queryset = queryset.filter(nombre__icontains=nombre)
         return queryset
-class PlatoCreateView(CreateView):
+class PlatoCreateView(PermissionRequiredMixin, CreateView):
     model = Plato
     form_class = PlatoForm
     template_name = 'plato/crear.html'
     success_url = reverse_lazy('app:listar_platos')
+    permission_required = "app.add_plato"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -70,12 +82,17 @@ class PlatoCreateView(CreateView):
         return context
     
     
-class PlatoUpdateView(UpdateView):
+class PlatoUpdateView(PermissionRequiredMixin, UpdateView):
     model = Plato
     form_class = PlatoForm
     template_name = 'plato/crear.html'
     success_url = reverse_lazy('app:listar_platos')
-    
+    permission_required = "app.change_plato"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         if self.request.method in ('POST', 'PUT'):
@@ -92,11 +109,16 @@ class PlatoUpdateView(UpdateView):
         return context
     
       
-class PlatoDeleteView(DeleteView):
+class PlatoDeleteView(PermissionRequiredMixin, DeleteView):
     model = Plato
     template_name = 'plato/eliminar.html'
     success_url = reverse_lazy('app:listar_platos')
-    
+    permission_required = "app.delete_plato"
+    raise_exception = True
+
+    def handle_no_permission(self):
+        raise Http404("No se encontro la pagina")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Plato'
