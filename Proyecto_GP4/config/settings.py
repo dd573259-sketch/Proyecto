@@ -89,7 +89,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'la_tuna',
         'USER': 'root',
-        'PASSWORD': '334578',
+        'PASSWORD': 'F4b14n89',
         'HOST': 'localhost',
         'PORT': '3306',
     }
@@ -148,5 +148,6 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'juniosdavidllanos2@gmail.com' 
 EMAIL_HOST_PASSWORD = 'iwng zdpp mjyi kqif'
+EMAIL_TIMEOUT = 10  # segundos
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

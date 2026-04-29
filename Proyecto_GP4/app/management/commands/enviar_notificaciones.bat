@@ -4,8 +4,12 @@ setlocal enabledelayedexpansion
 REM ============================================================================
 REM Script para Enviar Notificaciones por Email (Stock Bajo y Vencimientos)
 REM ============================================================================
-REM DEPRECATED: Usar enviar_notificaciones.bat en su lugar
-REM Este archivo se mantiene por compatibilidad
+REM Este script:
+REM - Detecta la ruta del proyecto automáticamente
+REM - Busca el entorno virtual en múltiples ubicaciones
+REM - Activa el entorno virtual
+REM - Ejecuta el comando de Django para enviar notificaciones
+REM - Registra logs de ejecución
 REM ============================================================================
 
 REM Obtener la ruta donde está el script
