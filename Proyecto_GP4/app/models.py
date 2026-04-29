@@ -387,7 +387,7 @@ class Menu(models.Model):
 
 class insumo(models.Model):
 
-    UNIDAD_OPCIONES = [
+    UNIDADES_MEDIDA = [
         ("kg", "Kilogramo (kg)"),
         ("g", "Gramo (g)"),
         ("l", "Litro (L)"),
@@ -401,7 +401,7 @@ class insumo(models.Model):
     categoria = models.ForeignKey('Categoria', on_delete=models.CASCADE)
     nombre = models.CharField(max_length=100, unique=True)
     descripcion = models.CharField(max_length=100)
-    unidad = models.CharField(max_length=20, choices=UNIDAD_OPCIONES, default="unidad")
+    unidad = models.CharField(max_length=20, choices=UNIDADES_MEDIDA, default="unidad")
     valor = models.DecimalField(max_digits=20, decimal_places=2, error_messages={'max_digits': 'El valor es demasiado alto.'})
     stock = models.PositiveIntegerField(default=0)
     fecha_ingreso = models.DateField(auto_now_add=True)          # ← automática al crear
@@ -436,7 +436,7 @@ class Receta(models.Model):
 class DetalleReceta(models.Model):
     receta = models.ForeignKey(Receta, on_delete=models.CASCADE, related_name='detalles')
     insumo = models.ForeignKey(insumo, on_delete=models.CASCADE)
-    cantidad = models.PositiveIntegerField(validators=[MinValueValidator(1)])
+    cantidad = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self):
         return f"{self.insumo.nombre} - {self.cantidad}"

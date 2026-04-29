@@ -147,6 +147,6 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'juniosdavidllanos2@gmail.com' 
-EMAIL_HOST_PASSWORD = 'junior123456789'
+EMAIL_HOST_PASSWORD = 'iwng zdpp mjyi kqif'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
