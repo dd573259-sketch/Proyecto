@@ -35,24 +35,24 @@ class ClienteForm(ModelForm):
                 'placeholder': 'Seleccione el tipo de cliente'}),
         }
     def clean_nombre(self):
-        nombre = self.cleaned_data.get('nombre')
+        nombre = self.cleaned_data.get('nombre', '').strip()
 
         if not nombre:
             raise forms.ValidationError("El nombre no puede estar vacío.")
 
-        if not nombre.isalpha():
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', nombre):
             raise forms.ValidationError("El nombre solo debe contener letras.")
 
         return nombre
     
     def clean_apellido(self):
-        apellido = self.cleaned_data.get('apellido')
+        apellido = self.cleaned_data.get('apellido', '').strip()
 
         if not apellido:
             raise forms.ValidationError("El apellido no puede estar vacío.")
 
 
-        if not apellido.isalpha():
+        if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$', apellido):
             raise forms.ValidationError("El apellido solo debe contener letras.")
 
         return apellido

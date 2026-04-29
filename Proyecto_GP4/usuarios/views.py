@@ -47,7 +47,6 @@ class ListarUsuariosView(AdminOrSuperuserRequiredMixin,ListView):
 #  CREAR USUARIO 
 class CrearUsuarioView(AdminOrSuperuserRequiredMixin,View):
     def get(self, request):
-        #  formularios vacios
         context = {
             'titulo': 'Crear Nuevo Usuario',
             'user_form': UserForm(),
