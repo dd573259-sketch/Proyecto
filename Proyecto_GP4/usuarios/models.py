@@ -8,7 +8,7 @@ ROLES = (
     ('cliente', 'Cliente'),
 )
 
-class PerfilUsuario(models.Model):
+class Usuario(models.Model):
     # Relación 1 a 1 con el usuario nativo de Django
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
     rol = models.CharField(max_length=20, choices=ROLES, default='cliente')

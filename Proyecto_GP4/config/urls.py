@@ -31,7 +31,7 @@ urlpatterns = [
     path('principal/', include(('app.urls', 'app'), namespace='app')),
     path('', include(('Login.urls', 'Login'), namespace='login')),
     path('usuarios/', include('usuarios.urls')),
-    path('ia/', include('app.views.IA.urls')),
+    path('principal/', include(('usuarios.urls', 'usuarios'), namespace='usuarios')), #esta es nueva estamos experimentando
     
 ]
 if settings.DEBUG:

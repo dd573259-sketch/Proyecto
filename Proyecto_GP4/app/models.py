@@ -7,10 +7,11 @@ from django.db.models import Sum
 from django.core.validators import RegexValidator
 from datetime import datetime
 from django.utils import timezone
+from usuarios.models import *
 
 
 # Create your models here.
-class Usuario(models.Model):
+'''class Usuario(models.Model):
 
     ROL_OPCIONES = (
         ('admin', 'Administrador'),
@@ -42,7 +43,7 @@ class Usuario(models.Model):
 
     def __str__(self):
         return f"{self.nombre} {self.apellido}"
-
+'''
 #Categorias Fuertes
 
 class Proveedor(models.Model):
@@ -193,7 +194,7 @@ class Compra(models.Model):
     ]
     id_compra = models.AutoField(primary_key=True)
     proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.CASCADE)
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True)
     insumo = models.ForeignKey( 'insumo', on_delete=models.CASCADE, null=True, blank=True)
     cantidad = models.IntegerField()
@@ -265,7 +266,7 @@ class Pedido(models.Model):
 
     id_pedido = models.AutoField(primary_key=True)
     mesa = models.ForeignKey('Mesa', on_delete=models.CASCADE, verbose_name="Mesa")
-    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE, verbose_name="Empleado")
+    usuario = models.ForeignKey('usuarios.Usuario',on_delete=models.CASCADE,verbose_name="Empleado")
     fecha_hora = models.DateTimeField(auto_now_add=True, verbose_name="Fecha y Hora")
     estado = models.CharField(max_length=15, choices=ESTADO, default="Preparación", verbose_name="Estado")
     pago = models.BooleanField(default=False, verbose_name="Pagado")
@@ -348,7 +349,7 @@ class Comanda(models.Model):
         related_name="comanda"
     )
 
-    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.CASCADE)
 
     fecha_hora = models.DateTimeField(auto_now_add=True)
 
@@ -451,7 +452,7 @@ class Notificacion(models.Model):
 
     id_notificacion = models.AutoField(primary_key=True)
 
-    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, null=True, blank=True)
+    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.CASCADE, null=True, blank=True)
 
     producto = models.ForeignKey(Producto, on_delete=models.CASCADE, null=True, blank=True)
     insumo = models.ForeignKey(insumo, on_delete=models.CASCADE, null=True, blank=True)
@@ -475,7 +476,7 @@ class Venta(models.Model):
     id_venta = models.AutoField(primary_key=True)
     codigo = models.CharField(max_length=50, unique=True, blank=True, null=True)
     pedido = models.ForeignKey('Pedido', on_delete=models.CASCADE)
-    usuario = models.ForeignKey('Usuario', on_delete=models.CASCADE)
+    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.CASCADE)
     total = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_venta = models.DateTimeField(auto_now_add=True)
     activo = models.BooleanField(default=True)  # ← añadir

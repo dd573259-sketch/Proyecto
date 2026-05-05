@@ -98,13 +98,13 @@
 
                         <td>
                             {% for d in p.detalle_productos.all %}
-                                {{ d.producto.descripcion }} (x{{ d.cantidad }})<br>
+                                {{ d.producto.nombre }} (x{{ d.cantidad }})<br>
                             {% empty %}
                                 <span class="text-muted">Sin productos</span>
                             {% endfor %}
                         </td>
 
-                        <td>{{ p.usuario.nombre }} {{ p.usuario.apellido }}</td>
+                        <td>{{ p.usuario.user.first_name }} {{ p.usuario.user.last_name }}</td>
                         <td>{{ p.fecha_hora|date:"Y/m/d H:i" }}</td>
                         <td>{{ p.estado }}</td>
                         <td>${{ p.total }}</td>

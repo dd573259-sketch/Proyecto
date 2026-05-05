@@ -53,7 +53,7 @@ async function sendMessage() {
     chatBox.scrollTop = chatBox.scrollHeight;
 
     try {
-        const response = await fetch("/ia/chat_bot/", {
+        const response = await fetch("/principal/chat_bot/", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"

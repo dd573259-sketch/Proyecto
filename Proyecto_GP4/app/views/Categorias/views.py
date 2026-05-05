@@ -21,7 +21,7 @@ def listar_categorias(request):
     }
     return render(request, 'Categoria/listar.html', nombre)
 
-class categoriaListView(PermissionRequiredMixin,listView):
+class CategoriaListView(PermissionRequiredMixin,listView):
     model = Categoria
     template_name = 'Categoria/listar.html'
     permission_required = "app.view_categoria"

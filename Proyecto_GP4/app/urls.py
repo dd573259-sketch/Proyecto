@@ -8,7 +8,7 @@ from app.views.Insumos.views import *
 from app.views.Facturas.views import *
 from app.views.Venta.views import *
 from app.views.pago.views import *
-from app.views.usuario.views import *
+#from app.views.usuario.views import *
 from app.views.proveedor.views import *
 from app.views.producto.views import *
 from app.views.compra.views import *
@@ -19,6 +19,7 @@ from app.views.Cliente.views import *
 from app.views.Dashborad.views import *
 from app.reportes import *
 from app.views.backup import *
+from app.views.IA.views import chat_view
 
 
 app_name = 'app'
@@ -150,7 +151,8 @@ urlpatterns = [
 # DASHBOARD
     path('dashboard/', dashboardView.as_view(), name='dashboard'),
     
-
+# IA
+    path('chat_bot/', chat_view, name='chat_bot'),
     
 # BACKUP
     path('backup/', backup, name='backup'),
@@ -163,9 +165,9 @@ urlpatterns = [
     path('backup/clientes/', backup_clientes, name='backup_clientes'), # ← nuevo
 
   
-path('pedidos/historial/', PedidoHistorialView.as_view(), name='historial_pedidos'),
-path('ventas/historial/', VentaHistorialView.as_view(), name='historial_ventas'),
-path('pagos/historial/', PagoHistorialView.as_view(), name='historial_pagos'),
-path('facturas/historial/', FacturaHistorialView.as_view(), name='historial_facturas'),
+    path('pedidos/historial/', PedidoHistorialView.as_view(), name='historial_pedidos'),
+    path('ventas/historial/', VentaHistorialView.as_view(), name='historial_ventas'),
+    path('pagos/historial/', PagoHistorialView.as_view(), name='historial_pagos'),
+    path('facturas/historial/', FacturaHistorialView.as_view(), name='historial_facturas'),
 ]
 

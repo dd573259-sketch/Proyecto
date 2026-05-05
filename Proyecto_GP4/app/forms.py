@@ -206,7 +206,7 @@ class DetallePedidoForm(ModelForm):
         # Mostramos la descripción del producto en el selector
         # en vez del nombre que trae por defecto el __str__
         self.fields['producto'].queryset = Producto.objects.all()
-        self.fields['producto'].label_from_instance = lambda obj: obj.descripcion
+        self.fields['producto'].label_from_instance = lambda obj: obj.nombre
 
     def clean_cantidad(self):
         cantidad = self.cleaned_data.get('cantidad')

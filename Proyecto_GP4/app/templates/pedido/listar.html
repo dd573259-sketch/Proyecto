@@ -56,12 +56,12 @@
             </td>
             <td>
                 {% for detalle in c.detalle_productos.all %}
-                    {{ detalle.producto.descripcion }} (x{{ detalle.cantidad }})<br>
+                    {{ detalle.producto.nombre }} (x{{ detalle.cantidad }})<br>
                 {% empty %}
                     <span class="text-muted">Sin productos</span>
                 {% endfor %}
             </td>
-            <td>{{ c.usuario.nombre }} {{ c.usuario.apellido }}</td>
+            <td>{{ c.usuario.user.first_name }} {{ c.usuario.user.last_name }}</td>
             <td>{{ c.fecha_hora|date:"Y/m/d H:i" }}</td>
             <td>{{ c.estado }}</td>
             <td>${{ c.total }}</td>
@@ -167,4 +167,31 @@
   Página {{ page_obj.number }} de {{ paginator.num_pages }} — {{ paginator.count }} registros en total
 </div>
 {% endif %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        {% if messages %}
+        {% for message in messages %}
+        Swal.fire({
+            icon: 'success',
+            title: '¡Listo!',
+            text: '{{ message }}',
+            confirmButtonColor: '#2e8b57',
+            confirmButtonText: 'Aceptar',
+            showConfirmButton: true,
+            allowOutsideClick: false
+        });
+        {% endfor %}
+        {% endif %}
+
+        function mostrarAlerta(mensaje) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sin resultados',
+                text: mensaje,
+                confirmButtonColor: '#e53935',
+                confirmButtonText: 'Entendido'
+            });
+        }
+    });
+</script>
 {% endblock %}

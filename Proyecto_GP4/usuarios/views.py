@@ -5,7 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User, Group, Permission
 from django.contrib import messages
 from django.core.exceptions import PermissionDenied
-from .models import PerfilUsuario
+from .models import Usuario
 from .forms import UserForm, PerfilForm, UserEditForm
 from django.shortcuts import get_object_or_404
 
@@ -87,7 +87,7 @@ class EditarUsuarioView(AdminOrSuperuserRequiredMixin,View):
     def get(self, request, pk):
         usuario = get_object_or_404(User, pk=pk)
         # Obtenemos el perfil, o lo creamos si por alguna razon no existe
-        perfil, created = PerfilUsuario.objects.get_or_create(user=usuario)
+        perfil, created = Usuario.objects.get_or_create(user=usuario)
         
         context = {
             'titulo': 'Editar Usuario',
@@ -99,7 +99,7 @@ class EditarUsuarioView(AdminOrSuperuserRequiredMixin,View):
 
     def post(self, request, pk):
         usuario = get_object_or_404(User, pk=pk)
-        perfil = get_object_or_404(PerfilUsuario, user=usuario)
+        perfil = get_object_or_404(Usuario, user=usuario)
         
         user_form = UserEditForm(request.POST, instance=usuario)
         perfil_form = PerfilForm(request.POST, instance=perfil)

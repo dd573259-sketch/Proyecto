@@ -168,26 +168,31 @@ def notificacion_stock_insumo(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Usuario)
 def notificacion_usuario_guardado(sender, instance, created, **kwargs):
+    nombre = instance.user.first_name
+    apellido = instance.user.last_name
+    username = instance.user.username
+
     if created:
         Notificacion.objects.create(
             usuario=instance,
             tipo_notificacion="Usuario creado",
-            mensaje=f"Nuevo usuario registrado: '{instance.nombre} {instance.apellido}' con rol '{instance.rol}'."
+            mensaje=f"Nuevo usuario registrado: '{username} {apellido}' con rol '{instance.rol}'."
         )
     else:
         Notificacion.objects.create(
             usuario=instance,
             tipo_notificacion="Usuario editado",
-            mensaje=f"El usuario '{instance.nombre} {instance.apellido}' fue modificado."
+            mensaje=f"El usuario '{nombre} {apellido}' fue modificado."
         )
 
 
 @receiver(post_delete, sender=Usuario)
 def notificacion_usuario_eliminado(sender, instance, **kwargs):
-    # Al eliminar el usuario, el FK se pone en NULL gracias a on_delete=CASCADE no aplica aquí,
-    # pero creamos la notificación ANTES de que el objeto desaparezca — post_delete lo permite
+    nombre = instance.user.first_name
+    apellido = instance.user.last_name
+
     Notificacion.objects.create(
-        usuario=None,  # ya no existe, evitamos FK roto
+        usuario=None,
         tipo_notificacion="Usuario eliminado",
-        mensaje=f"El usuario '{instance.nombre} {instance.apellido}' (rol: {instance.rol}) fue eliminado del sistema."
+        mensaje=f"El usuario '{nombre} {apellido}' (rol: {instance.rol}) fue eliminado del sistema."
     )

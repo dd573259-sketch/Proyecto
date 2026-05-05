@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import PerfilUsuario
+from .models import Usuario
 
 class UserForm(forms.ModelForm):
     password = forms.CharField(
@@ -21,7 +21,7 @@ class UserForm(forms.ModelForm):
 
 class PerfilForm(forms.ModelForm):
     class Meta:
-        model = PerfilUsuario
+        model = Usuario
         fields = ['rol', 'cedula', 'telefono']
 
 
