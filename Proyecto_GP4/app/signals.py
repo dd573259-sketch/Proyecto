@@ -1,9 +1,12 @@
 # app/signals.py
 
 from django.db.models.signals import post_save, post_delete
-
 from django.dispatch import receiver
 from .models import *
+from .utils_email import enviar_alerta_stock_bajo, enviar_alerta_vencimiento
+import logging
+
+logger = logging.getLogger(__name__)
 
 # En tu models.py o en un archivo utils.py
 class UnidadMedida(models.TextChoices):
@@ -107,11 +110,19 @@ def notificacion_stock_producto(sender, instance, **kwargs):
             else:
                 mensaje = f"Stock bajo: '{instance.nombre}' tiene {instance.stock} unidades."
 
+            # Crear notificación en BD
             Notificacion.objects.create(
                 producto=instance,
                 tipo_notificacion="Stock bajo",
                 mensaje=mensaje
             )
+            
+            # Enviar email de alerta
+            try:
+                enviar_alerta_stock_bajo(instance)
+                logger.info(f"Email enviado para stock bajo: {instance.nombre}")
+            except Exception as e:
+                logger.error(f"Error al enviar email de stock bajo para {instance.nombre}: {str(e)}")
     else:
         # Si el stock se recuperó, elimina las notificaciones no leídas de ese producto
         Notificacion.objects.filter(
@@ -148,11 +159,19 @@ def notificacion_stock_insumo(sender, instance, **kwargs):
             # Usar el mensaje formateado con la unidad original
             mensaje = formatear_mensaje_stock(instance.nombre, instance.stock, unidad)
             
+            # Crear notificación en BD
             Notificacion.objects.create(
                 insumo=instance,
                 tipo_notificacion="Stock bajo",
                 mensaje=mensaje
             )
+            
+            # Enviar email de alerta
+            try:
+                enviar_alerta_stock_bajo(instance)
+                logger.info(f"Email enviado para stock bajo: {instance.nombre}")
+            except Exception as e:
+                logger.error(f"Error al enviar email de stock bajo para {instance.nombre}: {str(e)}")
     else:
         # Si el stock se recuperó, limpia notificaciones no leídas
         Notificacion.objects.filter(
