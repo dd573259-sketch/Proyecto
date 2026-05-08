@@ -50,7 +50,7 @@ REM Detectar y validar entorno virtual
 echo [INFO] Buscando entorno virtual...
 
 REM Intentar ubicación 1: .venv en la carpeta del proyecto
-set "VENV_PATH=%PROYECTO_DIR%\.venv"
+set "C:\Users\dd573\Desktop\Proyecto\.venv\Scripts"
 if exist "!VENV_PATH!" (
     echo [INFO] Entorno virtual encontrado en: !VENV_PATH!
 ) else (
