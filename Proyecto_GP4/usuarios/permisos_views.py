@@ -33,7 +33,7 @@ class ListarPermisosView(AdminOrSuperuserRequiredMixin, View):
     def get(self, request):
         grupos = Group.objects.prefetch_related('permissions').all()
         context = {
-            'titulo': 'Dashboard de Permisos y Roles',
+            'titulo': 'Panel de Permisos y Roles',
             'grupos': grupos,
             'total_grupos': grupos.count(),
         }
