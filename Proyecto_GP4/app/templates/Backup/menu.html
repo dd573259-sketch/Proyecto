@@ -1,9 +1,9 @@
-{% extends 'body.html' %}
+{% extends 'main.html' %}
 {% load static %}
 
-{% block body %}
+{% block Contenido %}
   <div class="container-fluid mt-4">
-    <h2 class="mb-4"><i class="bi bi-database"></i> Respaldo y Restauracion de BD</h2>
+  
 
     <!-- ESTADO DE CONEXION -->
     <div class="row justify-content-center mb-4">
@@ -129,7 +129,7 @@
                     <h6 class="mt-2">Usuarios</h6>
                     <p class="small text-muted">Exporta la tabla de usuarios</p>
                     {% if mysql_conectado %}
-                      <form method="post" action="{% url 'app:backup_usuarios' %}">
+                      <form method="post" action="{% url 'usuarios:backup_usuarios' %}">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-download me-1"></i> Descargar</button>
                       </form>
@@ -420,5 +420,7 @@
       background-color: #d4edda !important;
       border-color: #198754 !important;
     }
+    
   </style>
 {% endblock %}
+
