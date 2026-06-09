@@ -6,6 +6,8 @@ from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from app.views.backup import generar_archivo_descarga
+from django.contrib import messages
+from django.shortcuts import redirect
 
 
 # ========== OBTENER DATOS DE LA BD ==========
@@ -49,6 +51,11 @@ def probar_conexion_mysql():
 
 # ========== VISTA PARA MOSTRAR OPCIONES DE RESPALDO ==========
 def backup_usuarios(request):
+    if not validar_password_backup(request):
+        messages.error(
+            request, "la contraseña de respaldo es incorrecta intentelo nuevamente"
+        )
+        return redirect('app:backup')
     """Exporta solo los datos de la tabla usuario"""
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -83,3 +90,9 @@ def backup_usuarios(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+
+def validar_password_backup(request):
+
+    password = request.POST.get("backup_password")
+    print("PASSWORD:", password)
+    return password == settings.BACKUP_PASSWORD

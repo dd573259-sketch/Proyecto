@@ -10,7 +10,8 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
-
+from django.contrib import messages
+from django.shortcuts import redirect
 
 # ========== OBTENER DATOS DE LA BD ==========
 def obtener_credenciales_mysql():
@@ -60,6 +61,9 @@ def backup(request):
 
         try:
             if accion == "backup_completo":
+                if not validar_password_backup(request):
+                    messages.error(request, "la contraseña de respaldo es incorrecta")
+                    return redirect("app:backup")
                 # Verificar conexion antes de hacer respaldo
                 if not probar_conexion_mysql():
                     return JsonResponse(
@@ -85,6 +89,15 @@ def backup(request):
 # ========== VISTA PARA RESTAURAR DATOS ==========
 @require_http_methods(["POST"])
 def restaurar_datos(request):
+    if not validar_password_backup(request):
+        messages.error(request, "la contraseña es incorrecta")
+        return redirect("app:backup")
+    elif not validar_password_backup(request):
+        messages.error(request, "contraseña correcta")
+
+        return redirect("app:backup")
+
+    
     """Restaura datos desde un archivo SQL"""
     if "archivo" not in request.FILES:
         return JsonResponse({"error": "No se proporciono archivo"}, status=400)
@@ -228,6 +241,12 @@ def generar_archivo_descarga(contenido_sql, nombre_archivo):
 
 
 def backup_ventas(request):
+    if not validar_password_backup(request):
+        
+        messages.error(
+            request,"La contraseña de respaldo es incorrecta"
+    )
+        return redirect('app:backup')
     """Exporta solo los datos de la tabla venta"""
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -268,6 +287,11 @@ def backup_ventas(request):
 
 
 def backup_pedidos(request):
+    if not validar_password_backup(request):
+        messages.error(
+            request, "la contraseña de respaldo es incorrecta intentelo nuevamente"
+        )
+        return redirect('app:backup')
     """Exporta solo los datos de la tabla pedido"""
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -308,6 +332,11 @@ def backup_pedidos(request):
 
 
 def backup_clientes(request):
+    if not validar_password_backup(request):
+        messages.error(
+            request, "la contraseña de respaldo es incorrecta intentelo nuevamente"
+        )
+        return redirect('app:backup')
     """Exporta solo los datos de la tabla cliente"""
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -378,6 +407,11 @@ def backup_clientes(request):
 
 
 def backup_pagos(request):
+    if not validar_password_backup(request):
+        messages.error(
+            request, "la contraseña de respaldo es incorrecta intentelo nuevamente"
+        )
+        return redirect('app:backup')
     """Exporta solo los datos de la tabla pago"""
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -418,6 +452,11 @@ def backup_pagos(request):
 
 
 def backup_proveedores(request):
+    if not validar_password_backup(request):
+        messages.error(
+            request, "la contraseña de respaldo es incorrecta intentelo nuevamente"
+        )
+        return redirect('app:backup')
     """Exporta solo los datos de la tabla proveedor"""
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -462,6 +501,11 @@ def backup_facturas(request):
 
 
 def backup_productos(request):
+    if not validar_password_backup(request):
+        messages.error(
+            request, "la contraseña de respaldo es incorrecta intentelo nuevamente"
+        )
+        return redirect('app:backup')
     """Exporta solo los datos de la tabla producto"""
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -500,6 +544,11 @@ def backup_productos(request):
 
 # RESPALDO PACHECO
 def backup_insumos(request):
+    if not validar_password_backup(request):
+        messages.error(
+            request, "la contraseña de respaldo es incorrecta intentelo nuevamente"
+        )
+        return redirect('app:backup')
     """Exporta solo los datos de la tabla insumo"""
 
     if request.method != "POST":
@@ -541,6 +590,11 @@ def backup_insumos(request):
 
 
 def backup_compras(request):
+    if not validar_password_backup(request):
+        messages.error(
+            request, "la contraseña de respaldo es incorrecta intentelo nuevamente"
+        )
+        return redirect('app:backup')
     """Exporta solo los datos de la tabla compra"""
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -578,6 +632,11 @@ def backup_compras(request):
 
 
 def backup_facturas(request):
+    if not validar_password_backup(request):
+        messages.error(
+            request, "la contraseña de respaldo es incorrecta intentelo nuevamente"
+        )
+        return redirect('app:backup')
     """Exporta solo los datos de la tabla factura"""
     if request.method != "POST":
         return JsonResponse({"error": "Método no permitido"}, status=405)
@@ -612,3 +671,9 @@ def backup_facturas(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=400)
+
+def validar_password_backup(request):
+
+    password = request.POST.get("backup_password")
+    print("PASSWORD:", password)
+    return password == settings.BACKUP_PASSWORD
