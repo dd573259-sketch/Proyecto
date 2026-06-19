@@ -151,3 +151,8 @@ EMAIL_HOST_PASSWORD = 'iwng zdpp mjyi kqif'
 EMAIL_TIMEOUT = 10  # segundos
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+#nueva idea de contraseña para los backup
+
+BACKUP_PASSWORD = "Admin123"
