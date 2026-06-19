@@ -437,6 +437,15 @@ DetalleFormSet = inlineformset_factory(
 )
 
 class InsumosForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+  
+        self.fields['categoria'].queryset = Categoria.objects.filter(
+            estado='activo'
+        )
+
     class Meta:
         model = insumo
         fields = '__all__'
@@ -449,13 +458,13 @@ class InsumosForm(ModelForm):
                 'cols': 3}),
             'valor': forms.NumberInput(attrs={
                 'placeholder': 'Ingrese el valor del insumo'}),
-            'fecha_vencimiento': forms.DateInput(attrs={  # ← calendario
+            'fecha_vencimiento': forms.DateInput(attrs={
                 'type': 'date',
                 'class': 'form-control'
             }, format='%Y-%m-%d'),
         }
 
-    # 🔹 Validaciones de NOMBRE
+
 def clean_nombre(self):
     nombre = self.cleaned_data.get('nombre')
     
@@ -482,6 +491,16 @@ def clean_nombre(self):
         raise forms.ValidationError('El nombre no puede iniciar ni terminar con espacio')
 
     return nombre
+
+    def clean_categoria(self):
+        categoria = self.cleaned_data.get('categoria')
+
+        if categoria.estado != 'activo':
+            raise forms.ValidationError(
+                'No puede seleccionar una categoría inactiva.'
+            )
+
+        return categoria
     
 
     def clean_descripcion(self):

@@ -5,8 +5,9 @@ from app.models import *
 from app.forms import *
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
+from app.signals import obtener_umbral
 
-class InsumosListView(listView):
+class InsumosListView(PermissionRequiredMixin, listView):
     model = insumo
     template_name = 'insumos/listar.html'
     context_object_name = 'object_list'
@@ -42,19 +43,30 @@ class InsumosListView(listView):
         
         # Sincronización con el Template: Creamos el objeto m.estado_stock
         for obj in context['object_list']:
+
+            umbral = obtener_umbral(obj.unidad)
+
             if obj.stock <= 0:
                 obj.estado_stock = {
-                    'texto': f'Agotado (0 {obj.unidad})',
+                    'texto': f'Agotado ({obj.stock} {obj.unidad})',
                     'clase': 'bg-danger'
                 }
-            elif obj.stock < 5:
+
+            elif obj.stock <= (umbral / 4):
+                obj.estado_stock = {
+                    'texto': f'Crítico ({obj.stock} {obj.unidad})',
+                    'clase': 'bg-danger'
+                }
+
+            elif obj.stock <= umbral:
                 obj.estado_stock = {
                     'texto': f'Bajo ({obj.stock} {obj.unidad})',
                     'clase': 'bg-warning text-dark'
                 }
+
             else:
                 obj.estado_stock = {
-                    'texto': f'Disponible ({obj.stock} {obj.unidad})',
+                    'texto': f'Normal ({obj.stock} {obj.unidad})',
                     'clase': 'bg-success'
                 }
         
