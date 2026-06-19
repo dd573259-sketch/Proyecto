@@ -26,9 +26,9 @@
     <div class="banner">TAQUERÍA LA TUNA</div>
     <div class="abaner"></div>
 
-    <div class="login">
+  <div class="login">
       <img src="{% static "imagenes/Logo.png" %}" alt="logo" class="logo">
-<div class="card-body login-card-body">
+    <div class="card-body login-card-body">
 
       <p class="login-box-msg">Inicio de Sesion</p>
           <form method="post">
@@ -43,8 +43,8 @@
             </div>
 
 
-        <a href="recuperacion_usuario.html" class="link">Recuperar usuario</a>
-        <a href="recuperacion_contrasena.html" class="link">Recuperar Contraseña</a>
+
+        <a href="{% url 'login:password_reset' %}" class="link">Recuperar Contraseña</a>
 
         <button type="submit">Entrar</button>
       </form>

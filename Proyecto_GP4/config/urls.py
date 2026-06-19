@@ -29,9 +29,9 @@ from  app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('principal/', include(('app.urls', 'app'), namespace='app')),
-    path('', include(('Login.urls', 'Login'), namespace='login')),
-    path('usuarios/', include('usuarios.urls')),
-    path('principal/', include(('usuarios.urls', 'usuarios'), namespace='usuarios')), #esta es nueva estamos experimentando
+    path('login/', include(('Login.urls', 'Login'), namespace='login')),
+    path('usuarios/', include(('usuarios.urls', 'Usuarios'), namespace='usuarios')),
+    
     
 ]
 if settings.DEBUG:

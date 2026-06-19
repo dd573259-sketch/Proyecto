@@ -6,7 +6,7 @@ from app.forms import *
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
 
-class InsumosListView(listView):
+class InsumosListView(PermissionRequiredMixin, listView):
     model = insumo
     template_name = 'insumos/listar.html'
     context_object_name = 'object_list'

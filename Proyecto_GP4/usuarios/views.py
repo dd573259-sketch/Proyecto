@@ -8,6 +8,8 @@ from django.core.exceptions import PermissionDenied
 from .models import Usuario
 from .forms import UserForm, PerfilForm, UserEditForm
 from django.shortcuts import get_object_or_404
+from django.contrib.auth.models import Group 
+from django.http import Http404
 
 
 class AdminOrSuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -44,6 +46,11 @@ class ListarUsuariosView(AdminOrSuperuserRequiredMixin,ListView):
         # Evitamos listar superusuarios del sistema 
         return User.objects.filter(is_superuser=False).select_related('perfil')
 
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        raise Http404("No se encontro la pagina")
+    
 #  CREAR USUARIO 
 class CrearUsuarioView(AdminOrSuperuserRequiredMixin,View):
     def get(self, request):
@@ -70,6 +77,9 @@ class CrearUsuarioView(AdminOrSuperuserRequiredMixin,View):
             perfil = perfil_form.save(commit=False)
             perfil.user = user
             perfil.save()
+            
+            grupo=Group.objects.get(name=perfil.rol)
+            user.groups.set([grupo])  # Asignamos el grupo al usuario
 
             messages.success(request, 'Usuario creado exitosamente.')
             return redirect('usuarios:listar') 
@@ -114,6 +124,9 @@ class EditarUsuarioView(AdminOrSuperuserRequiredMixin,View):
                 
             user.save()
             perfil_form.save()
+            
+            grupo=Group.objects.get(name=perfil.rol)
+            user.groups.set([grupo])  # Actualizamos el grupo del usuario
 
             messages.success(request, 'Usuario actualizado exitosamente.')
             return redirect('usuarios:listar')
