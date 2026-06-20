@@ -101,7 +101,7 @@ function abrirModal(index) {
     receta.detalles.forEach(detalle => {
         // Alerta si no hay stock (opcional, pero profesional)
         const stockStatus = !detalle.stock_suficiente 
-            ? `<br><small class="text-danger">⚠️ Stock bajo</small>` 
+            ? `<br><small class="text-danger"> Stock bajo</small>` 
             : "";
 
         tbody.innerHTML += `

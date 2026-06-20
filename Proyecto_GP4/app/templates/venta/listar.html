@@ -2,32 +2,33 @@
 {% load static %}
 
 {% block Contenido %}
-<div style="margin-bottom: 10px; color: #888; font-size: 0.85em;">
-  <i class="fas fa-calendar-alt"></i>
-  Mostrando ventas de: <strong>{{ mes_actual }}</strong>
-</div>
-
-
-<div style="margin-bottom:15px;">
-  <form method="GET" style="display:flex; gap:10px;">
-    <input type="text" name="usuario" placeholder="Buscar usuario" value="{{ usuario }}">
-    <input type="date" name="fecha" value="{{ fecha }}">
-    <button type="submit" class="btn btn-primary btn-xs">
-      <i class="fas fa-search"></i> Buscar
-    </button>
-
-    <div style="margin-left: auto; display:flex; align-items: center; gap:10px;">
-      <a href="{% url 'app:reporte_ventas_pdf' %}" class="btn btn-danger btn-xs btn-exportar">
-        <i class="fas fa-file-pdf"></i> Exportar PDF
-      </a>
-      <a href="{% url 'app:reporte_ventas_excel' %}" class="btn btn-success btn-xs btn-exportar">
-        <i class="fas fa-file-excel"></i> Exportar Excel
-      </a>
-    </div>
-  </form>
-</div>
-
 <div class="tabla-wrapper">
+  <div style="margin-bottom: 10px; color: #888; font-size: 0.85em;">
+    <i class="fas fa-calendar-alt"></i>
+    Mostrando ventas de: <strong>{{ mes_actual }}</strong>
+  </div>
+
+
+  <div style="margin-bottom:15px;">
+    <form method="GET" style="display:flex; gap:10px;">
+      <input type="text" name="usuario" placeholder="Buscar usuario" value="{{ usuario }}">
+      <input type="date" name="fecha" value="{{ fecha }}">
+      <button type="submit" class="btn btn-primary btn-xs">
+        <i class="fas fa-search"></i> Buscar
+      </button>
+
+      <div style="margin-left: auto; display:flex; align-items: center; gap:10px;">
+        <a href="{% url 'app:reporte_ventas_pdf' %}" class="btn btn-danger btn-xs btn-exportar">
+          <i class="fas fa-file-pdf"></i> Exportar PDF
+        </a>
+        <a href="{% url 'app:reporte_ventas_excel' %}" class="btn btn-success btn-xs btn-exportar">
+          <i class="fas fa-file-excel"></i> Exportar Excel
+        </a>
+      </div>
+    </form>
+  </div>
+
+
   <table class="tabla" id="tabla">
     <thead>
       <tr>
@@ -42,7 +43,7 @@
     </thead>
     <tbody>
       {% for v in ventas %}
-      <tr {% if not v.activo %}class="fila-inactiva"{% endif %}>
+      <tr {% if not v.activo %}class="fila-inactiva" {% endif %}>
         <td>{{ v.id_venta }}</td>
         <td>{{ v.usuario }}</td>
         <td>Pedido #{{ v.pedido.id_pedido }}</td>
@@ -51,25 +52,25 @@
 
         <td>
           {% if v.activo %}
-            <span class="badge badge-success text-dark">Activa</span>
+          <span class="badge badge-success text-dark">Activa</span>
           {% else %}
-            <span class="badge badge-secondary text-dark">Inactiva</span>
+          <span class="badge badge-secondary text-dark">Inactiva</span>
           {% endif %}
         </td>
 
         <td>
           {% if not v.activo %}
-            <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;" title="Venta inactiva">
-               Bloqueado
-            </span>
+          <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;" title="Venta inactiva">
+            Bloqueado
+          </span>
           {% elif v.pago_set.exists %}
-            <span class="btn btn-secondary btn-xs">
-              <i class="fas fa-check"></i> Pagado
-            </span>
+          <span class="btn btn-secondary btn-xs">
+            <i class="fas fa-check"></i> Pagado
+          </span>
           {% else %}
-            <a href="{% url 'app:crear_pago' v.id_venta %}" class="btn btn-success btn-xs">
-              <i class="fas fa-dollar-sign"></i> Pagar
-            </a>
+          <a href="{% url 'app:crear_pago' v.id_venta %}" class="btn btn-success btn-xs">
+            <i class="fas fa-dollar-sign"></i> Pagar
+          </a>
           {% endif %}
         </td>
       </tr>
@@ -86,22 +87,22 @@
 {% if is_paginated %}
 <div style="display:flex; justify-content:center; margin-top:15px; gap:5px;">
   {% if page_obj.has_previous %}
-    <a href="?page=1" class="btn btn-secondary btn-xs">« Primera</a>
-    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-xs">‹ Anterior</a>
+  <a href="?page=1" class="btn btn-secondary btn-xs">« Primera</a>
+  <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-xs">‹ Anterior</a>
   {% endif %}
 
   {% for num in paginator.page_range %}
-    {% if page_obj.number == num %}
-      <span class="btn btn-primary btn-xs">{{ num }}</span>
-    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-      <a href="?page={{ num }}" class="btn btn-secondary btn-xs">{{ num }}</a>
+  {% if page_obj.number == num %}
+  <span class="btn btn-primary btn-xs">{{ num }}</span>
+  {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a href="?page={{ num }}"
+    class="btn btn-secondary btn-xs">{{ num }}</a>
     {% endif %}
-  {% endfor %}
+    {% endfor %}
 
-  {% if page_obj.has_next %}
+    {% if page_obj.has_next %}
     <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs">Siguiente ›</a>
     <a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs">Última »</a>
-  {% endif %}
+    {% endif %}
 </div>
 <div style="text-align:center; margin-top:8px; color:#888; font-size:0.85em;">
   Página {{ page_obj.number }} de {{ paginator.num_pages }} — {{ paginator.count }} registros en total
@@ -127,57 +128,58 @@
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+  document.addEventListener('DOMContentLoaded', function () {
 
     {% if messages %}
-        {% for message in messages %}
-            Swal.fire({
-                icon: 'success',
-                title: '¡Listo!',
-                text: '{{ message|escapejs }}',
-                confirmButtonColor: '#2e8b57',
-                confirmButtonText: 'Aceptar',
-                allowOutsideClick: false
-            });
-        {% endfor %}
+    {% for message in messages %}
+    Swal.fire({
+      icon: 'success',
+      title: '¡Listo!',
+      text: '{{ message|escapejs }}',
+      confirmButtonColor: '#2e8b57',
+      confirmButtonText: 'Aceptar',
+      allowOutsideClick: false
+    });
+    {% endfor %}
     {% endif %}
 
     function mostrarAlerta(mensaje) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Sin resultados',
-            text: mensaje,
-            confirmButtonColor: '#e53935',
-            confirmButtonText: 'Entendido',
-            allowOutsideClick: false
-        });
+      Swal.fire({
+        icon: 'warning',
+        title: 'Sin resultados',
+        text: mensaje,
+        confirmButtonColor: '#e53935',
+        confirmButtonText: 'Entendido',
+        allowOutsideClick: false
+      });
     }
 
 
     document.querySelectorAll('.btn-exportar').forEach(function (btn) {
-        btn.addEventListener('click', function (e) {
-            const hayVentas = {{ ventas|length|default:0 }} > 0;
+      btn.addEventListener('click', function (e) {
+        const hayVentas = {{ ventas| length |default: 0
+      }} > 0;
 
-            if (!hayVentas) {
-                e.preventDefault();
-                e.stopImmediatePropagation();
+    if (!hayVentas) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
 
-                const filtroUsuario = "{{ request.GET.usuario|escapejs }}";
-                const filtroFecha   = "{{ request.GET.fecha|escapejs }}";
+      const filtroUsuario = "{{ request.GET.usuario|escapejs }}";
+      const filtroFecha = "{{ request.GET.fecha|escapejs }}";
 
-                let mensaje = "No hay ventas para exportar.";
+      let mensaje = "No hay ventas para exportar.";
 
-                if (filtroUsuario && filtroFecha) {
-                    mensaje = `No se encontraron ventas del usuario "${filtroUsuario}" en la fecha ${filtroFecha}.`;
-                } else if (filtroUsuario) {
-                    mensaje = `No se encontraron ventas del usuario "${filtroUsuario}".`;
-                } else if (filtroFecha) {
-                    mensaje = `No se encontraron ventas para la fecha ${filtroFecha}.`;
-                }
+      if (filtroUsuario && filtroFecha) {
+        mensaje = `No se encontraron ventas del usuario "${filtroUsuario}" en la fecha ${filtroFecha}.`;
+      } else if (filtroUsuario) {
+        mensaje = `No se encontraron ventas del usuario "${filtroUsuario}".`;
+      } else if (filtroFecha) {
+        mensaje = `No se encontraron ventas para la fecha ${filtroFecha}.`;
+      }
 
-                mostrarAlerta(mensaje);
-            }
-        });
+      mostrarAlerta(mensaje);
+    }
+  });
     });
 
 });

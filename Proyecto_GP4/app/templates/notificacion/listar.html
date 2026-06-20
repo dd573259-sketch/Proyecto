@@ -11,13 +11,13 @@
     <a href="{% url 'app:listar_notificaciones' %}"
        class="btn btn-sm {% if not filtro %}btn-dark{% else %}btn-outline-dark{% endif %}"
        style="border-radius:20px;">
-      🔔 Todas
+      Todas
     </a>
 
     <a href="?filtro=no_leidas"
        class="btn btn-sm {% if filtro == 'no_leidas' %}btn-danger{% else %}btn-outline-danger{% endif %}"
        style="border-radius:20px;">
-      🔴 No leídas
+      No leídas
       {% if contador_no_leidas > 0 %}
         <span style="background:white; color:red; border-radius:50%; padding:1px 6px; font-size:11px; margin-left:4px; font-weight:700;">
           {{ contador_no_leidas }}
@@ -28,14 +28,14 @@
     <a href="?filtro=leidas"
        class="btn btn-sm {% if filtro == 'leidas' %}btn-secondary{% else %}btn-outline-secondary{% endif %}"
        style="border-radius:20px;">
-      ✅ Leídas
+      Leídas
     </a>
 
     <!-- Marcar todas — form independiente, FUERA de cualquier otro form -->
     <form method="post" action="{% url 'app:marcar_leidas' %}" style="margin-left:auto;">
       {% csrf_token %}
       <button type="submit" class="btn btn-sm btn-outline-success" style="border-radius:20px;">
-        ✅ Marcar todas como leídas
+         Marcar todas como leídas
       </button>
     </form>
 
@@ -65,13 +65,13 @@
 
         <td>
           <span style="font-size:13px; font-weight: {% if not n.leido %}600{% else %}normal{% endif %};">
-            {% if "SIN STOCK" in n.mensaje %}🔴
-            {% elif "CRÍTICO" in n.mensaje %}🔴
-            {% elif "Stock bajo" in n.tipo_notificacion %}🟡
-            {% elif "creado" in n.tipo_notificacion %}👤
-            {% elif "editado" in n.tipo_notificacion %}✏️
-            {% elif "eliminado" in n.tipo_notificacion %}🗑️
-            {% else %}🔔{% endif %}
+            {% if "SIN STOCK" in n.mensaje %}
+            {% elif "CRÍTICO" in n.mensaje %}
+            {% elif "Stock bajo" in n.tipo_notificacion %}
+            {% elif "creado" in n.tipo_notificacion %}
+            {% elif "editado" in n.tipo_notificacion %}
+            {% elif "eliminado" in n.tipo_notificacion %}
+            {% else %}{% endif %}
             {{ n.tipo_notificacion }}
           </span>
         </td>
@@ -131,7 +131,7 @@
       {% empty %}
       <tr>
         <td colspan="10" style="text-align:center; padding:40px; color:#aaa;">
-          <div style="font-size:36px;">🔔</div>
+          <div style="font-size:36px;"></div>
           <p>No hay notificaciones</p>
         </td>
       </tr>

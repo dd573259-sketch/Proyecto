@@ -118,7 +118,7 @@
                     {% for detalle in pedido.detalle_productos.all %}
                         <tr>
                             {# Nombre del producto #}
-                            <td>{{ detalle.producto.descripcion }}</td>
+                            <td>{{ detalle.producto.nombre }}</td>
 
                             {# Precio unitario tomado directo de la BD #}
                             <td>${{ detalle.producto.precio }}</td>

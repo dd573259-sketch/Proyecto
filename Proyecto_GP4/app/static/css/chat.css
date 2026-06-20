@@ -92,7 +92,7 @@
 
 .chat-toggle {
     position: fixed;
-    bottom: 90px; /* 🔥 lo subimos también */
+    bottom: 20px; 
     right: 20px;
     background: #ffc107;
     color: black;

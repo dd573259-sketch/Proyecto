@@ -30,7 +30,7 @@
         <div class="card-body">
             {% for campo in form.visible_fields %}
             <div class="form-group mb-3">
-                <label>
+                <label for="{{ campo.id_for_label }}">
                     <strong>{{ campo.label }}:</strong>
                 </label>
                 {{ campo }}
@@ -56,12 +56,12 @@
             <div class="border rounded p-3 mb-3 fila-plato bg-light">
                 <div class="row align-items-end">
                     <div class="col-md-6 mb-2">
-                        <label><strong>Plato:</strong></label>
+                        <label for="{{ form_plato.plato.id_for_label }}"><strong>Plato:</strong></label>
                         {{ form_plato.plato }}
                         <small class="text-danger error-msg"></small>
                     </div>
                     <div class="col-md-3 mb-2">
-                        <label><strong>Cantidad:</strong></label>
+                        <label for="{{ form_plato.cantidad.id_for_label }}"><strong>Cantidad:</strong></label>
                         {{ form_plato.cantidad }}
                         <small class="text-danger error-msg"></small>
                     </div>
@@ -89,12 +89,12 @@
             <div class="border rounded p-3 mb-3 fila-producto bg-light">
                 <div class="row align-items-end">
                     <div class="col-md-6 mb-2">
-                        <label><strong>Producto:</strong></label>
+                        <label for="{{ form_producto.producto.id_for_label }}"><strong>Producto:</strong></label>
                         {{ form_producto.producto }}
                         <small class="text-danger error-msg"></small>
                     </div>
                     <div class="col-md-3 mb-2">
-                        <label><strong>Cantidad:</strong></label>
+                        <label for="{{ form_producto.cantidad.id_for_label }}"><strong>Cantidad:</strong></label>
                         {{ form_producto.cantidad }}
                         <small class="text-danger error-msg"></small>
                     </div>
@@ -119,21 +119,20 @@
             </h3>
         </div>
     </div>
+
     <div class="text-end mb-5">
-        <a href="{% url 'app:listar_pedidos' %}"
-           class="btn btn-secondary">
+        <a href="{% url 'app:listar_pedidos' %}" class="btn btn-secondary">
             Cancelar
         </a>
-        <button type="submit"
-                class="btn btn-primary px-4">
+        <button type="submit" class="btn btn-primary px-4">
             Guardar Pedido
         </button>
     </div>
 </form>
 
 {% endblock Contenido %}
-{% block js %}
 
+{% block js %}
 <script src="{% static 'js/select2.min.js' %}"></script>
 <script>
 const preciosPlatos = {{ platos_json|safe|default:"{}" }};
@@ -353,25 +352,54 @@ $(document).on(
 
 $('#form-pedido').on('submit', function(e){
     let valido = true;
-    $('input, select').each(function(){
+
+    $('.card-body').first().find('select, input').not('[type="hidden"]').each(function(){
         const campo = $(this);
-        if(
-            campo.attr('type') !== 'hidden'
-        ){
-            if(!campo.val()){
-                valido = false;
-                mostrarError(
-                    campo,
-                    'Este campo es obligatorio'
-                );
+        if(!campo.val() || campo.val() === ''){
+            valido = false;
+            if(campo.hasClass('select2-hidden-accessible')) {
+                mostrarError(campo.next('.select2').find('.select2-selection'), 'Este campo es obligatorio');
+            } else {
+                mostrarError(campo, 'Este campo es obligatorio');
             }
         }
     });
-    $('.fila-producto').each(function(){
-        if(!validarStock($(this))){
-            valido = false;
+
+    $('.fila-plato').each(function(){
+        const selectPlato = $(this).find('select[name$="-plato"]');
+        const inputCantidad = $(this).find('input[name$="-cantidad"]');
+        
+        if(selectPlato.val() || inputCantidad.val()){
+            if(!selectPlato.val()){
+                valido = false;
+                mostrarError(selectPlato.next('.select2').find('.select2-selection'), 'Seleccione un plato');
+            }
+            if(!inputCantidad.val() || parseInt(inputCantidad.val()) <= 0){
+                valido = false;
+                mostrarError(inputCantidad, 'Cantidad inválida');
+            }
         }
     });
+
+    $('.fila-producto').each(function(){
+        const selectProducto = $(this).find('select[name$="-producto"]');
+        const inputCantidad = $(this).find('input[name$="-cantidad"]');
+        
+        if(selectProducto.val() || inputCantidad.val()){
+            if(!selectProducto.val()){
+                valido = false;
+                mostrarError(selectProducto.next('.select2').find('.select2-selection'), 'Seleccione un producto');
+            }
+            if(!inputCantidad.val() || parseInt(inputCantidad.val()) <= 0){
+                valido = false;
+                mostrarError(inputCantidad, 'Cantidad inválida');
+            }
+            if(!validarStock($(this))){
+                valido = false;
+            }
+        }
+    });
+
     if(!valido){
         e.preventDefault();
         Swal.fire({
@@ -382,6 +410,7 @@ $('#form-pedido').on('submit', function(e){
         return false;
     }
 });
+
 $(document).ready(function(){
     activarSelect2();
     recalcularTotal();

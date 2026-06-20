@@ -2,13 +2,14 @@
 {% load static %}
 
 {% block Contenido %}
-<div style="margin-bottom: 10px; color: #888; font-size: 0.85em;">
+<div style="margin-bottom: 10px; color: #00000071; font-size: 0.85em;">
   <i class="fas fa-calendar-alt"></i>
   Mostrando facturas de: <strong>{{ mes_actual }}</strong>
 </div>
 
 <!-- FILTROS -->
-<div style="margin-bottom:15px;">
+
+<div class="tabla-wrapper">
   <form method="GET" style="display:flex; gap:10px;">
     <input type="text" name="usuario" placeholder="Buscar usuario" value="{{ usuario }}">
     <input type="date" name="fecha" value="{{ fecha }}">
@@ -25,9 +26,6 @@
       </a>
     </div>
   </form>
-</div>
-
-<div class="tabla-wrapper">
   <table class="tabla" id="tabla">
     <thead>
       <tr>
