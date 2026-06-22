@@ -100,12 +100,20 @@ class FacturaDesactivarView(View):
 
         observacion = request.POST.get('observacion', '').strip()
         if not observacion:
-            messages.error(request, "⚠ Debes ingresar una observación para desactivar la factura.")
+            messages.error(request, "Debes ingresar una observación para desactivar la factura.")
             return render(request, 'facturas/desactivar.html', {
                 'object': factura,
                 'titulo': 'Desactivar Factura',  # ← añadir también aquí
                 'icono': 'fa-solid fa-ban',
             })
+        
+        #aca esta la modificcion pra devolver
+        pedido = factura.venta.pedido
+        for detalle in pedido.detalle_productos.all():
+            producto = detalle.producto
+            producto.stock += detalle.cantidad
+            producto.save()
+
 
         factura.activo = False
         factura.observacion = observacion

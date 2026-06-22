@@ -162,12 +162,34 @@ class PedidoCreateView(PermissionRequiredMixin, CreateView):
                     form_plato.instance.precio_unitario = cleaned['plato'].precio
             formset_platos.save()
 
+            #aca inicio a modificar un poco las views de daniel att elkin
+
             formset_productos.instance = self.object
             for form_producto in formset_productos.forms:
                 cleaned = form_producto.cleaned_data
                 if cleaned.get('producto') and not cleaned.get('DELETE', False):
-                    form_producto.instance.precio_unitario = cleaned['producto'].precio
+                    producto = cleaned['producto']
+                    cantidad = cleaned['cantidad']
+                    #aca es una pequeña validacion para saber si esta disponoble
+
+                    if producto.stock < cantidad:
+                        messages.error(
+                            self.request, f"stock insuficiente para{producto.nombre}. Disponible: {producto.stock}"
+                        )
+                        #pasamos a otra pero esta es para registro vacios que no se cuelwn
+                        self.object.delete()
+                        return self.render_to_response(
+                            self.get_context_data(form=form)
+                        )
+                    
+                    #pasamos a descontar
+                    producto.stock -= cantidad
+                    producto.save()
+
+                    #precios en el detalle ._.
+                    form_producto.instance.precio_unitario = producto.precio
             formset_productos.save()
+                
 
             Comanda.objects.create(
                 pedido=self.object,
