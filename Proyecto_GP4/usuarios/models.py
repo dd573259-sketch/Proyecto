@@ -10,7 +10,7 @@ ROLES = (
 class Usuario(models.Model):
     # Relación 1 a 1 con el usuario nativo de Django
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='perfil')
-    rol = models.CharField(max_length=20, choices=ROLES, default='cliente')
+    rol = models.CharField(max_length=20, choices=ROLES, default='empleado')
     cedula = models.CharField(max_length=20, unique=True, verbose_name='Cédula')
     telefono = models.CharField(max_length=15, blank=True, null=True, verbose_name='Teléfono')
 

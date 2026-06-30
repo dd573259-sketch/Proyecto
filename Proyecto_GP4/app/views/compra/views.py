@@ -17,7 +17,7 @@ class CompraListView(PermissionRequiredMixin,listView):
     template_name = 'compra/listar.html'
     context_object_name = 'object_list'
     paginate_by = 7
-    permission_required = "app.view_categoria"
+    permission_required = "app.view_compra"
     raise_exception = True
     
     def handle_no_permission(self):
@@ -35,7 +35,7 @@ class CompraCreateView(PermissionRequiredMixin,CreateView):
     form_class = CompraForm
     template_name = 'compra/crear.html'
     success_url = reverse_lazy('app:listar_compras')
-    permission_required = "app.add_categoria"
+    permission_required = "app.add_compra"
     raise_exception = True
     
     def handle_no_permission(self):
@@ -55,7 +55,7 @@ class CompraDeleteView(PermissionRequiredMixin,DeleteView):
     model = Compra
     template_name = 'compra/eliminar.html'
     success_url = reverse_lazy('app:listar_compras')
-    permission_required = "app.delete_categoria"
+    permission_required = "app.delete_compra"
     raise_exception = True
     
     def handle_no_permission(self):
@@ -75,7 +75,7 @@ class CompraUpdateView(PermissionRequiredMixin,UpdateView):
     form_class = CompraForm
     template_name = 'compra/crear.html'
     success_url = reverse_lazy('app:listar_compras')
-    permission_required = "app.change_categoria"
+    permission_required = "app.change_compra"
     raise_exception = True
     
     def handle_no_permission(self):

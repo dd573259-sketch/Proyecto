@@ -8,8 +8,10 @@ from django.core.exceptions import PermissionDenied
 from .models import Usuario
 from .forms import UserForm, PerfilForm, UserEditForm
 from django.shortcuts import get_object_or_404
-from django.contrib.auth.models import Group 
+from django.contrib.auth.models import Group
 from django.http import Http404
+from django.db.models import Q
+
 
 
 class AdminOrSuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -20,7 +22,8 @@ class AdminOrSuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
         user = self.request.user
         return (
             user.is_authenticated and (
-                user.is_superuser or getattr(getattr(user, 'perfil', None), 'rol', '') == 'administrador'
+                user.is_superuser or getattr(
+                    getattr(user, 'perfil', None), 'rol', '') == 'administrador'
             )
         )
 
@@ -29,30 +32,67 @@ class AdminOrSuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
             return super().handle_no_permission()
         return redirect("app:acceso_denegado")
 
-#  LISTAR USUARIOS 
-class ListarUsuariosView(AdminOrSuperuserRequiredMixin,ListView):
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["titulo"] = "Listado de Usuarios"
-        context['icono'] = 'fas fa-cash-register'
-        return context
-    
+#  LISTAR USUARIOS
+class ListarUsuariosView(AdminOrSuperuserRequiredMixin, ListView):
+
     model = User
     template_name = 'usuarios/listar.html'
     context_object_name = 'usuarios'
 
     def get_queryset(self):
-        # Evitamos listar superusuarios del sistema 
-        return User.objects.filter(is_superuser=False).select_related('perfil')
+        queryset = User.objects.filter(
+            is_superuser=False
+        ).select_related('perfil')
+
+        buscar = self.request.GET.get("buscar")
+        estado = self.request.GET.get("estado")
+        rol = self.request.GET.get("rol")
+
+        # Buscar por usuario, nombre, apellido o cédula
+        if buscar:
+            queryset = queryset.filter(
+                Q(username__icontains=buscar) |
+                Q(first_name__icontains=buscar) |
+                Q(last_name__icontains=buscar) |
+                Q(perfil__cedula__icontains=buscar)
+            )
+
+        # Filtrar por estado
+        if estado == "activo":
+            queryset = queryset.filter(is_active=True)
+        elif estado == "inactivo":
+            queryset = queryset.filter(is_active=False)
+
+        # Filtrar por rol
+        if rol:
+            queryset = queryset.filter(perfil__rol=rol)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["titulo"] = "Listado de Usuarios"
+        context["icono"] = "fas fa-cash-register"
+
+        context["buscar"] = self.request.GET.get("buscar", "")
+        context["estado"] = self.request.GET.get("estado", "")
+        context["rol"] = self.request.GET.get("rol", "")
+
+        # Enviar los roles al template
+        context["roles"] = Usuario._meta.get_field("rol").choices
+
+        return context
 
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
             return super().handle_no_permission()
         return redirect("app:acceso_denegado")
 
-#  CREAR USUARIO 
-class CrearUsuarioView(AdminOrSuperuserRequiredMixin,View):
+#  CREAR USUARIO
+
+
+class CrearUsuarioView(AdminOrSuperuserRequiredMixin, View):
     def get(self, request):
         context = {
             'titulo': 'Crear Nuevo Usuario',
@@ -71,34 +111,36 @@ class CrearUsuarioView(AdminOrSuperuserRequiredMixin,View):
             user = user_form.save(commit=False)
             # Encriptamos la contraseña
             user.set_password(user_form.cleaned_data['password'])
-            user.save() # Ahora  guardamos el usuario
+            user.save()  # Ahora  guardamos el usuario
 
             # 2. Guardamos el Perfil y lo enlazamos al User creado
             perfil = perfil_form.save(commit=False)
             perfil.user = user
             perfil.save()
-            
-            grupo=Group.objects.get(name=perfil.rol)
+
+            grupo = Group.objects.get(name=perfil.rol)
             user.groups.set([grupo])  # Asignamos el grupo al usuario
 
             messages.success(request, 'Usuario creado exitosamente.')
-            return redirect('usuarios:listar') 
+            return redirect('usuarios:listar')
 
-        # Si hay errores, recargamos 
+        # Si hay errores, recargamos
         context = {
             'titulo': 'Crear Nuevo Usuario',
             'user_form': user_form,
             'perfil_form': perfil_form
         }
         return render(request, 'usuarios/crear.html', context)
-    
-#  EDITAR USUARIO 
-class EditarUsuarioView(AdminOrSuperuserRequiredMixin,View):
+
+#  EDITAR USUARIO
+
+
+class EditarUsuarioView(AdminOrSuperuserRequiredMixin, View):
     def get(self, request, pk):
         usuario = get_object_or_404(User, pk=pk)
         # Obtenemos el perfil, o lo creamos si por alguna razon no existe
         perfil, created = Usuario.objects.get_or_create(user=usuario)
-        
+
         context = {
             'titulo': 'Editar Usuario',
             'user_form': UserEditForm(instance=usuario),
@@ -110,22 +152,22 @@ class EditarUsuarioView(AdminOrSuperuserRequiredMixin,View):
     def post(self, request, pk):
         usuario = get_object_or_404(User, pk=pk)
         perfil = get_object_or_404(Usuario, user=usuario)
-        
+
         user_form = UserEditForm(request.POST, instance=usuario)
         perfil_form = PerfilForm(request.POST, instance=perfil)
 
         if user_form.is_valid() and perfil_form.is_valid():
             user = user_form.save(commit=False)
-            
+
             # Solo actualizamos la contraseña si el usuario escribio una nueva
             nueva_password = user_form.cleaned_data.get('password')
             if nueva_password:
                 user.set_password(nueva_password)
-                
+
             user.save()
             perfil_form.save()
-            
-            grupo=Group.objects.get(name=perfil.rol)
+
+            grupo = Group.objects.get(name=perfil.rol)
             user.groups.set([grupo])  # Actualizamos el grupo del usuario
 
             messages.success(request, 'Usuario actualizado exitosamente.')
@@ -140,7 +182,9 @@ class EditarUsuarioView(AdminOrSuperuserRequiredMixin,View):
         return render(request, 'usuarios/editar.html', context)
 
 # DESACTIVAR USUARIO
-class DesactivarUsuarioView(AdminOrSuperuserRequiredMixin,View):
+
+
+class DesactivarUsuarioView(AdminOrSuperuserRequiredMixin, View):
     def get(self, request, pk):
         usuario = get_object_or_404(User, pk=pk)
         context = {
@@ -152,24 +196,25 @@ class DesactivarUsuarioView(AdminOrSuperuserRequiredMixin,View):
 
     def post(self, request, pk):
         usuario = get_object_or_404(User, pk=pk)
-        
+
         # En lugar de usuario.delete(), lo desactivamos:
-        usuario.is_active = False 
+        usuario.is_active = False
         usuario.save()
-        
+
         messages.success(request, 'Usuario desactivado correctamente.')
         return redirect('usuarios:listar')
-    
+
+
 class CambiarEstadoUsuarioView(View):
     def post(self, request, pk):
         usuario = get_object_or_404(User, pk=pk)
-        
+
         # Invertimos el estado
         usuario.is_active = not usuario.is_active
         usuario.save()
-        
+
         # Mensaje dinamico
         estado = "activado" if usuario.is_active else "desactivado"
         messages.success(request, f'Usuario {estado} correctamente.')
-        
+
         return redirect('usuarios:listar')

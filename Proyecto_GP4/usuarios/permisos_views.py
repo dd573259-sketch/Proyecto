@@ -84,4 +84,4 @@ class EditarPermisosGrupoView(AdminOrSuperuserRequiredMixin, View):
         grupo.permissions.set(permisos_nuevos)
         
         messages.success(request, f'Permisos del grupo "{grupo.name}" actualizados correctamente.')
-        return redirect('usuarios:editar_permisos', pk=grupo.id)
+        return redirect('usuarios:listar_permisos')
