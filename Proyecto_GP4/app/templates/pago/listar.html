@@ -175,8 +175,7 @@
 
     document.querySelectorAll('.btn-exportar').forEach(function (btn) {
       btn.addEventListener('click', function (e) {
-        const hayPagos = {{ object_list| length |default: 0
-      }} > 0;
+        const hayPagos = {{ object_list|length|default:0 }} > 0;
 
     if (!hayPagos) {
       e.preventDefault();

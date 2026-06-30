@@ -12,6 +12,7 @@ from itertools import groupby
 from django.db.models.functions import TruncMonth
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
+from django.db.models import Q
 
 
 class PagoListView(PermissionRequiredMixin, ListView):
@@ -27,29 +28,49 @@ class PagoListView(PermissionRequiredMixin, ListView):
         raise Http404("No se encontro la pagina")
 
     def get_queryset(self):
-        queryset = Pago.objects.select_related('venta', 'venta__usuario', 'venta__pedido')
+        queryset = Pago.objects.select_related(
+            'venta',
+            'venta__usuario',
+            'venta__pedido'
+        )
+
         usuario = self.request.GET.get('usuario')
         fecha = self.request.GET.get('fecha')
         estado = self.request.GET.get('estado')
 
-        # Filtrar solo el mes actual por defecto
         hoy = timezone.now()
         queryset = queryset.filter(
             fecha__year=hoy.year,
             fecha__month=hoy.month
         )
 
-        # 🔍 Filtros (ajustados a tu modelo)
         if usuario:
-            queryset = queryset.filter(venta__usuario__nombre__icontains=usuario)
+            queryset = queryset.filter(
+                Q(venta__usuario__user__username__icontains=usuario) |
+                Q(venta__usuario__user__first_name__icontains=usuario) |
+                Q(venta__usuario__user__last_name__icontains=usuario)
+            )
 
         if fecha:
             queryset = queryset.filter(fecha__date=fecha)
 
         if estado == 'pagado':
-            queryset = queryset.filter(activo=True)
+                queryset = queryset.filter(activo=True)
         elif estado == 'pendiente':
             queryset = queryset.filter(activo=False)
+
+    # Mostrar alerta cuando no hay resultados
+        if (usuario or fecha or estado) and not queryset.exists():
+            if usuario and fecha:
+                mensaje = f'No se encontraron pagos del usuario "{usuario}" para la fecha {fecha}.'
+            elif usuario:
+                mensaje = f'No se encontraron pagos del usuario "{usuario}".'
+            elif fecha:
+                mensaje = f'No se encontraron pagos para la fecha {fecha}.'
+            elif estado:
+                mensaje = f'No se encontraron pagos con estado "{estado}".'
+
+            messages.warning(self.request, mensaje)
 
         return queryset
 

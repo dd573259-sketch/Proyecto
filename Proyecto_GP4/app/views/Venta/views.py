@@ -14,6 +14,7 @@ from itertools import groupby
 from django.db.models.functions import TruncMonth
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
+from django.db.models import Q
 
 
 from django.utils import timezone
@@ -44,7 +45,11 @@ class VentaListView(PermissionRequiredMixin, ListView):
         )
 
         if usuario:
-            queryset = queryset.filter(usuario__nombre__icontains=usuario)
+            queryset = queryset.filter(
+                Q(usuario__user__username__icontains=usuario) |
+                Q(usuario__user__first_name__icontains=usuario) |
+                Q(usuario__user__last_name__icontains=usuario)
+    )
         if fecha:
             queryset = queryset.filter(fecha_venta__date=fecha)
         if estado == 'pagado':
@@ -83,33 +88,55 @@ class VentaCreateView(PermissionRequiredMixin, CreateView):
 
     def form_valid(self, form):
         pedido = form.cleaned_data['pedido']
-        
 
-        #  Validar que el pedido esté entregado
+        # Validar que el pedido esté entregado
         if pedido.estado != 'Entregado':
-            messages.error(self.request, f"⚠ El pedido #{pedido.id_pedido} aún está en preparación. No se puede crear una venta hasta que sea entregado.")
+            messages.error(
+                self.request,
+                f"El pedido #{pedido.id_pedido} aún está en preparación. No se puede crear una venta hasta que sea entregado."
+            )
             return redirect('app:crear_venta')
 
         # Validar que no exista venta para ese pedido
         if Venta.objects.filter(pedido=pedido).exists():
-            messages.error(self.request, f"⚠ El pedido #{pedido.id_pedido} ya tiene una venta registrada.")
+            messages.error(
+                self.request,
+                f"El pedido #{pedido.id_pedido} ya tiene una venta registrada."
+            )
             return redirect('app:crear_venta')
 
         # Validar que el pedido tenga productos o platos
         if not pedido.detalle_productos.exists() and not pedido.detalle_platos.exists():
-            messages.error(self.request, f"⚠ No se puede crear una venta sin items en el pedido #{pedido.id_pedido}.")
+            messages.error(
+                self.request,
+                f"No se puede crear una venta sin ítems en el pedido #{pedido.id_pedido}."
+            )
             return redirect('app:crear_venta')
 
+        # Obtener el usuario
         usuario = Usuario.objects.first()
+
         if not usuario:
-            messages.error(self.request, "⚠ No hay usuarios disponibles para asignar a la venta.")
+            messages.error(
+                self.request,
+                "No hay usuarios disponibles para asignar a la venta."
+            )
             return redirect('app:crear_venta')
 
+        # Asignar datos a la venta
         form.instance.usuario = usuario
         form.instance.total = pedido.total
 
-        return super().form_valid(form)
-    
+        # Guardar la venta
+        response = super().form_valid(form)
+
+        # Mensaje de éxito
+        messages.success(
+            self.request,
+            f"Venta #{self.object.id_venta} creada correctamente."
+        )
+
+        return response
     
 class VentaUpdateView(PermissionRequiredMixin, UpdateView):
     model = Venta
@@ -146,15 +173,15 @@ def crear_venta_desde_pedido(request, pedido_id):
 
     # Validar que el pedido esté entregado
     if pedido.estado != 'Entregado':
-        messages.error(request, f"⚠ El pedido #{pedido.id_pedido} aún está en preparación. No se puede crear una venta.")
+        messages.error(request, f"El pedido #{pedido.id_pedido} aún está en preparación. No se puede crear una venta.")
         return redirect('app:listar_ventas')
 
     if Venta.objects.filter(pedido=pedido).exists():
-        messages.error(request, f"⚠ El pedido #{pedido.id_pedido} ya tiene una venta registrada.")
+        messages.error(request, f"El pedido #{pedido.id_pedido} ya tiene una venta registrada.")
         return redirect('app:listar_ventas')
 
     if not pedido.detalle_productos.exists() and not pedido.detalle_platos.exists():
-        messages.error(request, f"⚠ No se puede crear una venta sin items en el pedido #{pedido.id_pedido}.")
+        messages.error(request, f"No se puede crear una venta sin items en el pedido #{pedido.id_pedido}.")
         return redirect('app:listar_ventas')
 
     usuario = Usuario.objects.first()

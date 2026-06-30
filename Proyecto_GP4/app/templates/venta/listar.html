@@ -8,7 +8,6 @@
     Mostrando ventas de: <strong>{{ mes_actual }}</strong>
   </div>
 
-
   <div style="margin-bottom:15px;">
     <form method="GET" style="display:flex; gap:10px;">
       <input type="text" name="usuario" placeholder="Buscar usuario" value="{{ usuario }}">
@@ -28,7 +27,6 @@
     </form>
   </div>
 
-
   <table class="tabla" id="tabla">
     <thead>
       <tr>
@@ -41,9 +39,10 @@
         <th>Pagar</th>
       </tr>
     </thead>
+
     <tbody>
       {% for v in ventas %}
-      <tr {% if not v.activo %}class="fila-inactiva" {% endif %}>
+      <tr {% if not v.activo %}class="fila-inactiva"{% endif %}>
         <td>{{ v.id_venta }}</td>
         <td>{{ v.usuario }}</td>
         <td>Pedido #{{ v.pedido.id_pedido }}</td>
@@ -60,13 +59,15 @@
 
         <td>
           {% if not v.activo %}
-          <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;" title="Venta inactiva">
+          <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;">
             Bloqueado
           </span>
+
           {% elif v.pago_set.exists %}
           <span class="btn btn-secondary btn-xs">
             <i class="fas fa-check"></i> Pagado
           </span>
+
           {% else %}
           <a href="{% url 'app:crear_pago' v.id_venta %}" class="btn btn-success btn-xs">
             <i class="fas fa-dollar-sign"></i> Pagar
@@ -74,9 +75,12 @@
           {% endif %}
         </td>
       </tr>
+
       {% empty %}
       <tr>
-        <td colspan="7" style="text-align:center;">No hay ventas registradas</td>
+        <td colspan="7" style="text-align:center;">
+          No hay ventas registradas
+        </td>
       </tr>
       {% endfor %}
     </tbody>
@@ -86,100 +90,105 @@
 <!-- PAGINACIÓN -->
 {% if is_paginated %}
 <div style="display:flex; justify-content:center; margin-top:15px; gap:5px;">
-  {% if page_obj.has_previous %}
-  <a href="?page=1" class="btn btn-secondary btn-xs">« Primera</a>
-  <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-xs">‹ Anterior</a>
-  {% endif %}
 
-  {% for num in paginator.page_range %}
-  {% if page_obj.number == num %}
-  <span class="btn btn-primary btn-xs">{{ num }}</span>
-  {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a href="?page={{ num }}"
-    class="btn btn-secondary btn-xs">{{ num }}</a>
-    {% endif %}
-    {% endfor %}
+{% if page_obj.has_previous %}
+<a href="?page=1" class="btn btn-secondary btn-xs">« Primera</a>
+<a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-xs">‹ Anterior</a>
+{% endif %}
 
-    {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs">Siguiente ›</a>
-    <a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs">Última »</a>
+{% for num in paginator.page_range %}
+    {% if page_obj.number == num %}
+        <span class="btn btn-primary btn-xs">{{ num }}</span>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+        <a href="?page={{ num }}" class="btn btn-secondary btn-xs">{{ num }}</a>
     {% endif %}
+{% endfor %}
+
+{% if page_obj.has_next %}
+<a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs">Siguiente ›</a>
+<a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs">Última »</a>
+{% endif %}
+
 </div>
+
 <div style="text-align:center; margin-top:8px; color:#888; font-size:0.85em;">
-  Página {{ page_obj.number }} de {{ paginator.num_pages }} — {{ paginator.count }} registros en total
+    Página {{ page_obj.number }} de {{ paginator.num_pages }} — {{ paginator.count }} registros en total
 </div>
 {% endif %}
 
 <div class="card-footer" style="margin-top:15px;">
-  <a href="{% url 'app:crear_venta' %}" class="btn btn-primary btn-xs">
-    <i class="fas fa-plus"></i> Crear Venta
-  </a>
-  <a href="{% url 'app:historial_ventas' %}" class="btn btn-info btn-xs">
-    <i class="fas fa-history"></i> Historial
-  </a>
+    <a href="{% url 'app:crear_venta' %}" class="btn btn-primary btn-xs">
+        <i class="fas fa-plus"></i> Crear Venta
+    </a>
+
+    <a href="{% url 'app:historial_ventas' %}" class="btn btn-info btn-xs">
+        <i class="fas fa-history"></i> Historial
+    </a>
 </div>
 
 <style>
-  .fila-inactiva {
-    background-color: #f0f0f0 !important;
-    opacity: 0.75;
-    text-decoration: line-through;
-    color: #888;
-  }
+.fila-inactiva{
+    background:#f0f0f0!important;
+    opacity:.75;
+    text-decoration:line-through;
+    color:#888;
+}
 </style>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded",function(){
 
+    // ALERTAS DE DJANGO
     {% if messages %}
-    {% for message in messages %}
-    Swal.fire({
-      icon: 'success',
-      title: '¡Listo!',
-      text: '{{ message|escapejs }}',
-      confirmButtonColor: '#2e8b57',
-      confirmButtonText: 'Aceptar',
-      allowOutsideClick: false
-    });
-    {% endfor %}
+        {% for message in messages %}
+        Swal.fire({
+            icon: "{{ message.tags|default:'success' }}",
+            title: "{% if message.tags == 'success' %}¡Éxito!{% elif message.tags == 'error' %}Error{% elif message.tags == 'warning' %}Advertencia{% else %}Información{% endif %}",
+            text: "{{ message|escapejs }}",
+            confirmButtonColor:"#2e8b57",
+            confirmButtonText:"Aceptar"
+        });
+        {% endfor %}
     {% endif %}
 
-    function mostrarAlerta(mensaje) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Sin resultados',
-        text: mensaje,
-        confirmButtonColor: '#e53935',
-        confirmButtonText: 'Entendido',
-        allowOutsideClick: false
-      });
+    function mostrarAlerta(mensaje){
+        Swal.fire({
+            icon:'warning',
+            title:'Sin resultados',
+            text:mensaje,
+            confirmButtonColor:'#e53935',
+            confirmButtonText:'Entendido'
+        });
     }
 
+    document.querySelectorAll('.btn-exportar').forEach(function(btn){
 
-    document.querySelectorAll('.btn-exportar').forEach(function (btn) {
-      btn.addEventListener('click', function (e) {
-        const hayVentas = {{ ventas| length |default: 0
-      }} > 0;
+        btn.addEventListener('click',function(e){
 
-    if (!hayVentas) {
-      e.preventDefault();
-      e.stopImmediatePropagation();
+            const hayVentas = {{ ventas|length }};
 
-      const filtroUsuario = "{{ request.GET.usuario|escapejs }}";
-      const filtroFecha = "{{ request.GET.fecha|escapejs }}";
+            if(hayVentas==0){
 
-      let mensaje = "No hay ventas para exportar.";
+                e.preventDefault();
 
-      if (filtroUsuario && filtroFecha) {
-        mensaje = `No se encontraron ventas del usuario "${filtroUsuario}" en la fecha ${filtroFecha}.`;
-      } else if (filtroUsuario) {
-        mensaje = `No se encontraron ventas del usuario "${filtroUsuario}".`;
-      } else if (filtroFecha) {
-        mensaje = `No se encontraron ventas para la fecha ${filtroFecha}.`;
-      }
+                const filtroUsuario="{{ request.GET.usuario|escapejs }}";
+                const filtroFecha="{{ request.GET.fecha|escapejs }}";
 
-      mostrarAlerta(mensaje);
-    }
-  });
+                let mensaje="No hay ventas para exportar.";
+
+                if(filtroUsuario && filtroFecha){
+                    mensaje=`No se encontraron ventas del usuario "${filtroUsuario}" en la fecha ${filtroFecha}.`;
+                }else if(filtroUsuario){
+                    mensaje=`No se encontraron ventas del usuario "${filtroUsuario}".`;
+                }else if(filtroFecha){
+                    mensaje=`No se encontraron ventas para la fecha ${filtroFecha}.`;
+                }
+
+                mostrarAlerta(mensaje);
+            }
+
+        });
+
     });
 
 });
