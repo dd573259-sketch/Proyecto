@@ -27,7 +27,7 @@ class AdminOrSuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
             return super().handle_no_permission()
-        raise PermissionDenied('No tiene permiso para acceder a esta sección.')
+        return redirect("app:acceso_denegado")
 
 #  LISTAR USUARIOS 
 class ListarUsuariosView(AdminOrSuperuserRequiredMixin,ListView):
@@ -49,8 +49,8 @@ class ListarUsuariosView(AdminOrSuperuserRequiredMixin,ListView):
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
             return super().handle_no_permission()
-        raise Http404("No se encontro la pagina")
-    
+        return redirect("app:acceso_denegado")
+
 #  CREAR USUARIO 
 class CrearUsuarioView(AdminOrSuperuserRequiredMixin,View):
     def get(self, request):

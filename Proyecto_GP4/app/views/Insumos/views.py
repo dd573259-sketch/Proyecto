@@ -16,7 +16,7 @@ class InsumosListView(PermissionRequiredMixin, listView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
     
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -92,11 +92,12 @@ class InsumosCreateView(PermissionRequiredMixin,CreateView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
-    
+        return redirect("app:acceso_denegado")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Insumo'
+        context['icono'] = 'fa-solid fa-plus'
         return context
     
     
@@ -110,11 +111,12 @@ class InsumosUpdateView(PermissionRequiredMixin,UpdateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Insumo'
+        context['icono'] = 'fa-solid fa-edit'
         return context
     
     
@@ -126,7 +128,7 @@ class InsumosDeleteView(PermissionRequiredMixin,DeleteView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -28,7 +28,6 @@
             <th>apellido</th>
             <th>telefono</th>
             <th>correo_electronico</th>
-            <th>direccion</th>
             <th>tipo_cliente</th>
             <th>Editar</th>
             <th>Eliminar</th>
@@ -43,7 +42,6 @@
             <td>{{ c.apellido }}</td>
             <td>{{ c.telefono }}</td>
             <td>{{ c.correo_electronico }}</td>
-            <td>{{ c.direccion }}</td>
             <td>{{ c.tipo_cliente }}</td>
             <td>
                 <a href="{% url 'app:editar_cliente' c.id_cliente %}" class="btn btn-primary btn-xs">

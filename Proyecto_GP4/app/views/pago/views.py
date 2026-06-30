@@ -24,8 +24,8 @@ class PagoListView(PermissionRequiredMixin, ListView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
-
+        return redirect("app:acceso_denegado")
+    
     def get_queryset(self):
         queryset = Pago.objects.select_related('venta', 'venta__usuario', 'venta__pedido')
         usuario = self.request.GET.get('usuario')
@@ -73,7 +73,7 @@ class PagoCreateView(PermissionRequiredMixin, CreateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -112,7 +112,7 @@ class EliminarPagoView(PermissionRequiredMixin, DeleteView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def delete(self, request, *args, **kwargs):
         self.object = self.get_object()

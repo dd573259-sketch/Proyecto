@@ -21,8 +21,7 @@ class CompraListView(PermissionRequiredMixin,listView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
-
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -40,8 +39,8 @@ class CompraCreateView(PermissionRequiredMixin,CreateView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
-    
+        return redirect("app:acceso_denegado")
+
     def form_valid(self, form):
         return super().form_valid(form)
     
@@ -60,8 +59,8 @@ class CompraDeleteView(PermissionRequiredMixin,DeleteView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
-    
+        return redirect("app:acceso_denegado")
+
     def delete(self, request, *args, **kwargs):
         return super().delete(request, *args, **kwargs)
     
@@ -80,8 +79,8 @@ class CompraUpdateView(PermissionRequiredMixin,UpdateView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
-    
+        return redirect("app:acceso_denegado")
+
     def form_valid(self, form):
         return super().form_valid(form)
     

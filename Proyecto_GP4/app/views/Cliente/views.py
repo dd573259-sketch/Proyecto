@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
+from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.views.generic import *
 from app.models import Cliente  
@@ -15,7 +17,7 @@ class ClienteListView(PermissionRequiredMixin,ListView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -44,7 +46,7 @@ class ClienteCreateView(PermissionRequiredMixin,CreateView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -63,7 +65,7 @@ class ClienteUpdateView(PermissionRequiredMixin,UpdateView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -81,7 +83,7 @@ class ClienteDeleteView(PermissionRequiredMixin,DeleteView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

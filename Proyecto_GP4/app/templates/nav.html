@@ -16,5 +16,7 @@
         </ul>
     </div>
     <a href="{% url 'app:dashboard' %}"><img class="icono" src="{% static 'imagenes/inicio.png' %}" alt="Inicio"></a>
-    <a href="{% url 'usuarios:listar' %}"><img class="icono" src="{% static 'imagenes/usuario.png' %}" alt="Usuario"></a>
+    <a href="#" data-bs-toggle="modal" data-bs-target="#perfilModal">
+        <img class="icono" src="{% static 'imagenes/usuario.png' %}" alt="Perfil">
+    </a>
 </nav>

@@ -1,77 +1,93 @@
 {% load static %}
 {% load widget_tweaks %}
+
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login - Taquería La Tuna</title>
-  <link rel="stylesheet" href="{% static "css/loginstyle.css" %}">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>{{ titulo }}</title>
-    <!-- Tell the browser to be responsive to screen width -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="{% static 'lib/adminlte-3.0.4/plugins/font-awesome-5.11.1/css/all.min.css' %}">
-    <!-- Theme style -->
-    <link rel="stylesheet" href="{% static 'lib/adminlte-3.0.4/css/adminlte.min.css' %}">
-    
-    <!-- Sweetalert2 -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Taquería La Tuna</title>
+
+    <link rel="stylesheet" href="{% static 'css/loginstyle.css' %}">
+
+    <!-- Remix Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <!-- SweetAlert -->
     <script src="{% static 'lib/sweetalert2/sweetalert2.all.min.js' %}"></script>
+
 </head>
 
 <body>
-  <div class="contenedor">
-    <div class="banner">TAQUERÍA LA TUNA</div>
+
+<div class="contenedor">
+
+    <div class="banner">
+        TAQUERÍA LA TUNA
+    </div>
+
     <div class="abaner"></div>
 
-  <div class="login">
-      <img src="{% static "imagenes/Logo.png" %}" alt="logo" class="logo">
-    <div class="card-body login-card-body">
+    <div class="login">
 
-      <p class="login-box-msg">Inicio de Sesion</p>
-          <form method="post">
+        <img src="{% static 'imagenes/Logo.png' %}" class="logo" alt="Logo">
+
+        <h2>Inicio de Sesión</h2>
+
+        <form method="post">
+
             {% csrf_token %}
-            <div class="input-group mb-3">
-              {{ form.username | add_class:"form-control" | attr:"autocomplete:off" | attr:"placeholder: Usuario" }}
-              <div class="input-group-text"><span class="bi bi-envelope"></span></div>
+
+            <!-- Usuario -->
+            <div class="input-group">
+
+                {{ form.username|add_class:"form-control"|attr:"autocomplete:off"|attr:"placeholder:Usuario" }}
+
+                <i class="ri-user-3-line input-icon"></i>
+
             </div>
-            <div class="input-group mb-3">
-              {{ form.password | add_class:"form-control" | attr:"autocomplete:off" | attr:"placeholder: Contraseña" }}
-              <div class="input-group-text"><span class="bi bi-lock-fill"></span></div>
+
+            <!-- Contraseña -->
+            <div class="input-group password-group">
+
+                {{ form.password|add_class:"form-control password-input"|attr:"autocomplete:off"|attr:"placeholder:Contraseña" }}
+
+                <button type="button" class="toggle-password">
+
+                    <i class="ri-eye-line"></i>
+
+                </button>
+
             </div>
 
+            <a href="{% url 'login:password_reset' %}" class="link">
+                ¿Olvidaste tu contraseña?
+            </a>
 
+            <button type="submit">
+                Entrar
+            </button>
 
-        <a href="{% url 'login:password_reset' %}" class="link">Recuperar Contraseña</a>
+        </form>
 
-        <button type="submit">Entrar</button>
-      </form>
     </div>
-  </div>
+
+</div>
+
+{% if form.errors %}
+<script>
+
+Swal.fire({
+    icon:'error',
+    title:'Error',
+    text:'Usuario o contraseña incorrectos.'
+});
+
+</script>
+{% endif %}
+
+<script src="{% static 'js/login.js' %}"></script>
 
 </body>
- <script type="application/javascript">
-            {% if form.errors %}
-            var errors = '';
-            {% for field in form %}
-            {% for error in field.errors %}
-            errors += '{{ error }}\n';
-            {% endfor %}
-            {% endfor %}
-            {% for error in form.non_field_errors %}
-            errors += '{{ error }}\n';
-            {% endfor %}
-            Swal.fire({
-                title: 'Error!',
-                text: errors,
-                icon: 'error'
-            });
-            {% endif %}
-        </script>
-
-
-    
-
 </html>

@@ -28,7 +28,7 @@ class PlatoListView(PermissionRequiredMixin, listView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     #METODO DISPATCH
     #@method_decorator(login_required)
@@ -66,7 +66,7 @@ class PlatoCreateView(PermissionRequiredMixin, CreateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -91,7 +91,7 @@ class PlatoUpdateView(PermissionRequiredMixin, UpdateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -117,7 +117,7 @@ class PlatoDeleteView(PermissionRequiredMixin, DeleteView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

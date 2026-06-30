@@ -25,7 +25,7 @@ class FacturaListView(PermissionRequiredMixin,listView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_queryset(self):
         queryset = Factura.objects.select_related('venta', 'venta__usuario', 'venta__pedido')
@@ -73,8 +73,8 @@ class FacturaCreateView(PermissionRequiredMixin,CreateView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
-    
+        return redirect("app:acceso_denegado")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
@@ -138,8 +138,8 @@ class FacturaUpdateView(PermissionRequiredMixin,UpdateView):
     raise_exception = True
     
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
-    
+        return redirect("app:acceso_denegado")
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Factura'
