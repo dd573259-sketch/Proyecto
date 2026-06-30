@@ -52,4 +52,107 @@
 
 {% endblock %}
 
-{% block js %}{% endblock %}
+{% block js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+  // ── Utilidad: mostrar/limpiar error ──────────────────────────
+  function setError(field, msg) {
+    let span = field.parentElement.querySelector('.js-error');
+    if (!span) {
+      span = document.createElement('div');
+      span.className = 'text-danger mt-1 js-error';
+      field.parentElement.appendChild(span);
+    }
+    span.innerHTML = msg ? `<small>${msg}</small>` : '';
+    field.style.borderColor = msg ? '#dc3545' : '';
+  }
+
+  // ── Nombre ───────────────────────────────────────────────────
+  const nombre = document.querySelector('[name="nombre"]');
+  if (nombre) {
+    nombre.addEventListener('input', function () {
+      const v = this.value;
+      if (v.length === 0) return setError(this, '');
+      if (v.startsWith(' ') || v.endsWith(' '))
+        return setError(this, 'No puede iniciar ni terminar con espacio.');
+      if (v.includes('  '))
+        return setError(this, 'No se permiten espacios dobles.');
+      if (/^\d+$/.test(v))
+        return setError(this, 'El nombre no puede ser solo números.');
+      if (!/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$/.test(v))
+        return setError(this, 'Solo letras, números y espacios.');
+      if (v.length < 3)
+        return setError(this, 'Mínimo 3 caracteres.');
+      setError(this, '');
+    });
+  }
+
+  // ── Descripción ──────────────────────────────────────────────
+  const desc = document.querySelector('[name="descripcion"]');
+  if (desc) {
+    desc.addEventListener('input', function () {
+      const v = this.value;
+      if (v.length === 0) return setError(this, '');
+      if (/^\d+$/.test(v))
+        return setError(this, 'La descripción no puede ser solo números.');
+      if (!/^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$/.test(v))
+        return setError(this, 'Solo letras, números y espacios.');
+      if (v.length < 10)
+        return setError(this, `Mínimo 10 caracteres (${v.length}/10).`);
+      setError(this, '');
+    });
+  }
+
+  // ── Valor ────────────────────────────────────────────────────
+  const valor = document.querySelector('[name="valor"]');
+  if (valor) {
+    valor.addEventListener('input', function () {
+      const v = parseFloat(this.value);
+      if (this.value === '') return setError(this, '');
+      if (v < 0)
+        return setError(this, 'El valor debe ser mayor a 0.');
+      if (v > 10000000)
+        return setError(this, 'El valor es demasiado alto.');
+      setError(this, '');
+    });
+  }
+
+  // ── Stock ────────────────────────────────────────────────────
+  const stock = document.querySelector('[name="stock"]');
+  if (stock) {
+    stock.addEventListener('input', function () {
+      const v = parseInt(this.value);
+      if (this.value === '') return setError(this, '');
+      if (v < 0)
+        return setError(this, 'El stock no puede ser negativo.');
+      if (v > 1000000)
+        return setError(this, 'El stock es demasiado alto.');
+      setError(this, '');
+    });
+  }
+
+  // ── Fecha vencimiento ─────────────────────────────────────────
+  const fecha = document.querySelector('[name="fecha_vencimiento"]');
+  if (fecha) {
+    fecha.addEventListener('change', function () {
+      const hoy = new Date().toISOString().split('T')[0];
+      if (this.value < hoy)
+        return setError(this, 'La fecha no puede ser en el pasado.');
+      setError(this, '');
+    });
+  }
+
+  // ── Bloquear submit si hay errores JS ────────────────────────
+  document.querySelector('form').addEventListener('submit', function (e) {
+    const errores = document.querySelectorAll('.js-error');
+    const hayError = [...errores].some(el => el.textContent.trim() !== '');
+    if (hayError) {
+      e.preventDefault();
+      messages.error(request, 'Corrige los errores antes de guardar.');
+    }
+  });
+
+});
+</script>
+{% endblock %}

@@ -216,9 +216,21 @@ class PedidoUpdateView(PermissionRequiredMixin, UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         pedido = self.get_object()
-        if pedido.pago:
-            messages.error(request, "Este pedido ya fue pagado y no puede modificarse.")
+        
+        if pedido.estado == 'Entregado':
+            messages.error(
+                request,
+                "Este pedido ya fue entregado y no puede modificarse."
+            )
             return redirect('app:listar_pedidos')
+
+        if pedido.pago:
+            messages.error(
+                request,
+                "Este pedido ya fue pagado y no puede modificarse."
+            )
+            return redirect('app:listar_pedidos')
+
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -335,3 +347,51 @@ def verificar_mesa_disponible(request):
         pedidos_sin_pagar = pedidos_sin_pagar.exclude(pk=pedido_id)
 
     return JsonResponse({'ocupada': pedidos_sin_pagar.exists()})
+
+from django.views.generic import DetailView
+from app.models import Pedido
+
+
+from django.views.generic import DetailView
+from app.models import Pedido
+
+
+class ImprimirPedidoView(DetailView):
+    model = Pedido
+    template_name = "Pedido/imprimir_pedido.html"
+    context_object_name = "pedido"
+
+    def get_queryset(self):
+        return Pedido.objects.prefetch_related(
+            'detalle_platos__plato',
+            'detalle_productos__producto'
+        ).select_related(
+            'mesa',
+            'usuario'
+        )
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        # Al imprimir cambia automáticamente a Entregado
+        if self.object.estado != "Entregado":
+            self.object.estado = "Entregado"
+            self.object.save()
+
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        total = 0
+
+        for detalle in self.object.detalle_platos.all():
+            total += detalle.precio_unitario * detalle.cantidad
+
+        for detalle in self.object.detalle_productos.all():
+            total += detalle.precio_unitario * detalle.cantidad
+
+        context["total"] = total
+
+        return context

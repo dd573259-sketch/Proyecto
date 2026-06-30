@@ -365,41 +365,99 @@ $('#form-pedido').on('submit', function(e){
         }
     });
 
-    $('.fila-plato').each(function(){
-        const selectPlato = $(this).find('select[name$="-plato"]');
-        const inputCantidad = $(this).find('input[name$="-cantidad"]');
-        
-        if(selectPlato.val() || inputCantidad.val()){
-            if(!selectPlato.val()){
-                valido = false;
-                mostrarError(selectPlato.next('.select2').find('.select2-selection'), 'Seleccione un plato');
-            }
-            if(!inputCantidad.val() || parseInt(inputCantidad.val()) <= 0){
-                valido = false;
-                mostrarError(inputCantidad, 'Cantidad inválida');
-            }
+    let tienePlatos = false;
+let tieneProductos = false;
+
+
+$('.fila-plato').each(function(){
+
+    const selectPlato = $(this).find('select[name$="-plato"]');
+    const inputCantidad = $(this).find('input[name$="-cantidad"]');
+
+    const plato = selectPlato.val();
+    const cantidad = parseInt(inputCantidad.val()) || 0;
+
+    // Si la fila está totalmente vacía no validar
+    if(!plato && cantidad===0){
+        return;
+    }
+
+    tienePlatos = true;
+
+    if(!plato){
+        valido = false;
+        mostrarError(
+            selectPlato.next('.select2').find('.select2-selection'),
+            'Seleccione un plato'
+        );
+    }
+
+    if(cantidad<=0){
+        valido=false;
+        mostrarError(
+            inputCantidad,
+            'Cantidad inválida'
+        );
+    }
+
+});
+
+$('.fila-producto').each(function(){
+
+    const selectProducto = $(this).find('select[name$="-producto"]');
+    const inputCantidad = $(this).find('input[name$="-cantidad"]');
+
+    const producto = selectProducto.val();
+    const cantidad = parseInt(inputCantidad.val()) || 0;
+
+    // Si la fila está totalmente vacía no validar
+    if(!producto && cantidad===0){
+        return;
+    }
+
+    tieneProductos = true;
+
+    if(!producto){
+        valido=false;
+        mostrarError(
+            selectProducto.next('.select2').find('.select2-selection'),
+            'Seleccione un producto'
+        );
+    }
+
+    if(cantidad<=0){
+        valido=false;
+        mostrarError(
+            inputCantidad,
+            'Cantidad inválida'
+        );
+    }
+
+    if(producto){
+        if(!validarStock($(this))){
+            valido=false;
         }
+    }
+
+});
+
+
+/*===========================
+Debe existir al menos un plato
+o un producto
+============================*/
+
+if(!tienePlatos && !tieneProductos){
+
+    valido=false;
+
+    Swal.fire({
+        icon:'warning',
+        title:'Pedido vacío',
+        text:'Debe agregar al menos un plato o un producto.'
     });
 
-    $('.fila-producto').each(function(){
-        const selectProducto = $(this).find('select[name$="-producto"]');
-        const inputCantidad = $(this).find('input[name$="-cantidad"]');
-        
-        if(selectProducto.val() || inputCantidad.val()){
-            if(!selectProducto.val()){
-                valido = false;
-                mostrarError(selectProducto.next('.select2').find('.select2-selection'), 'Seleccione un producto');
-            }
-            if(!inputCantidad.val() || parseInt(inputCantidad.val()) <= 0){
-                valido = false;
-                mostrarError(inputCantidad, 'Cantidad inválida');
-            }
-            if(!validarStock($(this))){
-                valido = false;
-            }
-        }
-    });
-
+}
     if(!valido){
         e.preventDefault();
         Swal.fire({

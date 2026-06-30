@@ -58,6 +58,7 @@
                 <th>Total</th>
                 <th>Detalle</th>
                 <th>Editar</th>
+                <th>Imprimir</th>
             </tr>
         </thead>
 
@@ -114,14 +115,13 @@
 
                 <td>
 
-                    {% if c.pago %}
+                    {% if c.estado == "Entregado" %}
 
-                        <span class="btn btn-secondary btn-sm"
-                              style="cursor:not-allowed; opacity:0.6;"
-                              title="Pedido pagado - no se puede modificar">
-
-                            Pagado
-                        </span>
+                        <button class="btn btn-secondary btn-sm"
+                              disabled
+                              title="Pedido entregado - no se puede modificar">
+                           <i class="fas fa-lock"></i> Entregado
+                        </button>
 
                     {% else %}
 
@@ -134,13 +134,45 @@
                     {% endif %}
 
                 </td>
+                <td>
 
+                    {% if c.pago %}
+
+                        <span class="btn btn-secondary btn-sm"
+                              style="cursor:not-allowed; opacity:0.6;"
+                              title="Pedido pagado - no se puede imprimir">
+
+                            Pagado
+                        </span>
+
+                    {% else %}
+
+                        <a href="{% url 'app:imprimir_pedido' c.id_pedido %}"
+                           class="btn btn-dark btn-sm">
+
+                            <i class="fas fa-print"></i> Imprimir
+                        </a>
+
+                    {% endif %}
+
+                    {% if c.estado == "Entregado" %}
+
+                        <a href="{% url 'app:imprimir_pedido' c.id_pedido %}"
+                        class="btn btn-secondary btn-sm"
+                        style="text-decoration:line-through;">
+                            <i class="fas fa-print"></i> Ya impreso
+                        </a>
+
+                    {% else %}
+                
+                    {% endif %}
+                </td>
             </tr>
 
             {% empty %}
 
             <tr id="fila-vacia">
-                <td colspan="11" class="text-center text-muted">
+                <td colspan="12" class="text-center text-muted">
                     No hay pedidos registrados.
                 </td>
             </tr>

@@ -6,6 +6,7 @@ from app.forms import *
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
 from app.signals import obtener_umbral
+from django.contrib import messages
 
 class InsumosListView(PermissionRequiredMixin, listView):
     model = insumo

@@ -22,6 +22,8 @@ def listar_receta(request):
 class RecetaListView(PermissionRequiredMixin, listView):
     model = Receta
     template_name = 'receta/listar.html'
+    form_class = RecetaForm
+    success_url = reverse_lazy('app:listar_receta')
     permission_required = "app.view_receta"
     raise_exception = True
 
@@ -63,8 +65,8 @@ class RecetaListView(PermissionRequiredMixin, listView):
     
 class RecetaCreateView(PermissionRequiredMixin, CreateView):
     model = Receta
-    form_class = RecetaForm
     template_name = 'receta/crear.html'
+    form_class = RecetaForm
     success_url = reverse_lazy('app:listar_receta')
     permission_required = "app.add_receta"
     raise_exception = True
@@ -75,6 +77,7 @@ class RecetaCreateView(PermissionRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['formset'] = DetalleFormSet(self.request.POST or None)
+        context['titulo'] = 'Crear Receta'
         return context
 
     def form_valid(self, form):

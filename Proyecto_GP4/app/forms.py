@@ -114,11 +114,22 @@ class PedidoForm(ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Si el pedido ya está Entregado, bloquear el campo estado
-        if self.instance and self.instance.pk and self.instance.estado == 'Entregado':
+        if not self.instance.pk:
+            self.fields['estado'].choices = [
+                ('Preparación', 'Preparación')
+            ]
+            self.fields['estado'].initial = 'Preparación'
+
+
+        elif self.instance.estado == 'Entregado':
             self.fields['estado'].disabled = True
-            self.fields['estado'].widget.attrs['title'] = 'No se puede revertir un pedido entregado'
-    
+
+    def clean_estado(self):
+        
+        if self.instance.pk and self.instance.estado == 'Entregado':
+            return 'Entregado'
+
+        return self.cleaned_data.get('estado')
     
     def clean_mesa(self):
         mesa = self.cleaned_data.get('mesa')
@@ -126,8 +137,7 @@ class PedidoForm(ModelForm):
         if not mesa:
             raise forms.ValidationError('Por favor seleccione una mesa.')
 
-        # Solo validamos disponibilidad al crear un pedido nuevo
-        # Al editar no bloqueamos porque la mesa ya estaba asignada
+
         if not self.instance.pk:
             if mesa and mesa.estado == 'No disponible':
                 raise forms.ValidationError(
@@ -143,10 +153,6 @@ class PedidoForm(ModelForm):
         return Usuario
 
 
-# ==============================================================
-# FORMULARIO PARA CADA PLATO DEL PEDIDO
-# Valida cantidad > 0 y que el plato tenga precio válido
-# ==============================================================
 class DetallePlatoForm(ModelForm):
     class Meta:
         model = DetallePlato
@@ -162,9 +168,13 @@ class DetallePlatoForm(ModelForm):
 
     def clean_cantidad(self):
         cantidad = self.cleaned_data.get('cantidad')
+        plato = self.cleaned_data.get('plato')
 
         # La cantidad debe ser mayor a 0
-        if cantidad is not None and cantidad < 1:
+        if not plato:
+            return cantidad 
+        
+        if cantidad is not None and cantidad <= 0:
             raise forms.ValidationError('La cantidad debe ser mayor a 0.')
 
         return cantidad
@@ -210,9 +220,13 @@ class DetallePedidoForm(ModelForm):
 
     def clean_cantidad(self):
         cantidad = self.cleaned_data.get('cantidad')
+        producto = self.cleaned_data.get('producto')
 
         # La cantidad debe ser mayor a 0
-        if cantidad is not None and cantidad < 1:
+        if not producto:
+            return cantidad
+
+        if cantidad is not None and cantidad <= 0:
             raise forms.ValidationError('La cantidad debe ser mayor a 0.')
 
         return cantidad
@@ -253,7 +267,9 @@ DetallePlatoFormSet = inlineformset_factory(
     DetallePlato,
     form=DetallePlatoForm,
     extra=1,
-    can_delete=True
+    can_delete=True,
+    min_num=0,
+    validate_min=True
 )
 
 
@@ -266,7 +282,9 @@ DetallePedidoFormSet = inlineformset_factory(
     DetallePedido,
     form=DetallePedidoForm,
     extra=1,
-    can_delete=True
+    can_delete=True,
+    min_num=0,
+    validate_min=True
 )
 
 class MesaForm(ModelForm):
@@ -445,6 +463,8 @@ class InsumosForm(ModelForm):
         self.fields['categoria'].queryset = Categoria.objects.filter(
             estado='activo'
         )
+        from datetime import date
+        self.fields['fecha_vencimiento'].widget.attrs['min'] = date.today().isoformat()
 
     class Meta:
         model = insumo
@@ -465,32 +485,32 @@ class InsumosForm(ModelForm):
         }
 
 
-def clean_nombre(self):
-    nombre = self.cleaned_data.get('nombre')
-    
-    # ── CORRECCIÓN: excluye el insumo actual al editar ──
-    qs = insumo.objects.filter(nombre__iexact=nombre)
-    if self.instance.pk:  # si estamos editando
-        qs = qs.exclude(pk=self.instance.pk)
-    if qs.exists():
-        raise forms.ValidationError('Este insumo ya está registrado.')
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        
+        # ── CORRECCIÓN: excluye el insumo actual al editar ──
+        qs = insumo.objects.filter(nombre__iexact=nombre)
+        if self.instance.pk:  # si estamos editando
+            qs = qs.exclude(pk=self.instance.pk)
+        if qs.exists():
+            raise forms.ValidationError('Este insumo ya está registrado.')
 
-    if len(nombre) < 3:
-        raise forms.ValidationError('El nombre debe tener al menos 3 caracteres')
+        if len(nombre) < 3:
+            raise forms.ValidationError('El nombre debe tener al menos 3 caracteres')
 
-    if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$', nombre):
-        raise forms.ValidationError('El nombre solo puede contener letras, números y espacios')
+        if not re.match(r'^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]+$', nombre):
+            raise forms.ValidationError('El nombre solo puede contener letras, números y espacios')
 
-    if nombre.isdigit():
-        raise forms.ValidationError('El nombre no puede ser solo números')
+        if nombre.isdigit():
+            raise forms.ValidationError('El nombre no puede ser solo números')
 
-    if "  " in nombre:
-        raise forms.ValidationError('No se permiten espacios dobles')
+        if "  " in nombre:
+            raise forms.ValidationError('No se permiten espacios dobles')
 
-    if nombre.startswith(' ') or nombre.endswith(' '):
-        raise forms.ValidationError('El nombre no puede iniciar ni terminar con espacio')
+        if nombre.startswith(' ') or nombre.endswith(' '):
+            raise forms.ValidationError('El nombre no puede iniciar ni terminar con espacio')
 
-    return nombre
+        return nombre
 
     def clean_categoria(self):
         categoria = self.cleaned_data.get('categoria')
