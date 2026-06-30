@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from app.models import Mesa
@@ -14,7 +14,7 @@ class MesaListView(PermissionRequiredMixin, ListView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -41,7 +41,7 @@ class MesaCreateView(PermissionRequiredMixin, CreateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -59,7 +59,7 @@ class MesaUpdateView(PermissionRequiredMixin, UpdateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -75,7 +75,7 @@ class MesaDeleteView(PermissionRequiredMixin, DeleteView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
     template_name = 'Mesa/eliminar.html'
     success_url = reverse_lazy('app:listar_mesas')
 

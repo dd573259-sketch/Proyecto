@@ -29,7 +29,7 @@ class VentaListView(PermissionRequiredMixin, ListView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_queryset(self):
         queryset = Venta.objects.select_related('usuario', 'pedido')
@@ -78,7 +78,7 @@ class VentaCreateView(PermissionRequiredMixin, CreateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -147,7 +147,7 @@ class VentaUpdateView(PermissionRequiredMixin, UpdateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
 
 class VentaDeleteView(PermissionRequiredMixin, DeleteView):
@@ -158,7 +158,7 @@ class VentaDeleteView(PermissionRequiredMixin, DeleteView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
 
 # oagar venta

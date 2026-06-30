@@ -21,7 +21,7 @@ class ProveedorListView(PermissionRequiredMixin, listView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
 
     def get_context_data(self, **kwargs):
@@ -41,7 +41,7 @@ class ProveedorCreateView(PermissionRequiredMixin, CreateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -58,7 +58,7 @@ class ProveedorDeleteView(PermissionRequiredMixin, DeleteView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -75,7 +75,7 @@ class ProveedorUpdateView(PermissionRequiredMixin, UpdateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

@@ -18,8 +18,9 @@ from app.views.Pedido.views import *
 from app.views.Cliente.views import *
 from app.views.Dashborad.views import *
 from app.reportes import *
-from app.views.backup import *
+from app.views.Backup.backup import *
 from app.views.IA.views import chat_view
+from app.views.Error403 import *
 
 
 app_name = 'app'
@@ -170,5 +171,8 @@ urlpatterns = [
     path('ventas/historial/', VentaHistorialView.as_view(), name='historial_ventas'),
     path('pagos/historial/', PagoHistorialView.as_view(), name='historial_pagos'),
     path('facturas/historial/', FacturaHistorialView.as_view(), name='historial_facturas'),
+    
+# Error 403
+    path('acceso_denegado/', acceso_denegado, name='acceso_denegado')
 ]
 

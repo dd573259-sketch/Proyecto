@@ -12,6 +12,7 @@ from django.views.decorators.http import require_http_methods
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect
+from app.decoradores import solo_admin
 
 # ========== OBTENER DATOS DE LA BD ==========
 def obtener_credenciales_mysql():
@@ -53,6 +54,7 @@ def probar_conexion_mysql():
 
 
 # ========== VISTA PARA MOSTRAR OPCIONES DE RESPALDO ==========
+@solo_admin
 @require_http_methods(["GET", "POST"])
 def backup(request):
     """Muestra el menu de opciones para respaldo y restauracion"""
@@ -87,6 +89,7 @@ def backup(request):
 
 
 # ========== VISTA PARA RESTAURAR DATOS ==========
+@solo_admin
 @require_http_methods(["POST"])
 def restaurar_datos(request):
     if not validar_password_backup(request):
@@ -240,6 +243,7 @@ def generar_archivo_descarga(contenido_sql, nombre_archivo):
     return response
 
 
+@solo_admin
 def backup_ventas(request):
     if not validar_password_backup(request):
         
@@ -286,6 +290,7 @@ def backup_ventas(request):
 # ========== PEDIDOS ==========
 
 
+@solo_admin
 def backup_pedidos(request):
     if not validar_password_backup(request):
         messages.error(
@@ -331,6 +336,7 @@ def backup_pedidos(request):
 # ========== CLIENTES ==========
 
 
+@solo_admin
 def backup_clientes(request):
     if not validar_password_backup(request):
         messages.error(
@@ -374,8 +380,9 @@ def backup_clientes(request):
 
 
 # ========== USUARIOS  ==========
-
-'''def backup_usuarios(request):
+'''
+@solo_admin
+def backup_usuarios(request):
     """Exporta solo los datos de la tabla usuario"""
     if request.method != 'POST':
         return JsonResponse({'error': 'Método no permitido'}, status=405)
@@ -405,7 +412,7 @@ def backup_clientes(request):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=400)'''
 
-
+@solo_admin
 def backup_pagos(request):
     if not validar_password_backup(request):
         messages.error(
@@ -451,6 +458,7 @@ def backup_pagos(request):
 # ========== PROVEEDORES  ==========
 
 
+@solo_admin
 def backup_proveedores(request):
     if not validar_password_backup(request):
         messages.error(
@@ -493,6 +501,7 @@ def backup_proveedores(request):
         return JsonResponse({"error": str(e)}, status=400)
 
 
+@solo_admin
 def backup_facturas(request):
     """Exporta solo los datos de la tabla factura"""
 
@@ -500,6 +509,7 @@ def backup_facturas(request):
 # ========== PRODUCTOS  ==========
 
 
+@solo_admin
 def backup_productos(request):
     if not validar_password_backup(request):
         messages.error(
@@ -543,6 +553,7 @@ def backup_productos(request):
 
 
 # RESPALDO PACHECO
+@solo_admin
 def backup_insumos(request):
     if not validar_password_backup(request):
         messages.error(
@@ -588,7 +599,7 @@ def backup_insumos(request):
 
 # ========== COMPRAS ==========
 
-
+@solo_admin
 def backup_compras(request):
     if not validar_password_backup(request):
         messages.error(
@@ -631,6 +642,7 @@ def backup_compras(request):
         return JsonResponse({"error": str(e)}, status=400)
 
 
+@solo_admin
 def backup_facturas(request):
     if not validar_password_backup(request):
         messages.error(

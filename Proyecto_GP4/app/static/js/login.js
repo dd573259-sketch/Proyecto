@@ -1,41 +1,30 @@
 document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("loginForm");
-  const usuario = document.getElementById("usuario");
-  const contrasena = document.getElementById("contrasena");
-  const errorUsuario = document.getElementById("errorUsuario");
-  const errorContrasena = document.getElementById("errorContrasena");
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+    const passwordInput = document.querySelector(".password-input");
+    const togglePassword = document.querySelector(".toggle-password");
 
-    // limpiar mensajes previos
-    errorUsuario.textContent = "";
-    errorContrasena.textContent = "";
+    if (passwordInput && togglePassword) {
 
-    const formData = new FormData(form);
+        togglePassword.addEventListener("click", () => {
 
-    try {
-      const response = await fetch("validar.php", {
-        method: "POST",
-        body: formData
-      });
+            const icon = togglePassword.querySelector("i");
 
-      const result = await response.text();
+            if (passwordInput.type === "password") {
 
-      if (result === "usuario") {
-        errorUsuario.textContent = "Usuario incorrecto";
-        errorUsuario.style.color = "red";
-      } else if (result === "contrasena") {
-        errorContrasena.textContent = "Contraseña incorrecta";
-        errorContrasena.style.color = "red";
-      } else if (result === "error_general") {
-        alert("Error en la conexión con la base de datos");
-      } else {
-        // Si devuelve una ruta, redirigimos
-        window.location.href = result;
-      }
-    } catch (error) {
-      alert("Error en el sistema: " + error.message);
+                passwordInput.type = "text";
+                icon.classList.remove("ri-eye-line");
+                icon.classList.add("ri-eye-off-line");
+
+            } else {
+
+                passwordInput.type = "password";
+                icon.classList.remove("ri-eye-off-line");
+                icon.classList.add("ri-eye-line");
+
+            }
+
+        });
+
     }
-  });
+
 });

@@ -4,7 +4,7 @@ from django.contrib.auth import views as auth_views
 
 app_name = 'login'
 urlpatterns = [
-    path('login/', LoginView.as_view(), name='login'),
+    path('', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('recuperar_credenciales/', 
          auth_views.PasswordResetView.as_view(

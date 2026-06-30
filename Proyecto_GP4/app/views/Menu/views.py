@@ -28,7 +28,7 @@ class MenuListView(PermissionRequiredMixin,listView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     #METODO DISPATCH
     #@method_decorator(login_required)
@@ -64,7 +64,7 @@ class MenuCreateView(PermissionRequiredMixin,CreateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     #@method_decorator(csrf_exempt)
     
@@ -109,7 +109,7 @@ class MenuDeleteView(PermissionRequiredMixin,DeleteView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

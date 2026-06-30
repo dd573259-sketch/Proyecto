@@ -28,8 +28,8 @@ class RecetaListView(PermissionRequiredMixin, listView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
-    
+        return redirect("app:acceso_denegado")
+
     def get_queryset(self):
         # Programación Senior: Evitamos el problema N+1 con prefetch_related
         return Receta.objects.prefetch_related('detalles__insumo')
@@ -72,7 +72,7 @@ class RecetaCreateView(PermissionRequiredMixin, CreateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -101,7 +101,7 @@ class RecetaUpdateView(PermissionRequiredMixin, UpdateView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -125,7 +125,7 @@ class RecetaDeleteView(PermissionRequiredMixin, DeleteView):
     raise_exception = True
 
     def handle_no_permission(self):
-        raise Http404("No se encontro la pagina")
+        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

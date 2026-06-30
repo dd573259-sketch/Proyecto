@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.conf import settings
-from app.views.backup import generar_archivo_descarga
+from app.views.Backup.backup import generar_archivo_descarga
 from django.contrib import messages
 from django.shortcuts import redirect
 
