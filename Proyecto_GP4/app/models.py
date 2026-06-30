@@ -220,6 +220,13 @@ class Compra(models.Model):
 
     def __str__(self):
         return f"Compra #{self.id_compra} - {self.proveedor} - {self.producto}"
+    @property
+    def articulo(self):
+        if self.producto:
+            return self.producto.nombre
+        elif self.insumo:
+            return self.insumo.nombre
+        return "Sin artículo"
 
 class Mesa(models.Model):
     id_mesa = models.AutoField(primary_key=True)

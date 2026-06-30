@@ -840,56 +840,122 @@ class ProductoForm(ModelForm):
 
 class CompraForm(ModelForm):
 
+    articulo = forms.ChoiceField(
+        label="Artículo",
+        choices=[],
+        required=True
+    )
+
     class Meta:
         model = Compra
-        fields = '__all__'
+        fields = "__all__"
+
         widgets = {
-            'producto': forms.Select(attrs={
-                'placeholder': 'Seleccione el producto'}),
-            'insumo': forms.Select(attrs={
-                'placeholder': 'Seleccione el insumo'}),
-            'proveedor': forms.Select(attrs={
-                'placeholder': 'Seleccione el proveedor'}),
-            'cantidad': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese la cantidad de la compra',
-                'id': 'id_cantidad'}),
-            'precio_unitario': forms.NumberInput(attrs={
-                'placeholder': 'Ingrese el precio unitario',
-                'id': 'id_precio_unitario'}),
-            'fecha_compra': forms.DateInput(attrs={
-                'placeholder': 'Ingrese la fecha de la compra',
-                'type': 'date'}),
-            'estado_pago': forms.Select(),
-            'total_compra': forms.NumberInput(attrs={
-                'readonly': True,
-                'id': 'id_total_compra'}),
+            "producto": forms.HiddenInput(),
+            "insumo": forms.HiddenInput(),
+
+            "proveedor": forms.Select(attrs={
+                "placeholder": "Seleccione el proveedor"
+            }),
+
+            "cantidad": forms.NumberInput(attrs={
+                "placeholder": "Ingrese la cantidad de la compra",
+                "id": "id_cantidad"
+            }),
+
+            "precio_unitario": forms.NumberInput(attrs={
+                "placeholder": "Ingrese el precio unitario",
+                "id": "id_precio_unitario"
+            }),
+
+            "fecha_compra": forms.DateInput(attrs={
+                "type": "date"
+            }),
+
+            "estado_pago": forms.Select(),
+
+            "total_compra": forms.NumberInput(attrs={
+                "readonly": True,
+                "id": "id_total_compra"
+            }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        opciones = [
+            ("", "Seleccione un artículo")
+        ]
+
+        # Productos
+        for producto in Producto.objects.all():
+            opciones.append(
+                (
+                    f"producto_{producto.pk}",
+                    f"Producto - {producto.nombre}"
+                )
+            )
+
+        # Insumos
+        for item in insumo.objects.all():
+            opciones.append(
+                (
+                    f"insumo_{item.pk}",
+                    f"Insumo - {item.nombre}"
+                )
+            )
+
+        self.fields["articulo"].choices = opciones
+
     def clean_cantidad(self):
-        cantidad = self.cleaned_data.get('cantidad')
+        cantidad = self.cleaned_data.get("cantidad")
+
         if cantidad <= 0:
-            raise forms.ValidationError("La cantidad debe ser mayor a 0")
+            raise forms.ValidationError(
+                "La cantidad debe ser mayor a 0"
+            )
+
         return cantidad
 
-
     def clean_precio_unitario(self):
-        precio = self.cleaned_data.get('precio_unitario')
+        precio = self.cleaned_data.get("precio_unitario")
+
         if precio <= 0:
-            raise forms.ValidationError("El precio unitario debe ser mayor a 0")
+            raise forms.ValidationError(
+                "El precio unitario debe ser mayor a 0"
+            )
+
         return precio
 
     def clean(self):
         cleaned_data = super().clean()
 
-        producto = cleaned_data.get("producto")
-        insumo = cleaned_data.get("insumo")
+        articulo = cleaned_data.get("articulo")
 
-        if producto and insumo:
+        if not articulo:
             raise forms.ValidationError(
-                "Debe seleccionar solo un producto o un insumo, no ambos."
+                "Debe seleccionar un artículo."
             )
-        if not producto and not insumo:
-            raise forms.ValidationError(
-                "Debe seleccionar un producto o un insumo."
-            )
+
+        if articulo.startswith("producto_"):
+            pk = articulo.split("_")[1]
+            cleaned_data["producto"] = Producto.objects.get(pk=pk)
+            cleaned_data["insumo"] = None
+
+        elif articulo.startswith("insumo_"):
+            pk = articulo.split("_")[1]
+            cleaned_data["insumo"] = insumo.objects.get(pk=pk)
+            cleaned_data["producto"] = None
+
         return cleaned_data
+
+    def save(self, commit=True):
+        compra = super().save(commit=False)
+
+        compra.producto = self.cleaned_data.get("producto")
+        compra.insumo = self.cleaned_data.get("insumo")
+
+        if commit:
+            compra.save()
+
+        return compra

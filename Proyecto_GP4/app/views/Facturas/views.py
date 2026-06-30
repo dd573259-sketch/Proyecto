@@ -14,54 +14,93 @@ from itertools import groupby
 from django.db.models.functions import TruncMonth
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
+from django.db.models import Q
+from django.utils import timezone
 
-class FacturaListView(PermissionRequiredMixin,listView): 
+class FacturaListView(PermissionRequiredMixin, ListView):
     model = Factura
     template_name = 'facturas/listar.html'
     context_object_name = 'facturas'
     paginate_by = 5
     ordering = ('-fecha_hora',)
-    permission_required = "app.view_categoria"
+    permission_required = "app.view_factura"
     raise_exception = True
-    
+
     def handle_no_permission(self):
         raise Http404("No se encontro la pagina")
 
     def get_queryset(self):
-        queryset = Factura.objects.select_related('venta', 'venta__usuario', 'venta__pedido')
+
+        queryset = Factura.objects.select_related(
+            'venta',
+            'venta__usuario',
+            'venta__pedido'
+        )
+
         usuario = self.request.GET.get('usuario')
         fecha = self.request.GET.get('fecha')
         estado = self.request.GET.get('estado')
 
-        # Filtrar solo el mes actual por defecto
+        # Mostrar únicamente las facturas del mes actual
         hoy = timezone.now()
+
         queryset = queryset.filter(
             fecha_hora__year=hoy.year,
             fecha_hora__month=hoy.month
         )
 
-        # 🔍 Filtros (ajustados a tu modelo)
+        # Buscar por usuario
         if usuario:
-            queryset = queryset.filter(venta__usuario__nombre__icontains=usuario)
+            queryset = queryset.filter(
+                Q(venta__usuario__user__username__icontains=usuario) |
+                Q(venta__usuario__user__first_name__icontains=usuario) |
+                Q(venta__usuario__user__last_name__icontains=usuario)
+            )
 
+        # Buscar por fecha
         if fecha:
-            queryset = queryset.filter(fecha_hora__date=fecha)
+            queryset = queryset.filter(
+                fecha_hora__date=fecha
+            )
 
-        if estado == 'pagado':
+        # Filtrar por estado
+        if estado == "activa":
             queryset = queryset.filter(activo=True)
-        elif estado == 'pendiente':
+
+        elif estado == "inactiva":
             queryset = queryset.filter(activo=False)
+
+        # Mostrar alerta cuando no haya resultados
+        if (usuario or fecha or estado) and not queryset.exists():
+
+            if usuario and fecha:
+                mensaje = f'No se encontraron facturas del usuario "{usuario}" para la fecha {fecha}.'
+
+            elif usuario:
+                mensaje = f'No se encontraron facturas del usuario "{usuario}".'
+
+            elif fecha:
+                mensaje = f'No se encontraron facturas para la fecha {fecha}.'
+
+            else:
+                mensaje = f'No se encontraron facturas con estado "{estado}".'
+
+            messages.warning(self.request, mensaje)
 
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         context['titulo'] = 'Listado de Facturas'
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
+
         context['usuario'] = self.request.GET.get('usuario', '')
         context['fecha'] = self.request.GET.get('fecha', '')
         context['estado'] = self.request.GET.get('estado', '')
+
         context['mes_actual'] = timezone.now().strftime('%B %Y').capitalize()
+
         return context
 
 class FacturaCreateView(PermissionRequiredMixin,CreateView):
@@ -69,7 +108,7 @@ class FacturaCreateView(PermissionRequiredMixin,CreateView):
     form_class = FacturaForm
     template_name = 'facturas/crear.html'
     success_url = reverse_lazy('app:listar_facturas')
-    permission_required = "app.add_categoria"
+    permission_required = "app.add_factura"
     raise_exception = True
     
     def handle_no_permission(self):
@@ -134,7 +173,7 @@ class FacturaUpdateView(PermissionRequiredMixin,UpdateView):
     form_class = FacturaForm
     template_name = 'facturas/editar.html'
     success_url = reverse_lazy('app:listar_facturas')
-    permission_required = "app.change_categoria"
+    permission_required = "app.change_factura"
     raise_exception = True
     
     def handle_no_permission(self):
