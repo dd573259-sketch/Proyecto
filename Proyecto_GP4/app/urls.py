@@ -137,7 +137,6 @@ urlpatterns = [
     path('editar_pedido/<int:pk>/', PedidoUpdateView.as_view(), name='editar_pedido'),
     path('eliminar_pedido/<int:pk>/', PedidoDeleteView.as_view(), name='eliminar_pedido'),
     path('pedido/detalle/<int:pk>/', DetallePedidoView.as_view(), name='detalle_pedido'),
-    path('imprimir_pedido/<int:pk>/', ImprimirPedidoView.as_view(), name='imprimir_pedido'),
     path('exportar_pedido_pdf/', ExportarpedidoPDF.as_view(), name='exportar_pedido_pdf'),
     path('exportar_pedido_excel/', ReportePedidosExcel.as_view(), name='exportar_pedido_excel'),
     path('verificar_mesa_disponible/', verificar_mesa_disponible, name='verificar_mesa_disponible'),

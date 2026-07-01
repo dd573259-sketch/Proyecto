@@ -9,8 +9,6 @@ from django.utils import timezone
 from django.http import JsonResponse
 from app.models import Pago
 from django.contrib import messages
-from django.contrib.auth.mixins import PermissionRequiredMixin 
-from django.http import Http404
 
 
 class PedidoHistorialView(ListView):
@@ -41,6 +39,7 @@ class PedidoHistorialView(ListView):
         pedidos = context['pedidos']
         historial = {}
 
+        # 🔥 AGRUPAR POR MES (IGUAL A VENTAS)
         for pedido in pedidos:
             clave = pedido.fecha_hora.strftime('%B %Y').capitalize()
             if clave not in historial:
@@ -59,21 +58,17 @@ class PedidoHistorialView(ListView):
             hoy = timezone.now()
             context['mes_actual'] = hoy.strftime('%B %Y').capitalize()
 
+        # mantener filtro
         context['mes_seleccionado'] = self.request.GET.get('mes', '')
 
         return context
 
 
-class PedidoListView(PermissionRequiredMixin, ListView):
+class PedidoListView(ListView):
     model = Pedido
     template_name = 'Pedido/listar.html'
     context_object_name = 'object_list'
     paginate_by = 5
-    permission_required = "app.view_pedido"
-    raise_exception = True
-
-    def handle_no_permission(self):
-        return redirect("app:acceso_denegado")
 
     def get_queryset(self):
         hoy = timezone.now()
@@ -114,16 +109,11 @@ class PedidoListView(PermissionRequiredMixin, ListView):
         return context
 
 
-class PedidoCreateView(PermissionRequiredMixin, CreateView):
+class PedidoCreateView(CreateView):
     model = Pedido
     form_class = PedidoForm
     template_name = 'Pedido/crear.html'
     success_url = reverse_lazy('app:listar_pedidos')
-    permission_required = "app.add_pedido"
-    raise_exception = True
-
-    def handle_no_permission(self):
-        return redirect("app:acceso_denegado")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -162,34 +152,12 @@ class PedidoCreateView(PermissionRequiredMixin, CreateView):
                     form_plato.instance.precio_unitario = cleaned['plato'].precio
             formset_platos.save()
 
-            #aca inicio a modificar un poco las views de daniel att elkin
-
             formset_productos.instance = self.object
             for form_producto in formset_productos.forms:
                 cleaned = form_producto.cleaned_data
                 if cleaned.get('producto') and not cleaned.get('DELETE', False):
-                    producto = cleaned['producto']
-                    cantidad = cleaned['cantidad']
-                    #aca es una pequeña validacion para saber si esta disponoble
-
-                    if producto.stock < cantidad:
-                        messages.error(
-                            self.request, f"stock insuficiente para{producto.nombre}. Disponible: {producto.stock}"
-                        )
-                        #pasamos a otra pero esta es para registro vacios que no se cuelwn
-                        self.object.delete()
-                        return self.render_to_response(
-                            self.get_context_data(form=form)
-                        )
-                    
-                    #pasamos a descontar
-                    producto.stock -= cantidad
-                    producto.save()
-
-                    #precios en el detalle ._.
-                    form_producto.instance.precio_unitario = producto.precio
+                    form_producto.instance.precio_unitario = cleaned['producto'].precio
             formset_productos.save()
-                
 
             Comanda.objects.create(
                 pedido=self.object,
@@ -203,34 +171,17 @@ class PedidoCreateView(PermissionRequiredMixin, CreateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class PedidoUpdateView(PermissionRequiredMixin, UpdateView):
+class PedidoUpdateView(UpdateView):
     model = Pedido
     form_class = PedidoForm
     template_name = 'Pedido/crear.html'
     success_url = reverse_lazy('app:listar_pedidos')
-    permission_required = "app.change_pedido"
-    raise_exception = True
-
-    def handle_no_permission(self):
-        return redirect("app:acceso_denegado")
 
     def dispatch(self, request, *args, **kwargs):
         pedido = self.get_object()
-        
-        if pedido.estado == 'Entregado':
-            messages.error(
-                request,
-                "Este pedido ya fue entregado y no puede modificarse."
-            )
-            return redirect('app:listar_pedidos')
-
         if pedido.pago:
-            messages.error(
-                request,
-                "Este pedido ya fue pagado y no puede modificarse."
-            )
+            messages.error(request, "Este pedido ya fue pagado y no puede modificarse.")
             return redirect('app:listar_pedidos')
-
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -289,15 +240,10 @@ class PedidoUpdateView(PermissionRequiredMixin, UpdateView):
         return self.render_to_response(self.get_context_data(form=form))
 
 
-class PedidoDeleteView(PermissionRequiredMixin, DeleteView):
+class PedidoDeleteView(DeleteView):
     model = Pedido
     template_name = 'Pedido/eliminar.html'
     success_url = reverse_lazy('app:listar_pedidos')
-    permission_required = "app.delete_pedido"
-    raise_exception = True
-
-    def handle_no_permission(self):
-        return redirect("app:acceso_denegado")
 
     def dispatch(self, request, *args, **kwargs):
         pedido = self.get_object()
@@ -347,51 +293,3 @@ def verificar_mesa_disponible(request):
         pedidos_sin_pagar = pedidos_sin_pagar.exclude(pk=pedido_id)
 
     return JsonResponse({'ocupada': pedidos_sin_pagar.exists()})
-
-from django.views.generic import DetailView
-from app.models import Pedido
-
-
-from django.views.generic import DetailView
-from app.models import Pedido
-
-
-class ImprimirPedidoView(DetailView):
-    model = Pedido
-    template_name = "Pedido/imprimir_pedido.html"
-    context_object_name = "pedido"
-
-    def get_queryset(self):
-        return Pedido.objects.prefetch_related(
-            'detalle_platos__plato',
-            'detalle_productos__producto'
-        ).select_related(
-            'mesa',
-            'usuario'
-        )
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        # Al imprimir cambia automáticamente a Entregado
-        if self.object.estado != "Entregado":
-            self.object.estado = "Entregado"
-            self.object.save()
-
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-
-        total = 0
-
-        for detalle in self.object.detalle_platos.all():
-            total += detalle.precio_unitario * detalle.cantidad
-
-        for detalle in self.object.detalle_productos.all():
-            total += detalle.precio_unitario * detalle.cantidad
-
-        context["total"] = total
-
-        return context
