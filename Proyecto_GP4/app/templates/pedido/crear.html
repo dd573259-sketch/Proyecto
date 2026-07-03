@@ -744,6 +744,29 @@
     });
 
     $('#form-pedido').on('submit', function(e) {
+        
+                // Verificar que exista al menos un plato o un producto
+        const tienePlatos = $('.fila-plato select[name$="-plato"]').filter(function () {
+            return $(this).val();
+        }).length > 0;
+
+        const tieneProductos = $('.fila-producto select[name$="-producto"]').filter(function () {
+            return $(this).val();
+        }).length > 0;
+
+        if (!tienePlatos && !tieneProductos) {
+            e.preventDefault();
+
+            Swal.fire({
+                icon: 'warning',
+                title: 'Pedido vacío',
+                html: 'Debe agregar al menos un <strong>plato</strong> o un <strong>producto</strong>.',
+                confirmButtonText: 'Entendido',
+                confirmButtonColor: '#f0ad4e'
+            });
+
+            return false;
+        }
 
     let filaSinCantidad = null;
 

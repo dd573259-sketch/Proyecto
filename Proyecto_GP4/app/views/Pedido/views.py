@@ -143,37 +143,59 @@ class PedidoCreateView(CreateView):
         formset_productos = context['formset_productos']
 
         if formset_platos.is_valid() and formset_productos.is_valid():
+
+            # Verificar si existe al menos un plato
+            tiene_platos = any(
+                f.cleaned_data.get('plato')
+                for f in formset_platos.forms
+                if f.cleaned_data and not f.cleaned_data.get('DELETE', False)
+            )
+
+            # Verificar si existe al menos un producto
+            tiene_producto = any(
+                f.cleaned_data.get('producto')
+                for f in formset_productos.forms
+                if f.cleaned_data and not f.cleaned_data.get('DELETE', False)
+            )
+
+            # No permitir pedidos completamente vacíos
+            if not tiene_platos and not tiene_producto:
+                messages.error(
+                    self.request,
+                    'Por favor agregue al menos un plato o un producto.'
+                )
+                return self.render_to_response(self.get_context_data(form=form))
+
+            # Guardar el pedido
             self.object = form.save()
 
+            # Asociar los formsets al pedido
             formset_platos.instance = self.object
-            for form_plato in formset_platos.forms:
-                cleaned = form_plato.cleaned_data
-                if cleaned.get('plato') and not cleaned.get('DELETE', False):
-                    form_plato.instance.precio_unitario = cleaned['plato'].precio
-            formset_platos.save()
-
             formset_productos.instance = self.object
-            for form_producto in formset_productos.forms:
-                cleaned = form_producto.cleaned_data
-                if cleaned.get('producto') and not cleaned.get('DELETE', False):
-                    form_producto.instance.precio_unitario = cleaned['producto'].precio
+
+            # Guardar los detalles
+            formset_platos.save()
             formset_productos.save()
 
+            # Crear la comanda
             Comanda.objects.create(
                 pedido=self.object,
                 usuario=self.object.usuario,
                 estado="Preparación"
             )
 
-            messages.success(self.request, 'El pedido fue registrado correctamente')
+            messages.success(
+                self.request,
+                'El pedido fue registrado correctamente'
+            )
+
             return redirect(self.success_url)
 
         return self.render_to_response(self.get_context_data(form=form))
 
-
 class PedidoUpdateView(UpdateView):
     model = Pedido
-    form_class = PedidoForm
+    form_class = PedidoForm 
     template_name = 'Pedido/crear.html'
     success_url = reverse_lazy('app:listar_pedidos')
 
