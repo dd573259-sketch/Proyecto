@@ -36,7 +36,6 @@ CSRF_TRUSTED_ORIGINS = [
     'https://proyecto-s2yf.onrender.com',
 ]
 
-
 # Application definition
 
 INSTALLED_APPS = [
