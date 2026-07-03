@@ -17,12 +17,12 @@ def listar_categorias(request):
     context = {
         'categorias': Categoria.objects.all()
     }
-    return render(request, 'Categoria/listar.html', context)
+    return render(request, 'categoria/listar.html', context)
 
 
 class CategoriaListView(PermissionRequiredMixin, ListView):
     model = Categoria
-    template_name = 'Categoria/listar.html'
+    template_name = 'categoria/listar.html'
     permission_required = 'app.view_categoria'
     raise_exception = True
 
@@ -68,7 +68,7 @@ class CategoriaListView(PermissionRequiredMixin, ListView):
 class CategoriaCreateView(PermissionRequiredMixin, CreateView):
     model = Categoria
     form_class = CategoriaForm
-    template_name = 'Categoria/crear.html'
+    template_name = 'categoria/crear.html'
     success_url = reverse_lazy('app:listar_categorias')
 
     permission_required = 'app.add_categoria'
@@ -111,7 +111,7 @@ class CategoriaCreateView(PermissionRequiredMixin, CreateView):
 class CategoriaUpdateView(PermissionRequiredMixin, UpdateView):
     model = Categoria
     form_class = CategoriaForm
-    template_name = 'Categoria/crear.html'
+    template_name = 'categoria/crear.html'
     success_url = reverse_lazy('app:listar_categorias')
 
     permission_required = 'app.change_categoria'
@@ -153,7 +153,7 @@ class CategoriaUpdateView(PermissionRequiredMixin, UpdateView):
 
 class CategoriaDeleteView(PermissionRequiredMixin, DeleteView):
     model = Categoria
-    template_name = 'Categoria/eliminar.html'
+    template_name = 'categoria/eliminar.html'
     success_url = reverse_lazy('app:listar_categorias')
 
     permission_required = 'app.delete_categoria'

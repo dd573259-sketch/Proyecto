@@ -18,11 +18,11 @@ def imprimir_comanda(request, pk):
         
         comanda.pedido.estado = 'Entregado'
         comanda.pedido.save()
-    return render(request, 'Comanda/imprimir.html', {'comanda': comanda})
+    return render(request, 'comanda/imprimir.html', {'comanda': comanda})
 # Listar todas las comandas
 class ComandaListView(PermissionRequiredMixin,ListView):
     model = Comanda
-    template_name = 'Comanda/listar.html'
+    template_name = 'comanda/listar.html'
     paginate_by = 5
     permission_required = "app.view_categoria"
     raise_exception = True
@@ -80,7 +80,7 @@ class ComandaListView(PermissionRequiredMixin,ListView):
 class ComandaUpdateView(PermissionRequiredMixin,UpdateView):
     model = Comanda
     form_class = ComandaForm
-    template_name = 'Comanda/crear.html' 
+    template_name = 'comanda/crear.html' 
     success_url = reverse_lazy('app:listar_comandas')
     permission_required = "app.change_categoria"
     raise_exception = True
@@ -97,7 +97,7 @@ class ComandaUpdateView(PermissionRequiredMixin,UpdateView):
 # Eliminar comanda
 class ComandaDeleteView(PermissionRequiredMixin,DeleteView):
     model = Comanda
-    template_name = 'Comanda/eliminar.html'
+    template_name = 'comanda/eliminar.html'
     success_url = reverse_lazy('app:listar_comandas')
     permission_required = "app.delete_categoria"
     raise_exception = True

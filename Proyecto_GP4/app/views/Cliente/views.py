@@ -11,7 +11,7 @@ from django.http import Http404
 # Listar todas las clientes
 class ClienteListView(PermissionRequiredMixin,ListView):
     model = Cliente
-    template_name = 'Cliente/listar.html'
+    template_name = 'cliente/listar.html'
     context_object_name = 'clientes'
     permission_required = "app.view_categoria"
     raise_exception = True
@@ -50,7 +50,7 @@ class ClienteListView(PermissionRequiredMixin,ListView):
 class ClienteCreateView(PermissionRequiredMixin,CreateView):
     model = Cliente
     form_class = ClienteForm
-    template_name = 'Cliente/crear.html'
+    template_name = 'cliente/crear.html'
     success_url = reverse_lazy('app:listar_clientes')
     permission_required = "app.add_categoria"
     raise_exception = True
@@ -83,7 +83,7 @@ class ClienteCreateView(PermissionRequiredMixin,CreateView):
 class ClienteUpdateView(PermissionRequiredMixin,UpdateView):
     model = Cliente
     form_class = ClienteForm
-    template_name = 'Cliente/crear.html' # Reutilizamos el template de crear
+    template_name = 'cliente/crear.html' # Reutilizamos el template de crear
     success_url = reverse_lazy('app:listar_clientes')
     permission_required = "app.change_categoria"
     raise_exception = True

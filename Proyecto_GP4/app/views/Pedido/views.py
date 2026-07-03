@@ -76,7 +76,7 @@ class PedidoHistorialView(ListView):
 
 class PedidoListView(ListView):
     model = Pedido
-    template_name = 'Pedido/listar.html'
+    template_name = 'pedido/listar.html'
     context_object_name = 'object_list'
     paginate_by = 5
 
@@ -132,7 +132,7 @@ class PedidoListView(ListView):
 class PedidoCreateView(CreateView):
     model = Pedido
     form_class = PedidoForm
-    template_name = 'Pedido/crear.html'
+    template_name = 'pedido/crear.html'
     success_url = reverse_lazy('app:listar_pedidos')
 
     def get_context_data(self, **kwargs):
@@ -226,7 +226,7 @@ class PedidoCreateView(CreateView):
 class PedidoUpdateView(UpdateView):
     model = Pedido
     form_class = PedidoForm 
-    template_name = 'Pedido/crear.html'
+    template_name = 'pedido/crear.html'
     success_url = reverse_lazy('app:listar_pedidos')
 
     def dispatch(self, request, *args, **kwargs):
@@ -304,7 +304,7 @@ class PedidoUpdateView(UpdateView):
 
 class PedidoDeleteView(DeleteView):
     model = Pedido
-    template_name = 'Pedido/eliminar.html'
+    template_name = 'pedido/eliminar.html'
     success_url = reverse_lazy('app:listar_pedidos')
 
     def dispatch(self, request, *args, **kwargs):
@@ -337,7 +337,7 @@ class PedidoDeleteView(DeleteView):
 
 class DetallePedidoView(DetailView):
     model = Pedido
-    template_name = "Pedido/detalle.html"
+    template_name = "pedido/detalle.html"
     context_object_name = "pedido"
 
     def get_queryset(self):

@@ -8,7 +8,7 @@ from django.http import Http404
 
 class MesaListView(PermissionRequiredMixin, ListView):
     model = Mesa
-    template_name = 'Mesa/listar.html'
+    template_name = 'mesa/listar.html'
     context_object_name = 'mesas'
     permission_required = "app.view_mesa"
     raise_exception = True
@@ -45,7 +45,7 @@ class MesaListView(PermissionRequiredMixin, ListView):
 class MesaCreateView(PermissionRequiredMixin, CreateView):
     model = Mesa
     form_class = MesaForm
-    template_name = 'Mesa/crear.html'
+    template_name = 'mesa/crear.html'
     success_url = reverse_lazy('app:listar_mesas')
     permission_required = "app.add_mesa"
     raise_exception = True
@@ -77,7 +77,7 @@ class MesaCreateView(PermissionRequiredMixin, CreateView):
 class MesaUpdateView(PermissionRequiredMixin, UpdateView):
     model = Mesa
     form_class = MesaForm
-    template_name = 'Mesa/crear.html' 
+    template_name = 'mesa/crear.html' 
     success_url = reverse_lazy('app:listar_mesas')
     permission_required = "app.change_mesa"
     raise_exception = True
@@ -114,7 +114,7 @@ class MesaDeleteView(PermissionRequiredMixin, DeleteView):
 
     def handle_no_permission(self):
         return redirect("app:acceso_denegado")
-    template_name = 'Mesa/eliminar.html'
+    template_name = 'mesa/eliminar.html'
     success_url = reverse_lazy('app:listar_mesas')
 
     def get_context_data(self, **kwargs):
