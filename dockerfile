@@ -30,5 +30,4 @@ EXPOSE 8000
 
 
 CMD python Proyecto_GP4/manage.py migrate --noinput && \
-    python Proyecto_GP4/manage.py createsuperuser --noinput || true && \
-    gunicorn --chdir Proyecto_GP4 --bind 0.0.0.0:${PORT:-8000} config.wsgi:application
+    python Proyecto_GP4/manage.py runserver 0.0.0.0:${PORT:-8000}
