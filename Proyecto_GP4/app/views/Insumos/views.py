@@ -81,6 +81,16 @@ class InsumosListView(PermissionRequiredMixin, listView):
             'orden': self.request.GET.get('orden', ''),
             'conteo_stock_bajo_real': insumo.objects.filter(stock__lt=5).count()
         })
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Insumos',
+                'url': None
+            }
+        ]
         
         return context
     
@@ -99,6 +109,20 @@ class InsumosCreateView(PermissionRequiredMixin,CreateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Insumo'
         context['icono'] = 'fa-solid fa-plus'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Insumos',
+                'url': reverse_lazy('app:listar_insumos')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
     
     
@@ -118,6 +142,20 @@ class InsumosUpdateView(PermissionRequiredMixin,UpdateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Insumo'
         context['icono'] = 'fa-solid fa-edit'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Insumos',
+                'url': reverse_lazy('app:listar_insumos')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return context
     
     
@@ -136,4 +174,18 @@ class InsumosDeleteView(PermissionRequiredMixin,DeleteView):
         context['titulo'] = 'Eliminar Insumo'
         context['icono'] = 'fa-solid fa-trash'
         context['listar_url'] = reverse_lazy('app:listar_insumos')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Insumos',
+                'url': reverse_lazy('app:listar_insumos')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context

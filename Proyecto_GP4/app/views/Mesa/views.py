@@ -21,6 +21,16 @@ class MesaListView(PermissionRequiredMixin, ListView):
         context['titulo'] = 'Gestión de Mesas'
         context['icono'] = 'fas fa-table'
         context['crear_url'] = reverse_lazy('app:crear_mesa')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Mesas',
+                'url': None
+            }
+        ]
         return context
     
     def get_queryset(self):
@@ -48,6 +58,20 @@ class MesaCreateView(PermissionRequiredMixin, CreateView):
         context['titulo'] = 'Registrar Nueva Mesa'
         context['icono'] = 'fas fa-table'
         context['listar_url'] = reverse_lazy('app:listar_mesas')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Mesas',
+                'url': reverse_lazy('app:listar_mesas')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
 
 class MesaUpdateView(PermissionRequiredMixin, UpdateView):
@@ -66,6 +90,20 @@ class MesaUpdateView(PermissionRequiredMixin, UpdateView):
         context['titulo'] = 'Actualizar Mesa'
         context['icono'] = 'fas fa-table'
         context['listar_url'] = reverse_lazy('app:listar_mesas')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Mesas',
+                'url': reverse_lazy('app:listar_mesas')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return context
 
 # Eliminar mesa
@@ -84,4 +122,18 @@ class MesaDeleteView(PermissionRequiredMixin, DeleteView):
         context['icono'] = 'fas fa-table'
         context['titulo'] = '¿Eliminar Mesa?'
         context['listar_url'] = reverse_lazy('app:listar_mesas')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Mesas',
+                'url': reverse_lazy('app:listar_mesas')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context

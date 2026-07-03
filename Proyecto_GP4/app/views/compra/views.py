@@ -28,6 +28,16 @@ class CompraListView(PermissionRequiredMixin,listView):
         context['crear_url'] = reverse_lazy('app:crear_compra')
         context['icono'] = 'fa-solid fa-cart-shopping'
         context['titulo'] = 'Listado de Compras'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Compras',
+                'url': None
+            }
+        ]
         return context
 
 class CompraCreateView(PermissionRequiredMixin,CreateView):
@@ -48,6 +58,20 @@ class CompraCreateView(PermissionRequiredMixin,CreateView):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-cart-plus'
         context['titulo'] = 'Crear Compra'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Compras',
+                'url': reverse_lazy('app:listar_compras')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
 
 
@@ -68,6 +92,20 @@ class CompraDeleteView(PermissionRequiredMixin,DeleteView):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-cart-xmark'
         context['titulo'] = 'Eliminar Compra'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Compras',
+                'url': reverse_lazy('app:listar_compras')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context
     
 class CompraUpdateView(PermissionRequiredMixin,UpdateView):   
@@ -88,5 +126,19 @@ class CompraUpdateView(PermissionRequiredMixin,UpdateView):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-cart-edit'
         context['titulo'] = 'Editar Compra'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Compras',
+                'url': reverse_lazy('app:listar_compras')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return context
         

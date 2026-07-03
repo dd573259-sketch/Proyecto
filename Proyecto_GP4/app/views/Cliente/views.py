@@ -25,6 +25,16 @@ class ClienteListView(PermissionRequiredMixin,ListView):
         context['icono'] = 'fa-solid fa-users'
         context['crear_url'] = reverse_lazy('app:crear_cliente')
         context['buscar'] = self.request.GET.get('buscar', '')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Clientes',
+                'url': None
+            }
+        ]
         return context
 
     def get_queryset(self):
@@ -53,6 +63,20 @@ class ClienteCreateView(PermissionRequiredMixin,CreateView):
         context['icono'] = 'fa-solid fa-user-plus'
         context['titulo'] = 'Registrar Nuevo Cliente'
         context['listar_url'] = reverse_lazy('app:listar_clientes')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  
+            },
+            {
+                'nombre': 'Clientes',
+                'url': reverse_lazy('app:listar_clientes')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
 
 # Editar estado o usuario de la cliente
@@ -72,6 +96,20 @@ class ClienteUpdateView(PermissionRequiredMixin,UpdateView):
         context['titulo'] = 'Actualizar Cliente'
         context['icono'] = 'fa-solid fa-user-edit'
         context['listar_url'] = reverse_lazy('app:listar_clientes')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  
+            },
+            {
+                'nombre': 'Clientes',
+                'url': reverse_lazy('app:listar_clientes')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return context
 
 # Eliminar cliente
@@ -90,4 +128,18 @@ class ClienteDeleteView(PermissionRequiredMixin,DeleteView):
         context['icono'] = 'fa-solid fa-user-xmark'
         context['titulo'] = '¿Eliminar Cliente?'
         context['listar_url'] = reverse_lazy('app:listar_clientes')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  
+            },
+            {
+                'nombre': 'Clientes',
+                'url': reverse_lazy('app:listar_clientes')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context

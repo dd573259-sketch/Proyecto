@@ -82,6 +82,16 @@ class PagoListView(PermissionRequiredMixin, ListView):
         context['fecha'] = self.request.GET.get('fecha', '')
         context['estado'] = self.request.GET.get('estado', '')
         context['mes_actual'] = timezone.now().strftime('%B %Y').capitalize()
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Pagos',
+                'url': reverse_lazy('app:listar_pagos')
+            }
+        ]
         return context
 
 
@@ -103,6 +113,20 @@ class PagoCreateView(PermissionRequiredMixin, CreateView):
         context['venta'] = venta
         context['titulo'] = 'Registrar Pago'
         context['icono'] = 'fas fa-cash-register'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Pagos',
+                'url': reverse_lazy('app:listar_pagos')
+            },
+            {
+                'nombre': 'Registrar',
+                'url': None
+            }
+        ]
         return context
 
     def form_valid(self, form):
@@ -147,6 +171,20 @@ class EliminarPagoView(PermissionRequiredMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Pago'
         context['listar_url'] = reverse_lazy('app:listar_ventas')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Pagos',
+                'url': reverse_lazy('app:listar_pagos')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context
 
 
@@ -216,5 +254,19 @@ class PagoHistorialView(ListView):
 
         context['historial'] = historial
         context['mes_seleccionado'] = self.request.GET.get('mes', '')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Pagos',
+                'url': reverse_lazy('app:listar_pagos')
+            },
+            {
+                'nombre': 'Historial',
+                'url': None
+            }
+        ]
 
         return context

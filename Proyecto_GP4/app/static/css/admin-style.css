@@ -59,6 +59,19 @@ header {
   left: auto !important;
 }
 
+.titulo-principal {
+  display: block;
+  text-align: center;
+  font-weight: bold;
+  background-color: #2e8b57;
+  color: white;
+  padding: 15px 25px;
+  margin: 0%;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  letter-spacing: 2px;
+}
+
 /* NAV */
 nav {
   background-color: #ffe4b5;
@@ -67,7 +80,7 @@ nav {
   align-items: center;
   padding: 10px 20%;
   position: sticky;
-  top: 110px;
+  top: 21%;
   z-index: 999;
 }
 
@@ -79,25 +92,42 @@ main {
   justify-content: center;
   align-items: center;
   background-image: url('../imagenes/fondoadmin.png');
-  padding: 30px;
+  padding: 50px 20px;
   min-height: auto;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
 }
+.breadcrumb-container {
+  width: 100%;
+  padding: 10px 20px;
+  background: #fff;
+  align-items: center;
+  justify-content: center;
+  display: flex;  
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-size: 15px;
+  position: sticky;
+  top: 15%;
+  z-index: 999;
+}
 
-.titulo-principal {
-  display: block;
-  text-align: center;
-  font-size: 2rem;
-  font-weight: bold;
-  background-color: #2e8b57;
-  color: white;
-  padding: 15px 25px;
-  margin: 0 auto 20px auto;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-  letter-spacing: 2px;
+.breadcrumb-container a {
+  color: #000000;
+  text-decoration: none;
+  font-weight: 600;
+}
+.breadcrumb-container a:hover {
+  text-decoration: underline;
+}
+.breadcrumb-container span {
+  color: #ff0000;
+  font-weight: 600;
+}
+.separador {
+  margin: 0 8px;
+  color: #999;
+  font-size: 12px;
 }
 
 @keyframes fadeIn {
@@ -202,8 +232,18 @@ footer {
     width: 300px !important;
   }
 
+  .titulo-principal {
+    font-size: 0.9rem;
+    padding: 10px 15px;
+  }
+
+  .breadcrumb-container {
+    top: 79px;
+    padding: 8px 10px;
+  }
+  
   nav {
-    top: 83px;
+    top: 119px;
     padding: 8px 5%;
     flex-wrap: wrap;
     gap: 5px;

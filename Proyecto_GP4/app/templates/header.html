@@ -190,4 +190,20 @@ function marcarTodasLeidas(btn) {
 }
 </script>
 {% endblock js %}
+
 </header>
+{% if breadcrumb %}
+    <div class="breadcrumb-container">
+        {% for item in breadcrumb %}
+            {% if item.url %}
+                <a href="{{ item.url }}">{{ item.nombre }}</a>
+            {% else %}
+                <span>{{ item.nombre }}</span>
+            {% endif %}
+
+            {% if not forloop.last %}
+                <i class="fas fa-chevron-right"></i>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}

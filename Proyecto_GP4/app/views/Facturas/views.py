@@ -100,7 +100,16 @@ class FacturaListView(PermissionRequiredMixin, ListView):
         context['estado'] = self.request.GET.get('estado', '')
 
         context['mes_actual'] = timezone.now().strftime('%B %Y').capitalize()
-
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Facturas',
+                'url': None
+            }
+        ]
         return context
 
 class FacturaCreateView(PermissionRequiredMixin,CreateView):
@@ -118,6 +127,20 @@ class FacturaCreateView(PermissionRequiredMixin,CreateView):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
         context['titulo'] = 'Crear Nueva Factura'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Facturas',
+                'url': reverse_lazy('app:listar_facturas')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
     
 
@@ -132,6 +155,20 @@ class FacturaDesactivarView(View):
             'object': factura,
             'titulo': 'Desactivar Factura',      # ← añadir
             'icono': 'fa-solid fa-ban',           # ← añadir
+            'breadcrumb': [
+                {
+                    'nombre': 'Inicio',
+                    'url': reverse_lazy('app:dashboard')
+                },
+                {
+                    'nombre': 'Facturas',
+                    'url': reverse_lazy('app:listar_facturas')
+                },
+                {
+                    'nombre': 'Desactivar',
+                    'url': None
+                }
+            ]
         })
 
     def post(self, request, pk):
@@ -184,6 +221,20 @@ class FacturaUpdateView(PermissionRequiredMixin,UpdateView):
         context['titulo'] = 'Editar Factura'
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
         context['listar_url'] = reverse_lazy('app:listar_facturas')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Facturas',
+                'url': reverse_lazy('app:listar_facturas')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return context
 
 
@@ -196,6 +247,20 @@ class FacturaDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Detalle de Factura'
         context['icono'] = 'fa-solid fa-file-invoice-dollar'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Facturas',
+                'url': reverse_lazy('app:listar_facturas')
+            },
+            {
+                'nombre': 'Detalle',
+                'url': None
+            }
+        ]
         return context
 
 class FacturaHistorialView(ListView):
@@ -236,6 +301,20 @@ class FacturaHistorialView(ListView):
 
         context['historial'] = historial
         context['mes_seleccionado'] = self.request.GET.get('mes', '')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Facturas',
+                'url': reverse_lazy('app:listar_facturas')
+            },
+            {
+                'nombre': 'Historial',
+                'url': None
+            }
+        ]
 
         return context
     

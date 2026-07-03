@@ -81,6 +81,17 @@ class ListarUsuariosView(AdminOrSuperuserRequiredMixin, ListView):
 
         # Enviar los roles al template
         context["roles"] = Usuario._meta.get_field("rol").choices
+        
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Usuarios',
+                'url': None
+            }
+        ]
 
         return context
 
@@ -99,6 +110,20 @@ class CrearUsuarioView(AdminOrSuperuserRequiredMixin, View):
             'user_form': UserForm(),
             'perfil_form': PerfilForm()
         }
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Usuarios',
+                'url': reverse_lazy('usuarios:listar')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return render(request, 'usuarios/crear.html', context)
 
     def post(self, request):
@@ -147,6 +172,20 @@ class EditarUsuarioView(AdminOrSuperuserRequiredMixin, View):
             'perfil_form': PerfilForm(instance=perfil),
             'usuario': usuario
         }
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Usuarios',
+                'url': reverse_lazy('usuarios:listar')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return render(request, 'usuarios/editar.html', context)
 
     def post(self, request, pk):

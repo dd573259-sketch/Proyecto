@@ -17,7 +17,7 @@ def index(request):
 def listar_menu(request):
     nombre = {
         
-        'menu': menu.objects.all()
+        'menu': Menu.objects.all()
     }
     return render(request, 'menu/listar.html', nombre)
     
@@ -52,6 +52,16 @@ class MenuListView(PermissionRequiredMixin,listView):
         context['titulo'] = 'Listado de menu'
         context['icono'] = 'fas fa-utensils'
         context['crear_url'] = reverse_lazy('app:crear_menu')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Clientes',
+                'url': None
+            }
+        ]
 
         return context
     
@@ -72,6 +82,21 @@ class MenuCreateView(PermissionRequiredMixin,CreateView):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fas fa-utensils'
         context['titulo'] = 'Crear Menu'
+        context['listar_url'] = reverse_lazy('app:listar_menu')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Menu',
+                'url': reverse_lazy('app:listar_menu')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
     
     
@@ -116,5 +141,19 @@ class MenuDeleteView(PermissionRequiredMixin,DeleteView):
         context['titulo'] = 'Eliminar Menu'
         context['icono'] = 'fas fa-utensils'
         context['listar_url'] = reverse_lazy('app:listar_menu')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Menu',
+                'url': reverse_lazy('app:listar_menu')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context
     

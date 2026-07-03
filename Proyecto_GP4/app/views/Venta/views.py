@@ -67,6 +67,17 @@ class VentaListView(PermissionRequiredMixin, ListView):
         context['fecha'] = self.request.GET.get('fecha', '')
         context['estado'] = self.request.GET.get('estado', '')
         context['mes_actual'] = timezone.now().strftime('%B %Y').capitalize()
+        context['crear_url'] = reverse_lazy('app:crear_venta')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Ventas',
+                'url': None
+            }
+        ]
         return context
 
 class VentaCreateView(PermissionRequiredMixin, CreateView):
@@ -84,6 +95,20 @@ class VentaCreateView(PermissionRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Venta'
         context['icono'] = 'fas fa-cash-register'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Ventas',
+                'url': reverse_lazy('app:listar_ventas')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
 
     def form_valid(self, form):
@@ -233,6 +258,20 @@ class VentaHistorialView(ListView):
 
         # Para mantener el valor seleccionado en el input
         context['mes_seleccionado'] = self.request.GET.get('mes', '')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Ventas',
+                'url': reverse_lazy('app:listar_ventas')
+            },
+            {
+                'nombre': 'Historial',
+                'url': None
+            }
+        ]
 
         return context
 

@@ -49,6 +49,16 @@ class PlatoListView(PermissionRequiredMixin, listView):
         context['icono'] = 'fa-solid fa-utensils'
         context['crear_url'] = reverse_lazy('app:crear_plato')
         context['buscar'] = self.request.GET.get('buscar', '')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Platos',
+                'url': None
+            }
+        ]
         return context
     
     def get_queryset(self):
@@ -79,6 +89,20 @@ class PlatoCreateView(PermissionRequiredMixin, CreateView):
         context['titulo'] = 'Crear Plato'
         context['icono'] = 'fas fa-utensils'
         context['listar_url'] = reverse_lazy('app:listar_platos')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Platos',
+                'url': reverse_lazy('app:listar_platos')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
     
     
@@ -106,6 +130,20 @@ class PlatoUpdateView(PermissionRequiredMixin, UpdateView):
         context['titulo'] = 'Editar Plato'
         context['icono'] = 'fa-solid fa-pen-to-square'
         context['listar_url'] = reverse_lazy('app:listar_platos')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Platos',
+                'url': reverse_lazy('app:listar_platos')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return context
     
       
@@ -124,4 +162,18 @@ class PlatoDeleteView(PermissionRequiredMixin, DeleteView):
         context['titulo'] = 'Eliminar Plato'
         context['icono'] = 'fa-solid fa-trash'
         context['listar_url'] = reverse_lazy('app:listar_platos')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Platos',
+                'url': reverse_lazy('app:listar_platos')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context

@@ -37,6 +37,16 @@ class ComandaListView(PermissionRequiredMixin,ListView):
         context['crear_url'] = reverse_lazy('app:crear_comanda')
         context['buscar'] = self.request.GET.get('buscar', '')
         context['fecha'] = self.request.GET.get('fecha', '')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Comandas',
+                'url': None
+            }
+        ]
 
         return context
         

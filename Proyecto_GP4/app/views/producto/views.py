@@ -29,6 +29,16 @@ class ProductoListView(PermissionRequiredMixin, listView):
         context['crear_url'] = reverse_lazy('app:crear_producto')
         context['icono'] = 'fa-solid fa-boxes-stacked'
         context['titulo'] = 'Listado de Productos'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Productos',
+                'url': None
+            }
+        ]
         return context
     
 
@@ -56,6 +66,21 @@ class ProductoCreateView(PermissionRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fa-solid fa-boxes-stacked'
         context['titulo'] = 'Crear Producto'
+        context['listar_url'] = reverse_lazy('app:listar_productos')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Productos',
+                'url': reverse_lazy('app:listar_productos')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
     
 
@@ -76,6 +101,21 @@ class ProductoDeleteView(PermissionRequiredMixin, DeleteView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Producto'
         context['icono'] = 'fa-solid fa-trash'
+        context['listar_url'] = reverse_lazy('app:listar_productos')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Productos',
+                'url': reverse_lazy('app:listar_productos')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context
 
 
@@ -100,5 +140,20 @@ class ProductoUpdateView(PermissionRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Editar Producto'
         context['icono'] = 'fa-solid fa-pen-to-square'
+        context['listar_url'] = reverse_lazy('app:listar_productos')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Productos',
+                'url': reverse_lazy('app:listar_productos')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return context
         

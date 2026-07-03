@@ -29,6 +29,16 @@ class ProveedorListView(PermissionRequiredMixin, listView):
         context['crear_url'] = reverse_lazy('app:crear_proveedor')
         context['icono'] = 'fas fa-truck'
         context['titulo'] = 'Listado de Proveedor'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Proveedores',
+                'url': None
+            }
+        ]   
         return context
 
 
@@ -47,6 +57,20 @@ class ProveedorCreateView(PermissionRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Crear Proveedor'
         context['icono'] = 'fas fa-plus-circle'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Proveedores',
+                'url': reverse_lazy('app:listar_proveedores')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
     
 
@@ -63,6 +87,20 @@ class ProveedorDeleteView(PermissionRequiredMixin, DeleteView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Proveedor'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Proveedores',
+                'url': reverse_lazy('app:listar_proveedores')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context
 
 
@@ -81,4 +119,18 @@ class ProveedorUpdateView(PermissionRequiredMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['icono'] = 'fas fa-edit'
         context['titulo'] = 'Editar Proveedor'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Proveedores',
+                'url': reverse_lazy('app:listar_proveedores')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return context

@@ -13,6 +13,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import redirect
 from app.decoradores import solo_admin
+from django.urls import reverse_lazy
 
 # ========== OBTENER DATOS DE LA BD ==========
 def obtener_credenciales_mysql():
@@ -85,6 +86,18 @@ def backup(request):
         "titulo": "Respaldo y Restauracion de Base de Datos",
         "mysql_conectado": mysql_ok,
     }
+    context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Backup',
+                'url': None
+            }
+        ]
+
+
     return render(request, "backup/menu.html", context)
 
 

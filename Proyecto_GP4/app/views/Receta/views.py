@@ -61,6 +61,16 @@ class RecetaListView(PermissionRequiredMixin, listView):
             'titulo': 'Gestión de Recetas',
             'crear_url': reverse_lazy('app:crear_receta')
         })
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Recetas',
+                'url': None
+            }
+        ]
         return context
     
 class RecetaCreateView(PermissionRequiredMixin, CreateView):
@@ -78,6 +88,20 @@ class RecetaCreateView(PermissionRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['formset'] = DetalleFormSet(self.request.POST or None)
         context['titulo'] = 'Crear Receta'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Recetas',
+                'url': reverse_lazy('app:listar_receta')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
 
     def form_valid(self, form):
@@ -106,6 +130,20 @@ class RecetaUpdateView(PermissionRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['formset'] = DetalleFormSet(self.request.POST or None, instance=self.object)
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Recetas',
+                'url': reverse_lazy('app:listar_receta')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return context
 
     def form_valid(self, form):
@@ -132,4 +170,18 @@ class RecetaDeleteView(PermissionRequiredMixin, DeleteView):
         context['titulo'] = 'Eliminar Receta'
         context['icono'] = 'fa-solid fa-trash'
         context['listar_url'] = reverse_lazy('app:listar_receta')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Recetas',
+                'url': reverse_lazy('app:listar_receta')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context

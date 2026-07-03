@@ -60,6 +60,16 @@ class PedidoHistorialView(ListView):
 
         # mantener filtro
         context['mes_seleccionado'] = self.request.GET.get('mes', '')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Pedidos',
+                'url': None
+            }
+        ]
 
         return context
 
@@ -106,6 +116,16 @@ class PedidoListView(ListView):
         
         hoy = timezone.now()
         context['mes_actual'] = hoy.strftime('%B %Y').capitalize()
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Pedidos',
+                'url': None
+            }
+        ]
         return context
 
 
@@ -135,6 +155,16 @@ class PedidoCreateView(CreateView):
         context['platos_json'] = json.dumps({p.id_plato: float(p.precio) for p in platos_qs})
         context['productos_json'] = json.dumps({p.id_producto: float(p.precio) for p in productos_qs})
         context['stock_json'] = json.dumps({p.id_producto: int(p.stock) for p in productos_qs})
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Crear Pedido',
+                'url': None
+            }
+        ]
         return context
 
     def form_valid(self, form):
@@ -210,6 +240,16 @@ class PedidoUpdateView(UpdateView):
         context['platos_json'] = json.dumps({p.id_plato: float(p.precio) for p in platos_qs})
         context['productos_json'] = json.dumps({p.id_producto: float(p.precio) for p in productos_qs})
         context['stock_json'] = json.dumps({p.id_producto: int(p.stock) for p in productos_qs})
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Editar Pedido',
+                'url': reverse_lazy('app:listar_pedidos')
+            }
+        ]
         return context
 
     def form_valid(self, form):
@@ -256,6 +296,20 @@ class PedidoDeleteView(DeleteView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = '¿Eliminar Pedido?'
         context['listar_url'] = reverse_lazy('app:listar_pedidos')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Pedidos',
+                'url': reverse_lazy('app:listar_pedidos')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context
 
 
@@ -275,6 +329,22 @@ class DetallePedidoView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Detalle del Pedido'
+        context['icono'] = 'fas fa-shopping-cart'
+        context['listar_url'] = reverse_lazy('app:listar_pedidos')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Pedidos',
+                'url': reverse_lazy('app:listar_pedidos')
+            },
+            {
+                'nombre': 'Detalle',
+                'url': None
+            }
+        ]
         return context
 
 

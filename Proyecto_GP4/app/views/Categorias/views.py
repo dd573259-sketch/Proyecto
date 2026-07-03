@@ -51,6 +51,16 @@ class CategoriaListView(PermissionRequiredMixin, ListView):
         context['crear_url'] = reverse_lazy('app:crear_categoria')
         context['buscar'] = self.request.GET.get('buscar', '')
         context['estado'] = self.request.GET.get('estado', '')
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': 'Categorías',
+                'url': None
+            }
+        ]
 
         return context
 
@@ -81,7 +91,20 @@ class CategoriaCreateView(PermissionRequiredMixin, CreateView):
         context['titulo'] = 'Crear Categoría'
         context['icono'] = 'plus'
         context['listar_url'] = reverse_lazy('app:listar_categorias')
-
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  
+            },
+            {
+                'nombre': 'Categorías',
+                'url': reverse_lazy('app:listar_categorias')
+            },
+            {
+                'nombre': 'Crear',
+                'url': None
+            }
+        ]
         return context
 
 
@@ -111,7 +134,20 @@ class CategoriaUpdateView(PermissionRequiredMixin, UpdateView):
         context['titulo'] = 'Editar Categoría'
         context['icono'] = 'edit'
         context['listar_url'] = reverse_lazy('app:listar_categorias')
-
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Categorías',
+                'url': reverse_lazy('app:listar_categorias')
+            },
+            {
+                'nombre': 'Editar',
+                'url': None
+            }
+        ]
         return context
 
 
@@ -136,5 +172,18 @@ class CategoriaDeleteView(PermissionRequiredMixin, DeleteView):
         context['titulo'] = 'Eliminar Categoría'
         context['icono'] = 'trash'
         context['listar_url'] = reverse_lazy('app:listar_categorias')
-
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')
+            },
+            {
+                'nombre': 'Categorías',
+                'url': reverse_lazy('app:listar_categorias')
+            },
+            {
+                'nombre': 'Eliminar',
+                'url': None
+            }
+        ]
         return context

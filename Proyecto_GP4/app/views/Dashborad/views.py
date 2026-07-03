@@ -23,4 +23,14 @@ class dashboardView(TemplateView):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Inicio'
         context['icono'] = 'list'
+        context['breadcrumb'] = [
+            {
+                'nombre': 'Inicio',
+                'url': reverse_lazy('app:dashboard')  # Cambia esta URL por la de tu dashboard
+            },
+            {
+                'nombre': '',
+                'url': None
+            }
+        ]
         return context
