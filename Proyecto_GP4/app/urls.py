@@ -148,6 +148,10 @@ urlpatterns = [
     path('eliminar_cliente/<int:pk>/', ClienteDeleteView.as_view(), name='eliminar_cliente'),  
     path('exportar_clientes_pdf/', ExportarclientesPDF.as_view(), name='exportar_clientes_pdf'),
     path('exportar_clientes_excel/', ExportarclientesExcel.as_view(), name='exportar_clientes_excel'),
+    
+# PLATO
+    path('exportar_plato_pdf/', ExportarPlatoPDF.as_view(), name='exportar_plato_pdf'),
+    path('exportar_plato_excel/', ExportarPlatoExcel.as_view(), name='exportar_plato_excel'),
 
 # DASHBOARD
     path('dashboard/', dashboardView.as_view(), name='dashboard'),

@@ -19,12 +19,18 @@
         <i class="fas fa-search"></i> Buscar
     </button>
     <div style="flex: 1;"></div>
+
     <a href="{% url 'app:exportar_pedido_pdf' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-danger btn-sm btn-exportar">
         <i class="fas fa-file-pdf"></i> Exportar PDF
     </a>
     <a href="{% url 'app:exportar_pedido_excel' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-success btn-sm btn-exportar">
         <i class="fas fa-file-excel"></i> Exportar Excel
     </a>
+    <a href="{% url 'app:historial_pedidos' %}" class="btn btn-info btn-xs">
+    <i class="fas fa-history"></i> Historial
+    </a>
+    <a href="{% url 'app:crear_pedido' %}" class="btn btn-success">Crear nuevo pedido</a>
+    </div>
 </form>
 
 <table class="tabla" id="tabla">
@@ -56,7 +62,7 @@
             </td>
             <td>
                 {% for detalle in c.detalle_productos.all %}
-                    {{ detalle.producto.descripcion }} (x{{ detalle.cantidad }})<br>
+                    {{ detalle.producto.nombre }} (x{{ detalle.cantidad }})<br>
                 {% empty %}
                     <span class="text-muted">Sin productos</span>
                 {% endfor %}
@@ -93,12 +99,6 @@
 </table>
 </div>
 
-<div class="card-footer">
-    <a href="{% url 'app:crear_pedido' %}" class="btn btn-success">Crear nuevo pedido</a>
-    <a href="{% url 'app:historial_pedidos' %}" class="btn btn-info btn-xs">
-    <i class="fas fa-history"></i> Historial
-</a>
-</div>
 
 <style>
     .fila-pagada {

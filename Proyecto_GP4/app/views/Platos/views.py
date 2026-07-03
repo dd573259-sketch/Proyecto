@@ -10,7 +10,8 @@ from app.models import *
 from app.forms import PlatoForm
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
-
+from django.views import View
+from app.utils import exportar_pdf, exportar_excel
 def index(request):
     return render(request, 'main.html')
 # Create your views here.
@@ -177,3 +178,76 @@ class PlatoDeleteView(PermissionRequiredMixin, DeleteView):
             }
         ]
         return context
+    
+class ExportarPlatoPDF(View):
+
+    def get(self, request):
+        buscar = request.GET.get("buscar", "")
+
+        platos = Plato.objects.all()
+
+        if buscar:
+            platos = platos.filter(nombre__icontains=buscar)
+
+        columnas = [
+            "ID",
+            "Categoría",
+            "Nombre",
+            "Descripción",
+            "Precio",
+        ]
+
+        datos = [
+            (
+                plato.id_plato,
+                plato.categoria.nombre if plato.categoria else "",
+                plato.nombre,
+                plato.descripcion,
+                plato.precio,
+            )
+            for plato in platos
+        ]
+
+        return exportar_pdf(
+            "Reporte de Platos",
+            columnas,
+            datos,
+            "platos"
+        )
+
+
+class ExportarPlatoExcel(View):
+
+    def get(self, request):
+        buscar = request.GET.get("buscar", "")
+
+        platos = Plato.objects.all()
+
+        if buscar:
+            platos = platos.filter(nombre__icontains=buscar)
+
+        columnas = [
+            "ID",
+            "Categoría",
+            "Nombre",
+            "Descripción",
+            "Precio",
+        ]
+
+        datos = [
+            (
+                plato.id_plato,
+                plato.categoria.nombre if plato.categoria else "",
+                plato.nombre,
+                plato.descripcion,
+                plato.precio,
+            )
+            for plato in platos
+        ]
+
+        return exportar_excel(
+            "Reporte de Platos",
+            columnas,
+            datos,
+            "platos"
+        )

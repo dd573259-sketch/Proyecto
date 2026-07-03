@@ -18,7 +18,11 @@
         <a href="{% url 'app:exportar_categorias_excel' %}" class="btn btn-success btn-xs btn-exportar">
           <i class="fas fa-file-excel"></i> Exportar Excel
         </a>
+        <a href="{{crear_url}}" class="btn btn-success btn-xs">
+          <i class="fas fa-plus"></i> Crear nueva categoria
+        </a>
       </div>
+
     </form>
 
   <table class="tabla" id="tabla">
@@ -59,11 +63,6 @@
   </table>
 </div>
 
-<div class="card-footer">
-  <a href="{{crear_url}}" class="btn btn-success btn-xs">
-    <i class="fas fa-plus"></i> Crear nueva categoria
-  </a>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {

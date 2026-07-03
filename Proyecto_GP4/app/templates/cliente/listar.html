@@ -17,6 +17,9 @@
     <a href="{% url 'app:exportar_clientes_excel' %}?buscar={{ request.GET.buscar }}" class="btn btn-success btn-sm btn-exportar">
         <i class="fas fa-file-excel"></i> Exportar Excel
     </a>
+    <a href="{{ crear_url }}" class="btn btn-success btn-xs">
+        <i class="fas fa-plus"></i> Crear nuevo cliente
+    </a>
 </form>
 
 <table class="tabla" id="tabla">
@@ -63,11 +66,6 @@
 </table>
 </div>
 
-<div class="card-footer">
-    <a href="{{ crear_url }}" class="btn btn-success btn-xs">
-        <i class="fas fa-plus"></i> Crear nuevo cliente
-    </a>
-</div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {

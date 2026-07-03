@@ -24,6 +24,9 @@
         <a href="{% url 'app:reporte_pagos_excel' %}" class="btn btn-success btn-xs btn-exportar">
           <i class="fas fa-file-excel"></i> Exportar Excel
         </a>
+        <a href="{% url 'app:historial_pagos' %}" class="btn btn-info btn-xs">
+          <i class="fas fa-history"></i> Historial
+        </a>
       </div>
     </form>
   </div>
@@ -128,11 +131,6 @@
   </div>
   {% endif %}
 
-  <div style="margin-top: 15px;">
-    <a href="{% url 'app:historial_pagos' %}" class="btn btn-info btn-xs">
-      <i class="fas fa-history"></i> Historial
-    </a>
-  </div>
 
   <style>
     .fila-inactiva {

@@ -2,6 +2,12 @@
 {% load static %}
 
 {% block Contenido %}
+<div style="flex: 1;"></div>
+    <a href="{{ crear_url }}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Crear Nueva Receta
+    </a>
+</div>
+
 <div class="tabla-wrapper">
     <table class="tabla" id="tabla">
         <thead class="table-dark">
@@ -74,11 +80,6 @@
     </div>
 </div>
 
-<div class="card-footer mt-4">
-    <a href="{{ crear_url }}" class="btn btn-success">
-        <i class="fas fa-plus"></i> Crear Nueva Receta
-    </a>
-</div>
 
 {{ recetas_data|json_script:"recetas-data" }}
 
