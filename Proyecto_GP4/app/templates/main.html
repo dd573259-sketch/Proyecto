@@ -19,9 +19,14 @@
 </main>
 
 <!--  BOTÓN FLOTANTE -->
-<div class="chat-toggle" onclick="toggleChat()">
+<div title="Chat IA" class="chat-toggle" onclick="toggleChat()">
   IA
 </div>
+
+<!--  BOTÓN DE AYUDA -->
+<a href="{% static 'pdf/Manual.pdf' %}" target="_blank" class="btn-help" title="Manual de Usuario">
+  <i class="icon-help">?</i>
+</a>
 
 <!--  CHAT -->
 <div class="chat-container" id="chat-container">
@@ -32,6 +37,7 @@
     <button onclick="sendMessage()">Enviar</button>
   </div>
 </div>
+
 
 {% include 'modales/perfil.html' %}
 

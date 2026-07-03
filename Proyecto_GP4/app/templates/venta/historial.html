@@ -25,11 +25,11 @@
                 style="max-width: 80px;"
             >
 
-            <button type="submit" class="btn btn-success btn-sm">
+            <button type="submit"  class="btn btn-success btn-sm" title="Buscar">
                 <i class="fas fa-check"></i>
             </button>
 
-            <a href="{% url 'app:historial_ventas' %}" class="btn btn-outline-danger btn-sm">
+            <a href="{% url 'app:historial_ventas' %}" class="btn btn-outline-danger btn-sm" title="Limpiar filtros">
                 <i class="fas fa-trash"></i>
             </a>
 
@@ -102,21 +102,21 @@
 <div style="display:flex; justify-content:center; margin-top:15px; gap:5px;">
 
   {% if page_obj.has_previous %}
-    <a href="?page=1" class="btn btn-secondary btn-xs">« Primera</a>
-    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-xs">‹ Anterior</a>
+    <a href="?page=1" class="btn btn-secondary btn-xs" title="Primera página">« Primera</a>
+    <a href="?page={{ page_obj.previous_page_number }}"  class="btn btn-secondary btn-xs" title="Página anterior">‹ Anterior</a>
   {% endif %}
 
   {% for num in paginator.page_range %}
     {% if page_obj.number == num %}
       <span class="btn btn-primary btn-xs">{{ num }}</span>
     {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-      <a href="?page={{ num }}" class="btn btn-secondary btn-xs">{{ num }}</a>
+      <a href="?page={{ num }}" class="btn btn-secondary btn-xs" title="Página {{ num }}">{{ num }}</a>
     {% endif %}
   {% endfor %}
 
   {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs">Siguiente ›</a>
-    <a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs">Última »</a>
+    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs" title="Página siguiente">Siguiente ›</a>
+    <a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs" title="Última página">Última »</a>
   {% endif %}
 
 </div>

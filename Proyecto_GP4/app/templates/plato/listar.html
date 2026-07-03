@@ -9,7 +9,7 @@
         placeholder="Buscar por nombre de plato" 
         value="{{ request.GET.buscar }}">
       
-      <button type="submit" class="btn btn-primary">
+      <button type="submit"  class="btn btn-primary" title="Buscar">
         Buscar
       </button>
     </form>
@@ -35,12 +35,14 @@
         <td data-col="descripcion">{{ p.descripcion }}</td>
         <td>{{ p.precio }}</td>
         <td>
-          <a href="{% url "app:editar_plato" p.id_plato %}" class="btn btn-primary btn-xs"><i
-              class="fas fa-edit"></i></a>
+          <a href="{% url "app:editar_plato" p.id_plato %}" class="btn btn-primary btn-xs" title="Editar plato">
+            <i class="fas fa-edit"></i>
+          </a>
         </td>
         <td>
-          <a href="{% url "app:eliminar_plato" p.id_plato %}" class="btn btn-danger btn-xs"><i
-              class="fas fa-trash"></i></a>
+          <a href="{% url "app:eliminar_plato" p.id_plato %}" class="btn btn-danger btn-xs" title="Eliminar plato">
+            <i class="fas fa-trash"></i>
+          </a>
         </td>
       </tr>
       {% endfor %}
@@ -48,7 +50,7 @@
   </table>
 </div>
 <div class="card-footer">
-  <a href="{{crear_url}}" class="btn btn-success btn-xs">
+  <a href="{{crear_url}}" class="btn btn-success btn-xs" title="Crear nuevo plato">
     <i class="fas fa-plus"></i> Crear nuevo plato
   </a>
 </div>

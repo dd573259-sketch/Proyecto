@@ -15,14 +15,14 @@
     <input type="date" name="fecha"
            value="{{ request.GET.fecha }}"
            class="form-control" style="width: 200px;">
-    <button type="submit" class="btn btn-primary">
+    <button type="submit" title="Buscar" class="btn btn-primary">
         <i class="fas fa-search"></i> Buscar
     </button>
     <div style="flex: 1;"></div>
-    <a href="{% url 'app:exportar_pedido_pdf' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-danger btn-sm btn-exportar">
+    <a href="{% url 'app:exportar_pedido_pdf' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-danger btn-sm btn-exportar" title="Exportar a PDF">
         <i class="fas fa-file-pdf"></i> Exportar PDF
     </a>
-    <a href="{% url 'app:exportar_pedido_excel' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-success btn-sm btn-exportar">
+    <a href="{% url 'app:exportar_pedido_excel' %}?buscar={{ request.GET.buscar }}&fecha={{ request.GET.fecha }}" class="btn btn-success btn-sm btn-exportar" title="Exportar a Excel">
         <i class="fas fa-file-excel"></i> Exportar Excel
     </a>
 </form>
@@ -66,7 +66,7 @@
             <td>{{ c.estado }}</td>
             <td>${{ c.total }}</td>
             <td>
-                <a href="{% url 'app:detalle_pedido' c.id_pedido %}" class="btn btn-success btn-sm">
+                <a href="{% url 'app:detalle_pedido' c.id_pedido %}" class="btn btn-success btn-sm" title="Ver detalle del pedido">
                     Ver Detalle
                 </a>
             </td>
@@ -78,7 +78,7 @@
                         Pagado
                     </span>
                 {% else %}
-                    <a href="{% url 'app:editar_pedido' c.id_pedido %}" class="btn btn-primary btn-sm">
+                    <a href="{% url 'app:editar_pedido' c.id_pedido %}"  class="btn btn-primary btn-sm" title="Editar pedido">
                         Editar
                     </a>
                 {% endif %}
@@ -94,10 +94,12 @@
 </div>
 
 <div class="card-footer">
-    <a href="{% url 'app:crear_pedido' %}" class="btn btn-success">Crear nuevo pedido</a>
-    <a href="{% url 'app:historial_pedidos' %}" class="btn btn-info btn-xs">
-    <i class="fas fa-history"></i> Historial
-</a>
+    <a href="{% url 'app:crear_pedido' %}" class="btn btn-success" title="Crear nuevo pedido">
+        <i class="fas fa-plus"></i> Crear nuevo pedido
+    </a>
+    <a href="{% url 'app:historial_pedidos' %}" class="btn btn-info btn-xs" title="Ver historial de pedidos">
+        <i class="fas fa-history"></i> Historial
+    </a>
 </div>
 
 <style>

@@ -12,15 +12,15 @@
     <form method="GET" style="display:flex; gap:10px;">
       <input type="text" name="usuario" placeholder="Buscar usuario" value="{{ usuario }}">
       <input type="date" name="fecha" value="{{ fecha }}">
-      <button type="submit" class="btn btn-primary btn-xs">
+      <button type="submit"  class="btn btn-primary btn-xs" title="Buscar">
         <i class="fas fa-search"></i> Buscar
       </button>
 
       <div style="margin-left: auto; display:flex; align-items: center; gap:10px;">
-        <a href="{% url 'app:reporte_ventas_pdf' %}" class="btn btn-danger btn-xs btn-exportar">
+        <a href="{% url 'app:reporte_ventas_pdf' %}" class="btn btn-danger btn-xs btn-exportar" title="Exportar a PDF">
           <i class="fas fa-file-pdf"></i> Exportar PDF
         </a>
-        <a href="{% url 'app:reporte_ventas_excel' %}" class="btn btn-success btn-xs btn-exportar">
+        <a href="{% url 'app:reporte_ventas_excel' %}" class="btn btn-success btn-xs btn-exportar" title="Exportar a Excel">
           <i class="fas fa-file-excel"></i> Exportar Excel
         </a>
       </div>
@@ -59,17 +59,17 @@
 
         <td>
           {% if not v.activo %}
-          <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;">
+          <span class="btn btn-secondary btn-xs" style="cursor:not-allowed; opacity:0.6;" title="Venta inactiva">
             Bloqueado
           </span>
 
           {% elif v.pago_set.exists %}
-          <span class="btn btn-secondary btn-xs">
+          <span class="btn btn-secondary btn-xs" title="Venta pagada">
             <i class="fas fa-check"></i> Pagado
           </span>
 
           {% else %}
-          <a href="{% url 'app:crear_pago' v.id_venta %}" class="btn btn-success btn-xs">
+          <a href="{% url 'app:crear_pago' v.id_venta %}" class="btn btn-success btn-xs" title="Crear pago">
             <i class="fas fa-dollar-sign"></i> Pagar
           </a>
           {% endif %}
@@ -117,11 +117,11 @@
 {% endif %}
 
 <div class="card-footer" style="margin-top:15px;">
-    <a href="{% url 'app:crear_venta' %}" class="btn btn-primary btn-xs">
+    <a href="{% url 'app:crear_venta' %}" class="btn btn-primary btn-xs" title="Crear Venta">
         <i class="fas fa-plus"></i> Crear Venta
     </a>
 
-    <a href="{% url 'app:historial_ventas' %}" class="btn btn-info btn-xs">
+    <a href="{% url 'app:historial_ventas' %}" class="btn btn-info btn-xs" title="Historial de Ventas">
         <i class="fas fa-history"></i> Historial
     </a>
 </div>

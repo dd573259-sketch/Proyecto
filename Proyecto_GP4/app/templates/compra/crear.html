@@ -26,10 +26,10 @@
 {% endfor %}
 
     <div class="card-footer">
-        <button type="submit" class="btn btn-primary btn-xs">
+        <button type="submit" title="Guardar registro" class="btn btn-primary btn-xs">
             <i class="fas fa-plus"></i> Guardar registro
-    </button>
-        <a href="{% url 'app:listar_compras' %}" class="btn btn-danger">
+        </button>
+        <a href="{% url 'app:listar_compras' %}" title="Cancelar" class="btn btn-danger">
             Cancelar
         </a>
     </div>

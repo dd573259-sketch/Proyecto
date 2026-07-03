@@ -44,18 +44,18 @@
                 {% endfor %}
             </div>
 
-            <button type="button" class="btn btn-success" id="add-form">
+            <button type="button" class="btn btn-success" id="add-form" title="Agregar insumo">
                 + Agregar insumo
             </button>
 
         </div>
 
         <div class="card-footer">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary" title="Guardar receta">
                 Guardar
             </button>
 
-            <a href="{% url 'app:listar_receta' %}" class="btn btn-danger">
+            <a href="{% url 'app:listar_receta' %}" class="btn btn-danger" title="Cancelar">
                 Cancelar
             </a>
         </div>
