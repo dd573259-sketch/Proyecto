@@ -30,4 +30,5 @@ EXPOSE 8000
 
 
 CMD python Proyecto_GP4/manage.py migrate --noinput && \
+    python Proyecto_GP4/manage.py createsuperuser --noinput || true && \
     python Proyecto_GP4/manage.py runserver 0.0.0.0:${PORT:-8000}
