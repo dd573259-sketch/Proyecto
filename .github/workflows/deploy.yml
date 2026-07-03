@@ -1,0 +1,31 @@
+name: Integración Continua (CI)
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  testeo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r Proyecto_GP4/requirements.txt
+          pip install pytest pytest-django
+
+      - name: Ejecutar pruebas con pytest
+        working-directory: Proyecto_GP4
+        run: |
+          pytest app/tests.py --ds=config.settings
