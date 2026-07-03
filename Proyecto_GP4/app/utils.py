@@ -14,11 +14,6 @@ import logging
 from django.core.mail import send_mail
 from django.conf import settings
 
-# ============================================
-# 1. CONFIGURACIÓN DE UNIDADES DE MEDIDA
-# ============================================
-
-# Configuración de conversiones a unidad base
 CONVERSIONES_UNIDADES = {
     'kg': {'base': 'g', 'factor': 1000, 'tipo': 'masa'},      # 1 kg = 1000 g
     'g': {'base': 'g', 'factor': 1, 'tipo': 'masa'},
@@ -241,10 +236,6 @@ def exportar_pdf(titulo, columnas, datos, nombre_archivo):
     return response
 
 
-# ============================================
-# 4. FUNCIONES DE EXPORTACIÓN A EXCEL
-# ============================================
-
 def exportar_excel(titulo, columnas, datos, nombre_archivo):
     """
     FUNCIÓN PARA EXPORTAR DATOS A EXCEL USANDO OPENPYXL
@@ -429,3 +420,4 @@ def exportar_recetas_con_costos(recetas_queryset, formato='excel'):
         return exportar_excel(titulo, columnas, datos, nombre_archivo)
     else:
         return exportar_pdf(titulo, columnas, datos, nombre_archivo)
+    

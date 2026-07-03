@@ -1,15 +1,15 @@
 {% extends "main.html" %}
 {% load static %}
 {% block Contenido %}
-
-  <!-- BOTONES DE EXPORTACION -->
-  <div style="margin-bottom:15px; display:flex; gap:10px;">
+  <div style="flex:1"></div>
     <a href="{% url 'app:exportar_productos_pdf' %}" class="btn btn-danger btn-xs btn-exportar">
       <i class="fas fa-file-pdf"></i> Exportar PDF
     </a>
-
     <a href="{% url 'app:exportar_productos_excel' %}" class="btn btn-success btn-xs btn-exportar">
       <i class="fas fa-file-excel"></i> Exportar Excel
+    </a>
+    <a href="{{crear_url}}" class="btn btn-success btn-xs">
+      <i class="fas fa-plus"></i> Crear nuevo producto
     </a>
   </div>
 
@@ -62,11 +62,6 @@
     </table>
   </div>
 
-  <div class="card-footer">
-    <a href="{{crear_url}}" class="btn btn-success btn-xs">
-      <i class="fas fa-plus"></i> Crear nuevo producto
-    </a>
-  </div>
 
   <!-- PAGINACIÓN -->
   {% if is_paginated %}

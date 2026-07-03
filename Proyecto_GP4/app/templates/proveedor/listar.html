@@ -11,6 +11,9 @@
     <a href="{% url 'app:exportar_proveedores_excel' %}" class="btn btn-success btn-xs btn-exportar">
       <i class="fas fa-file-excel"></i> Exportar Excel
     </a>
+    <a href="{{crear_url}}" class="btn btn-success btn-xs">
+      <i class="fas fa-plus"></i> Crear nuevo proveedor
+    </a>
   </div>
 
   <div class="tabla-wrapper">
@@ -54,11 +57,6 @@
     </table>
   </div>
 
-  <div class="card-footer">
-    <a href="{{crear_url}}" class="btn btn-success btn-xs">
-      <i class="fas fa-plus"></i> Crear nuevo proveedor
-    </a>
-  </div>
 
   <!-- PAGINACIÓN -->
   {% if is_paginated %}

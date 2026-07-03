@@ -194,11 +194,6 @@ class DetallePlatoForm(ModelForm):
 
         return cleaned_data
 
-
-# ==============================================================
-# FORMULARIO PARA CADA PRODUCTO DEL PEDIDO
-# Valida cantidad > 0, stock disponible y que no supere el stock
-# ==============================================================
 class DetallePedidoForm(ModelForm):
     class Meta:
         model = DetallePedido
@@ -242,14 +237,12 @@ class DetallePedidoForm(ModelForm):
             return cleaned_data
 
         if cantidad is not None:
-            # El producto no debe tener stock en 0
             if producto.stock <= 0:
                 raise forms.ValidationError(
                     f'El producto "{producto.descripcion}" no tiene stock disponible. '
                     f'No es posible agregarlo al pedido.'
                 )
 
-            # La cantidad pedida no puede superar el stock disponible
             if cantidad > producto.stock:
                 raise forms.ValidationError(
                     f'Solo hay {producto.stock} unidades disponibles de '
@@ -258,10 +251,7 @@ class DetallePedidoForm(ModelForm):
 
         return cleaned_data
 
-# ==============================================================
-# FORMSET DE PLATOS
-# Permite agregar múltiples platos al pedido
-# ==============================================================
+
 DetallePlatoFormSet = inlineformset_factory(
     Pedido,
     DetallePlato,
@@ -273,10 +263,6 @@ DetallePlatoFormSet = inlineformset_factory(
 )
 
 
-# ==============================================================
-# FORMSET DE PRODUCTOS
-# Permite agregar múltiples productos al pedido
-# ==============================================================
 DetallePedidoFormSet = inlineformset_factory(
     Pedido,
     DetallePedido,

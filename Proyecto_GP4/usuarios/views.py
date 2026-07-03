@@ -11,6 +11,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import Group
 from django.http import Http404
 from django.db.models import Q
+from app.utils import exportar_pdf, exportar_excel
 
 
 
@@ -218,3 +219,106 @@ class CambiarEstadoUsuarioView(View):
         messages.success(request, f'Usuario {estado} correctamente.')
 
         return redirect('usuarios:listar')
+
+class ExportarUsuariosPDF(View):
+
+    def get(self, request):
+        buscar = request.GET.get('buscar', '')
+        estado = request.GET.get('estado', '')
+        rol = request.GET.get('rol', '')
+
+        usuarios = User.objects.select_related('perfil')
+
+        if buscar:
+            usuarios = usuarios.filter(
+                Q(username__icontains=buscar) |
+                Q(first_name__icontains=buscar) |
+                Q(last_name__icontains=buscar) |
+                Q(perfil__cedula__icontains=buscar)
+            )
+
+        if estado == "activo":
+            usuarios = usuarios.filter(is_active=True)
+
+        elif estado == "inactivo":
+            usuarios = usuarios.filter(is_active=False)
+
+        if rol:
+            usuarios = usuarios.filter(perfil__rol=rol)
+
+        columnas = [
+            "Usuario",
+            "Nombre",
+            "Rol",
+            "Cédula",
+            "Estado"
+        ]
+
+        datos = [
+            (
+                u.username,
+                f"{u.first_name} {u.last_name}",
+                u.perfil.get_rol_display() if hasattr(u, "perfil") else "",
+                u.perfil.cedula if hasattr(u, "perfil") else "",
+                "Activo" if u.is_active else "Inactivo",
+            )
+            for u in usuarios
+        ]
+
+        return exportar_pdf(
+            "Reporte de Usuarios",
+            columnas,
+            datos,
+            "usuarios"
+        )
+        
+class ExportarUsuariosExcel(View):
+
+    def get(self, request):
+        buscar = request.GET.get('buscar', '')
+        estado = request.GET.get('estado', '')
+        rol = request.GET.get('rol', '')
+
+        usuarios = User.objects.select_related('perfil')
+
+        if buscar:
+            usuarios = usuarios.filter(
+                Q(username__icontains=buscar) |
+                Q(first_name__icontains=buscar) |
+                Q(last_name__icontains=buscar) |
+                Q(perfil__cedula__icontains=buscar)
+            )
+
+        if estado == "activo":
+            usuarios = usuarios.filter(is_active=True)
+        elif estado == "inactivo":
+            usuarios = usuarios.filter(is_active=False)
+
+        if rol:
+            usuarios = usuarios.filter(perfil__rol=rol)
+
+        columnas = [
+            "Usuario",
+            "Nombre",
+            "Rol",
+            "Cédula",
+            "Estado"
+        ]
+
+        datos = [
+            (
+                u.username,
+                f"{u.first_name} {u.last_name}",
+                u.perfil.get_rol_display() if hasattr(u, "perfil") else "",
+                u.perfil.cedula if hasattr(u, "perfil") else "",
+                "Activo" if u.is_active else "Inactivo",
+            )
+            for u in usuarios
+        ]
+
+        return exportar_excel(
+            "Reporte de Usuarios",
+            columnas,
+            datos,
+            "usuarios"
+        )

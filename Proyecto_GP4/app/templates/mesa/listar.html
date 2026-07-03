@@ -8,7 +8,14 @@
     <button type="submit" class="btn btn-primary">
       Buscar
     </button>
+
+    <div style="margin-left: auto; display:flex; align-items: center; gap:10px;">
+      <a href="{{crear_url}}" class="btn btn-success btn-xs">
+        <i class="fas fa-plus"></i> Crear nueva mesa
+      </a>
+    </div>
   </form>
+  
 
   <table class="tabla" id="tabla">
     <thead>
@@ -39,9 +46,5 @@
     </tbody>
   </table>
 </div>
-<div class="card-footer">
-  <a href="{{crear_url}}" class="btn btn-success btn-xs">
-    <i class="fas fa-plus"></i> Crear nueva mesa
-  </a>
-</div>
+
 {% endblock %}
