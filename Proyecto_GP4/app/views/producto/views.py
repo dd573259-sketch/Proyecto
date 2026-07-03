@@ -1,16 +1,11 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
-from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView as listView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import PermissionRequiredMixin
+
 from app.models import *
 from app.forms import *
-from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.http import Http404
-
 
 
 class ProductoListView(PermissionRequiredMixin, listView):
@@ -23,6 +18,29 @@ class ProductoListView(PermissionRequiredMixin, listView):
 
     def handle_no_permission(self):
         return redirect("app:acceso_denegado")
+
+    # ================= FILTROS =================
+    def get_queryset(self):
+        queryset = super().get_queryset().select_related('categoria')
+
+        categoria = self.request.GET.get('categoria')
+        stock_bajo = self.request.GET.get('stock_bajo')
+        orden = self.request.GET.get('orden')
+
+        if categoria:
+            queryset = queryset.filter(categoria_id=categoria)
+
+        if stock_bajo == "1":
+            queryset = queryset.filter(stock__lt=5)
+
+        if orden == "desc":
+            queryset = queryset.order_by('-stock')
+        elif orden == "asc":
+            queryset = queryset.order_by('stock')
+
+        return queryset
+
+    # ==========================================
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -39,8 +57,49 @@ class ProductoListView(PermissionRequiredMixin, listView):
                 'url': None
             }
         ]
+
+        for obj in context['object_list']:
+            umbral = 10
+
+            if obj.stock <= 0:
+                obj.estado_stock = {
+                    'texto': f'Agotado ({obj.stock})',
+                    'clase': 'bg-danger'
+                }
+            elif obj.stock <= (umbral / 4):
+                obj.estado_stock = {
+                    'texto': f'Crítico ({obj.stock})',
+                    'clase': 'bg-danger'
+                }
+            elif obj.stock <= umbral:
+                obj.estado_stock = {
+                    'texto': f'Bajo ({obj.stock})',
+                    'clase': 'bg-warning text-dark'
+                }
+            else:
+                obj.estado_stock = {
+                    'texto': f'Normal ({obj.stock})',
+                    'clase': 'bg-success'
+                }
+
+        context.update({
+            'titulo': 'Listado de Productos',
+            'icono': 'fa-solid fa-boxes-stacked',
+            'crear_url': reverse_lazy('app:crear_producto'),
+
+            'categorias': Categoria.objects.all(),
+
+            'categoria_seleccionada': self.request.GET.get('categoria', ''),
+            'stock_bajo': self.request.GET.get('stock_bajo', ''),
+            'orden': self.request.GET.get('orden', ''),
+
+            'conteo_stock_bajo_real': Producto.objects.filter(stock__lt=5).count()
+        })
+
         return context
-    
+
+
+# ===================== CREAR =====================
 
 class ProductoCreateView(PermissionRequiredMixin, CreateView):
     model = Producto
@@ -56,15 +115,11 @@ class ProductoCreateView(PermissionRequiredMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         if self.request.method in ('POST', 'PUT'):
-            kwargs['files'] = self.request.FILES  # ← agrega esto
+            kwargs['files'] = self.request.FILES
         return kwargs
-    
-    def form_valid(self, form):
-        return super().form_valid(form)
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['icono'] = 'fa-solid fa-boxes-stacked'
         context['titulo'] = 'Crear Producto'
         context['listar_url'] = reverse_lazy('app:listar_productos')
         context['breadcrumb'] = [
@@ -81,9 +136,34 @@ class ProductoCreateView(PermissionRequiredMixin, CreateView):
                 'url': None
             }
         ]
+        context['icono'] = 'fa-solid fa-boxes-stacked'
         return context
-    
 
+
+# ===================== EDITAR =====================
+
+class ProductoUpdateView(PermissionRequiredMixin, UpdateView):
+    model = Producto
+    form_class = ProductoForm
+    template_name = 'producto/crear.html'
+    success_url = reverse_lazy('app:listar_productos')
+    permission_required = "app.change_producto"
+    raise_exception = True
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.method in ('POST', 'PUT'):
+            kwargs['files'] = self.request.FILES
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['titulo'] = 'Editar Producto'
+        context['icono'] = 'fa-solid fa-pen-to-square'
+        return context
+
+
+# ===================== ELIMINAR =====================
 
 class ProductoDeleteView(PermissionRequiredMixin, DeleteView):
     model = Producto
@@ -95,8 +175,6 @@ class ProductoDeleteView(PermissionRequiredMixin, DeleteView):
     def handle_no_permission(self):
         return redirect("app:acceso_denegado")
 
-    def delete(self, request, *args, **kwargs):
-        return super().delete(request, *args, **kwargs)
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['titulo'] = 'Eliminar Producto'
@@ -156,4 +234,3 @@ class ProductoUpdateView(PermissionRequiredMixin, UpdateView):
             }
         ]
         return context
-        
