@@ -20,11 +20,11 @@
                 <input type="month" name="mes" value="{{ mes_seleccionado }}" class="form-control form-control-sm"
                     style="max-width: 80px;">
 
-                <button type="submit" class="btn btn-success btn-sm">
+                <button type="submit" title="Buscar" class="btn btn-success btn-sm">
                     <i class="fas fa-check"></i>
                 </button>
 
-                <a href="{% url 'app:historial_ventas' %}" class="btn btn-outline-danger btn-sm">
+                <a href="{% url 'app:historial_ventas' %}" title="Limpiar filtros" class="btn btn-outline-danger btn-sm">
                     <i class="fas fa-trash"></i>
                 </a>
 

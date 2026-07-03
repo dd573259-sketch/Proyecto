@@ -5,7 +5,7 @@
   <form method="GET" class="mb-3 d-flex gap-2 align-items-center">
     <input type="text" name="buscar" placeholder="Buscar por numero de mesa" value="{{ request.GET.buscar }}"
       class="form-control" style="width: 300px;">
-    <button type="submit" class="btn btn-primary">
+    <button type="submit" title="Buscar" class="btn btn-primary">
       Buscar
     </button>
 
@@ -35,10 +35,10 @@
         <td>{{ c.numero_mesa }}</td>
         <td>{{ c.estado }}</td>
         <td>
-          <a href="{% url 'app:editar_mesa' c.id_mesa %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+          <a href="{% url 'app:editar_mesa' c.id_mesa %}" title="Editar" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
         </td>
         <td>
-          <a href="{% url 'app:eliminar_mesa' c.id_mesa %}" class="btn btn-danger btn-xs"><i
+          <a href="{% url 'app:eliminar_mesa' c.id_mesa %}" title="Eliminar" class="btn btn-danger btn-xs"><i
               class="fas fa-trash"></i></a>
         </td>
       </tr>
@@ -46,5 +46,4 @@
     </tbody>
   </table>
 </div>
-
 {% endblock %}

@@ -13,15 +13,15 @@
     <form method="GET" style="display:flex; gap:10px;">
       <input type="text" name="usuario" placeholder="Buscar por ventas" value="{{ usuario }}">
       <input type="date" name="fecha" value="{{ fecha }}">
-      <button type="submit" class="btn btn-primary btn-xs">
+      <button type="submit" title="Buscar" class="btn btn-primary btn-xs">
         <i class="fas fa-search"></i> Buscar
       </button>
 
       <div style="margin-left: auto; display:flex; align-items: center; gap:10px;">
-        <a href="{% url 'app:reporte_pagos_pdf' %}" class="btn btn-danger btn-xs btn-exportar">
+        <a href="{% url 'app:reporte_pagos_pdf' %}"  title="Exportar PDF" class="btn btn-danger btn-xs btn-exportar">
           <i class="fas fa-file-pdf"></i> Exportar PDF
         </a>
-        <a href="{% url 'app:reporte_pagos_excel' %}" class="btn btn-success btn-xs btn-exportar">
+        <a href="{% url 'app:reporte_pagos_excel' %}" title="Exportar Excel" class="btn btn-success btn-xs btn-exportar">
           <i class="fas fa-file-excel"></i> Exportar Excel
         </a>
         <a href="{% url 'app:historial_pagos' %}" class="btn btn-info btn-xs">
@@ -86,11 +86,11 @@
               Bloqueado
             </span>
             {% elif p.factura %}
-            <span class="btn btn-secondary btn-xs">
+            <span class="btn btn-secondary btn-xs" title="Facturada">
               <i class="fas fa-check"></i> Facturada
             </span>
             {% else %}
-            <a href="{% url 'app:crear_factura' p.id_pago %}" class="btn btn-success btn-xs">
+            <a href="{% url 'app:crear_factura' p.id_pago %}" class="btn btn-success btn-xs" title="Crear Factura">
               <i class="fas fa-file-invoice"></i> Facturar
             </a>
             {% endif %}
@@ -109,21 +109,21 @@
   {% if is_paginated %}
   <div style="display:flex; justify-content:center; margin-top:15px; gap:5px;">
     {% if page_obj.has_previous %}
-    <a href="?page=1" class="btn btn-secondary btn-xs">« Primera</a>
-    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-xs">‹ Anterior</a>
+    <a href="?page=1" class="btn btn-secondary btn-xs" title="Primera página">« Primera</a>
+    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-xs" title="Página anterior">‹ Anterior</a>
     {% endif %}
 
     {% for num in paginator.page_range %}
     {% if page_obj.number == num %}
     <span class="btn btn-primary btn-xs">{{ num }}</span>
     {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a href="?page={{ num }}"
-      class="btn btn-secondary btn-xs">{{ num }}</a>
+      class="btn btn-secondary btn-xs" title="Página {{ num }}"> {{ num }}</a>
       {% endif %}
       {% endfor %}
 
       {% if page_obj.has_next %}
-      <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs">Siguiente ›</a>
-      <a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs">Última »</a>
+      <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs" title="Página siguiente">Siguiente ›</a>
+      <a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs" title="Última página">Última »</a>
       {% endif %}
   </div>
   <div style="text-align:center; margin-top:8px; color:#888; font-size:0.85em;">

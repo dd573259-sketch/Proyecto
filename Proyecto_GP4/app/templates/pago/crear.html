@@ -98,7 +98,7 @@
                 </div>
 
                 <!-- BOTÓN PARA ABRIR MODAL COMPROBANTE -->
-                <button type="button" class="btn btn-info btn-xs" id="btn-comprobante" style="margin-top:10px; display:none;">
+                <button type="button" class="btn btn-info btn-xs" id="btn-comprobante" style="margin-top:10px; display:none;" title="Adjuntar Comprobante">
                     <i class="fas fa-upload"></i> Adjuntar Comprobante
                 </button>
 
@@ -121,10 +121,10 @@
             </div>
 
             <div class="card-footer text-right" style="margin-top:20px; padding:0;">
-                <button type="submit" class="btn btn-success btn-xs" id="btn-registrar">
+                <button type="submit" class="btn btn-success btn-xs" id="btn-registrar" title="Registrar Pago">
                     <i class="fas fa-save"></i> Registrar Pago
                 </button>
-                <a href="{% url 'app:listar_ventas' %}" class="btn btn-danger btn-xs">
+                <a href="{% url 'app:listar_ventas' %}" title="Cancelar" class="btn btn-danger btn-xs">
                     <i class="fas fa-times"></i> Cancelar
                 </a>
             </div>

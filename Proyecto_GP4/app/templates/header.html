@@ -1,17 +1,17 @@
 {% load static %}
 
 <header>
-    <a href="#"><img id="logo" src="{% static 'imagenes/logo.png' %}" alt="Logo"></a>
+    <a href="#"><img id="logo" title="Logo" src="{% static 'imagenes/logo.png' %}" alt="Logo"></a>
 
     <div class="header-right">
         
-        <a href="{% url 'app:backup' %}" class="btn btn-link">
+        <a href="{% url 'app:backup' %}" title="Respaldo" class="btn btn-link">
             <img class="icono" src="{% static 'imagenes/backup.png' %}" alt="Respaldo">
         </a>
         
         <div class="dropdown">
             <button type="button" class="btn btn-link position-relative" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
-                <img class="icono" src="{% static 'imagenes/campana.png' %}" alt="Notificaciones">
+                <img title="Notificaciones" class="icono" src="{% static 'imagenes/campana.png' %}" alt="Notificaciones">
                 {% if contador_notificaciones > 0 %}
                 <span style="
                     position:absolute;
@@ -126,10 +126,10 @@
 
                 <!-- FOOTER -->
                 <div style="padding:10px 16px; background:#f9f9f9; text-align:center; border-top:1px solid #eee;">
-                       <button type="button" onclick="marcarTodasLeidas(this)" class="btn btn-sm btn-outline-success" style="border-radius:20px; padding:5px 16px; font-size:13px;">
+                       <button type="button" onclick="marcarTodasLeidas(this)"  class="btn btn-sm btn-outline-success" style="border-radius:20px; padding:5px 16px; font-size:13px;" title="Marcar todas como leídas">
                              Marcar leídas
                         </button>
-                    <a href="{% url 'app:listar_notificaciones' %}" class="btn btn-dark btn-sm" style="border-radius:20px; padding:5px 22px; font-size:13px;">
+                    <a href="{% url 'app:listar_notificaciones' %}" class="btn btn-dark btn-sm" style="border-radius:20px; padding:5px 22px; font-size:13px;" title="Ver todas las notificaciones">
                         Ver todas las notificaciones
                     </a>
                 </div>
@@ -140,7 +140,7 @@
 
         <form method="post" action="{% url 'login:logout' %}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-link">
+            <button type="submit" class="btn btn-link" title="Cerrar sesión">
                 <img class="icono" src="{% static 'imagenes/cerrar-sesion.png' %}" alt="Cerrar sesión">
             </button>
         </form>

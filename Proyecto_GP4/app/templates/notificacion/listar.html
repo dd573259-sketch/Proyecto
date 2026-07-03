@@ -9,12 +9,14 @@
   <div class="mb-3 d-flex align-items-center flex-wrap" style="gap:10px; padding: 0 10px;">
 
     <a href="{% url 'app:listar_notificaciones' %}"
+       title="Todas"
        class="btn btn-sm {% if not filtro %}btn-dark{% else %}btn-outline-dark{% endif %}"
        style="border-radius:20px;">
       Todas
     </a>
 
     <a href="?filtro=no_leidas"
+       title="No leídas"
        class="btn btn-sm {% if filtro == 'no_leidas' %}btn-danger{% else %}btn-outline-danger{% endif %}"
        style="border-radius:20px;">
       No leídas
@@ -26,6 +28,7 @@
     </a>
 
     <a href="?filtro=leidas"
+       title="Leídas"
        class="btn btn-sm {% if filtro == 'leidas' %}btn-secondary{% else %}btn-outline-secondary{% endif %}"
        style="border-radius:20px;">
       Leídas
@@ -34,7 +37,7 @@
     <!-- Marcar todas — form independiente, FUERA de cualquier otro form -->
     <form method="post" action="{% url 'app:marcar_leidas' %}" style="margin-left:auto;">
       {% csrf_token %}
-      <button type="submit" class="btn btn-sm btn-outline-success" style="border-radius:20px;">
+      <button type="submit" title="Marcar todas como leídas" class="btn btn-sm btn-outline-success" style="border-radius:20px;">
          Marcar todas como leídas
       </button>
     </form>
@@ -117,7 +120,7 @@
         
 
         <td>
-          <a href="{% url 'app:eliminar_notificacion' n.id_notificacion %}" class="btn btn-danger btn-xs">
+          <a href="{% url 'app:eliminar_notificacion' n.id_notificacion %}" title="Eliminar" class="btn btn-danger btn-xs">
             <i class="fas fa-trash"></i>
           </a>
         </td>

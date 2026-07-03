@@ -6,16 +6,16 @@
       <input type="text" name="buscar" placeholder="Buscar por nombre de categoria" value="{{ request.GET.buscar }}">
       <input type="text" name="estado" placeholder="Buscar por estado" value="{{ request.GET.estado }}">
       
-      <button type="submit" class="btn btn-primary">
+      <button type="submit" class="btn btn-primary" title="Buscar">
         <i class="fas fa-search"></i> Buscar
       </button>
 
       <div> 
-        <a href="{% url 'app:exportar_categorias_pdf' %}" class="btn btn-danger btn-xs btn-exportar">
+        <a href="{% url 'app:exportar_categorias_pdf' %}" class="btn btn-danger btn-xs btn-exportar" title="Exportar PDF">
           <i class="fas fa-file-pdf"></i> Exportar PDF
         </a>
 
-        <a href="{% url 'app:exportar_categorias_excel' %}" class="btn btn-success btn-xs btn-exportar">
+        <a href="{% url 'app:exportar_categorias_excel' %}" class="btn btn-success btn-xs btn-exportar" title="Exportar Excel">
           <i class="fas fa-file-excel"></i> Exportar Excel
         </a>
         <a href="{{crear_url}}" class="btn btn-success btn-xs">
@@ -48,10 +48,10 @@
         <td>{{ c.fecha_creacion }}</td>
         <td>{{ c.fecha_actualizacion }}</td>
         <td>
-          <a href="{% url 'app:editar_categoria' c.id %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+          <a href="{% url 'app:editar_categoria' c.id %}" title="Editar" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
         </td>
         <td>
-          <a href="{% url 'app:eliminar_categoria' c.id %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+          <a href="{% url 'app:eliminar_categoria' c.id %}" title="Eliminar" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
         </td>
       </tr>
       {% empty %}

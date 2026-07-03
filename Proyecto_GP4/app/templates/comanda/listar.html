@@ -13,7 +13,7 @@
       class="form-control"
       style="width: 200px; display: inline;">
 
-    <button type="submit" class="btn btn-primary">
+    <button type="submit" title="Buscar" class="btn btn-primary">
       Buscar
     </button>
   </form>
@@ -66,6 +66,7 @@
 
             <td>
             <a href="{% url 'app:imprimir_comanda' c.id_comanda %}"
+               title="Imprimir"
                class="btn btn-sm {% if c.estado == 'Entregado' %}btn-secondary{% else %}btn-primary{% endif %}">
                
                 <i class="fas fa-print"></i> Imprimir
@@ -122,12 +123,12 @@ function confirmarImpresion(estado) {
   {% endfor %}
 
   {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs">Siguiente ›</a>
-    <a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs">Última »</a>
+    <a href="?page={{ page_obj.next_page_number }}" title="Siguiente" class="btn btn-secondary btn-xs">Siguiente ›</a>
+    <a href="?page={{ paginator.num_pages }}" title="Última" class="btn btn-secondary btn-xs">Última »</a>
   {% endif %}
 
 </div>
-<div style="text-align:center; margin-top:8px; color:#888; font-size:0.85em;">
+<div title="Información de paginación" style="text-align:center; margin-top:8px; color:#888; font-size:0.85em;">
   Página {{ page_obj.number }} de {{ paginator.num_pages }} — {{ paginator.count }} registros en total
 </div>
 {% endif %}

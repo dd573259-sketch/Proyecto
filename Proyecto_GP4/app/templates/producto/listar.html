@@ -43,12 +43,12 @@
           <td>{{ u.fecha_ingreso }}</td>
           <td>{{ u.fecha_vencimiento }}</td>
           <td>
-            <a href="{% url 'app:editar_producto' u.id_producto %}" class="btn btn-primary btn-xs">
+            <a href="{% url 'app:editar_producto' u.id_producto %}" class="btn btn-primary btn-xs" title="Editar producto">
               <i class="fas fa-edit"></i>
             </a>
           </td>
           <td>
-            <a href="{% url 'app:eliminar_producto' u.id_producto %}" class="btn btn-danger btn-xs">
+            <a href="{% url 'app:eliminar_producto' u.id_producto %}" class="btn btn-danger btn-xs" title="Eliminar producto">
               <i class="fas fa-trash"></i>
             </a>
           </td>
@@ -67,21 +67,21 @@
   {% if is_paginated %}
   <div style="display:flex; justify-content:center; margin-top:15px; gap:5px;">
     {% if page_obj.has_previous %}
-      <a href="?page=1" class="btn btn-secondary btn-xs">« Primera</a>
-      <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-xs">‹ Anterior</a>
+      <a href="?page=1" class="btn btn-secondary btn-xs" title="Ir a la primera página">« Primera</a>
+      <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-xs" title="Ir a la página anterior">‹ Anterior</a>
     {% endif %}
 
     {% for num in paginator.page_range %}
       {% if page_obj.number == num %}
-        <span class="btn btn-primary btn-xs">{{ num }}</span>
+        <span class="btn btn-primary btn-xs" title="Página {{ num }}">{{ num }}</span>
       {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-        <a href="?page={{ num }}" class="btn btn-secondary btn-xs">{{ num }}</a>
+        <a href="?page={{ num }}" class="btn btn-secondary btn-xs" title="Ir a la página {{ num }}">{{ num }}</a>
       {% endif %}
     {% endfor %}
 
     {% if page_obj.has_next %}
-      <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs">Siguiente ›</a>
-      <a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs">Última »</a>
+      <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs" title="Ir a la siguiente página">Siguiente ›</a>
+      <a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs" title="Ir a la última página">Última »</a>
     {% endif %}
   </div>
   <div style="text-align:center; margin-top:8px; color:#888; font-size:0.85em;">

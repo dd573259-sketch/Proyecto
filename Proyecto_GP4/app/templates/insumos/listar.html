@@ -10,10 +10,10 @@
     <i class="fas fa-file-pdf"></i> Exportar PDF
   </a>
 
-  <a href="{% url 'app:exportar_insumos_excel' %}" class="btn btn-success btn-xs"
+  <a href="{% url 'app:exportar_insumos_excel' %}" title="Exportar a Excel" class="btn btn-success btn-xs"
   onclick="verificarExportar(event)"
    class="btn btn-success btn-xs">
-    <i class="fas fa-file-excel"></i> Exportar Excel
+    <i title="Exportar a Excel" class="fas fa-file-excel"></i> Exportar Excel
   </a>
   <a href="{% url 'app:crear_insumos' %}" class="btn btn-success">
     <i class="fas fa-plus"></i> Crear nuevo insumo
@@ -52,12 +52,13 @@
 <div class="col-md-3">
   <select name="orden" class="form-control">
     <option value="">Ordenar por stock</option>
+  
 
     <option value="desc"
       {% if orden == "desc" %}selected{% endif %}>
       Mayor a menor
     </option>
-
+    
     <option value="asc"
       {% if orden == "asc" %}selected{% endif %}>
       Menor a mayor
@@ -65,12 +66,19 @@
   </select>
 </div>
 
+
+<div class="card-footer">
+  <a href="{% url 'app:crear_insumos' %}" title="Crear nuevo insumo" class="btn btn-success">
+    <i class="fas fa-plus"></i> Crear nuevo insumo
+  </a>
+</div>
     <div class="col-md-4">
-      <button type="submit" class="btn btn-primary">
+      <button type="submit" title="Buscar" class="btn btn-primary">
         <i class="fas fa-search"></i> Buscar
       </button>
     </div>
-
+    
+    
   </div>
 </form>
 <table class="tabla" id="tabla">
@@ -102,10 +110,10 @@
 </td>
       <td>{{ m.valor }}</td>
       <td>
-        <a href="{% url 'app:editar_insumos' m.id_insumo %}" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
+        <a href="{% url 'app:editar_insumos' m.id_insumo %}" title="Editar" class="btn btn-primary btn-xs"><i class="fas fa-edit"></i></a>
       </td>
       <td>
-        <a href="{% url 'app:eliminar_insumos' m.id_insumo %}" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
+        <a href="{% url 'app:eliminar_insumos' m.id_insumo %}" title="Eliminar" class="btn btn-danger btn-xs"><i class="fas fa-trash"></i></a>
       </td>
     </tr>
     {% empty %}
@@ -124,21 +132,21 @@
 <div style="display:flex; justify-content:center; margin-top:15px; gap:5px;">
 
   {% if page_obj.has_previous %}
-    <a href="?page=1" class="btn btn-secondary btn-xs">« Primera</a>
-    <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary btn-xs">‹ Anterior</a>
+    <a href="?page=1" title="Ir a la primera página" class="btn btn-secondary btn-xs">« Primera</a>
+    <a href="?page={{ page_obj.previous_page_number }}" title="Ir a la página anterior" class="btn btn-secondary btn-xs">‹ Anterior</a>
   {% endif %}
 
   {% for num in paginator.page_range %}
     {% if page_obj.number == num %}
       <span class="btn btn-primary btn-xs">{{ num }}</span>
     {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-      <a href="?page={{ num }}" class="btn btn-secondary btn-xs">{{ num }}</a>
+      <a href="?page={{ num }}" title="Ir a la página {{ num }}" class="btn btn-secondary btn-xs">{{ num }}</a>
     {% endif %}
   {% endfor %}
 
   {% if page_obj.has_next %}
-    <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary btn-xs">Siguiente ›</a>
-    <a href="?page={{ paginator.num_pages }}" class="btn btn-secondary btn-xs">Última »</a>
+    <a href="?page={{ page_obj.next_page_number }}" title="Ir a la página siguiente" class="btn btn-secondary btn-xs">Siguiente ›</a>
+    <a href="?page={{ paginator.num_pages }}" title="Ir a la última página" class="btn btn-secondary btn-xs">Última »</a>
   {% endif %}
 
 </div>

@@ -31,7 +31,7 @@
 
     <div class="login">
 
-        <img src="{% static 'imagenes/Logo.png' %}" class="logo" alt="Logo">
+        <img src="{% static 'imagenes/Logo.png' %}" class="logo" alt="Logo" title="Logo">
 
         <h2>Inicio de Sesión</h2>
 
@@ -53,7 +53,7 @@
 
                 {{ form.password|add_class:"form-control password-input"|attr:"autocomplete:off"|attr:"placeholder:Contraseña" }}
 
-                <button type="button" class="toggle-password">
+                <button type="button" class="toggle-password" title="Mostrar/ocultar contraseña">
 
                     <i class="ri-eye-line"></i>
 
@@ -61,11 +61,11 @@
 
             </div>
 
-            <a href="{% url 'login:password_reset' %}" class="link">
+            <a href="{% url 'login:password_reset' %}" class="link" title="Recuperar contraseña">
                 ¿Olvidaste tu contraseña?
             </a>
 
-            <button type="submit">
+            <button  type="submit" title="Iniciar sesión" class="btn btn-primary">
                 Entrar
             </button>
 

@@ -69,7 +69,7 @@
                         {% if form_plato.instance.pk %}
                             <div class="form-check mt-2">
                                 {{ form_plato.DELETE }}
-                                <label class="form-check-label text-danger">Eliminar este plato</label>
+                                <label class="form-check-label text-danger" title="Eliminar este plato">Eliminar este plato</label>
                             </div>
                         {% endif %}
 
@@ -80,7 +80,7 @@
                 {% endfor %}
             </div>
             <div class="card-footer bg-white">
-                <button type="button" class="btn btn-outline-warning btn-sm" id="agregar-plato">
+                <button type="button" class="btn btn-outline-warning btn-sm" id="agregar-plato" title="Agregar otro plato">
                     <i class="fas fa-plus"></i> Agregar otro plato
                 </button>
             </div>
@@ -113,7 +113,7 @@
                         {% if form_producto.instance.pk %}
                             <div class="form-check mt-2">
                                 {{ form_producto.DELETE }}
-                                <label class="form-check-label text-danger">Eliminar este producto</label>
+                                <label class="form-check-label text-danger" title="Eliminar este producto">Eliminar este producto</label>
                             </div>
                         {% endif %}
 
@@ -124,7 +124,7 @@
                 {% endfor %}
             </div>
             <div class="card-footer bg-white">
-                <button type="button" class="btn btn-outline-success btn-sm" id="agregar-producto">
+                <button type="button" class="btn btn-outline-success btn-sm" id="agregar-producto" title="Agregar otro producto">
                     <i class="fas fa-plus"></i> Agregar otro producto
                 </button>
             </div>
@@ -138,8 +138,12 @@
         </div>
 
         <div class="text-end mb-5">
-            <a href="{% url 'app:listar_pedidos' %}" class="btn btn-secondary">Cancelar</a>
-            <button type="submit" class="btn btn-primary px-4">Guardar Pedido</button>
+            <a href="{% url 'app:listar_pedidos' %}" class="btn btn-secondary" title="Cancelar">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
+            <button type="submit"  class="btn btn-primary px-4" title="Guardar Pedido">
+                <i class="fas fa-save"></i> Guardar Pedido
+            </button>
         </div>
     </form>
 </div>
