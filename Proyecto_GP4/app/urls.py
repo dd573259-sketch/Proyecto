@@ -166,8 +166,8 @@ urlpatterns = [
     path('backup/pagos/', backup_pagos, name='backup_pagos'),
     path('backup/facturas/', backup_facturas, name='backup_facturas'),
     path('backup/insumos/', backup_insumos, name='backup_insumos'),
-    path('backup/pedidos/', backup_pedidos, name='backup_pedidos'),   # ← nuevo
-    path('backup/clientes/', backup_clientes, name='backup_clientes'), # ← nuevo
+    path('backup/pedidos/', backup_pedidos, name='backup_pedidos'), 
+    path('backup/clientes/', backup_clientes, name='backup_clientes'), 
 
   
     path('pedidos/historial/', PedidoHistorialView.as_view(), name='historial_pedidos'),

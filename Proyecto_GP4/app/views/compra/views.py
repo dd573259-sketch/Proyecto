@@ -10,6 +10,7 @@ from app.models import *
 from app.forms import *
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
+from django.db.models import Q
 
 
 class CompraListView(PermissionRequiredMixin,listView):        
@@ -22,6 +23,23 @@ class CompraListView(PermissionRequiredMixin,listView):
     
     def handle_no_permission(self):
         return redirect("app:acceso_denegado")
+    
+
+    def get_queryset(self):
+            queryset = Compra.objects.all().order_by("id_compra")
+
+            buscar = self.request.GET.get("buscar")
+
+            if buscar:
+                queryset = queryset.filter(
+                    Q(proveedor__nombre_proveedor__icontains=buscar) |
+                    Q(usuario__user__username__icontains=buscar) |
+                    Q(producto__nombre__icontains=buscar) |
+                    Q(insumo__nombre__icontains=buscar) |
+                    Q(estado_pago__contains=buscar)
+                )
+
+            return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -38,6 +56,7 @@ class CompraListView(PermissionRequiredMixin,listView):
                 'url': None
             }
         ]
+        context['buscar'] = self.request.GET.get("buscar", "")
         return context
 
 class CompraCreateView(PermissionRequiredMixin,CreateView):

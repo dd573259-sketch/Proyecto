@@ -10,6 +10,7 @@ from app.models import *
 from app.forms import *
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import Http404
+from django.db.models import Q
 
 
 class ProveedorListView(PermissionRequiredMixin, listView):
@@ -23,7 +24,22 @@ class ProveedorListView(PermissionRequiredMixin, listView):
     def handle_no_permission(self):
         return redirect("app:acceso_denegado")
 
+    def get_queryset(self):
+            queryset = Proveedor.objects.all().order_by("id_proveedor")
 
+            buscar = self.request.GET.get("buscar")
+
+            if buscar:
+                queryset = queryset.filter(
+                    Q(nombre_proveedor__icontains=buscar) |
+                    Q(telefono__icontains=buscar) |
+                    Q(correo_electronico__icontains=buscar) |
+                    Q(direccion__icontains=buscar)
+                )
+
+            return queryset
+
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['crear_url'] = reverse_lazy('app:crear_proveedor')
@@ -40,6 +56,10 @@ class ProveedorListView(PermissionRequiredMixin, listView):
             }
         ]   
         return context
+    
+
+
+    
 
 
 class ProveedorCreateView(PermissionRequiredMixin, CreateView):
@@ -73,6 +93,7 @@ class ProveedorCreateView(PermissionRequiredMixin, CreateView):
         ]
         return context
     
+
 
 class ProveedorDeleteView(PermissionRequiredMixin, DeleteView):
     model = Proveedor
