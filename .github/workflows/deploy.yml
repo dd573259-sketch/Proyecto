@@ -31,4 +31,5 @@ jobs:
           pytest app/tests.py --ds=config.settings
 
       - name: Run tests
+        working-directory: ./Proyecto_GP4
         run: pytest app/tests.py --ds=config.settings || [ $? -eq 5 ]
